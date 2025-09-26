@@ -1,0 +1,35 @@
+@startuml 2.2.3
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Port Authority Officer" as portOfficer
+participant "System" as system
+
+title System Sequence Diagram - US2.2.3
+
+== Register a dock ==
+activate portOfficer
+
+portOfficer -> system : Register a dock
+activate system
+
+system -> portOfficer : Request Dock ("Unique Identifier, Dock Name,\n Location within the Port, Length, Depth, Max Draft")
+deactivate system
+portOfficer -> system : Provide Dock Information
+
+activate system
+system -> portOfficer : Request the Vessel Types allowed to berth in the dock
+deactivate system
+portOfficer -> system : Provide Vessel Types allowed to berth in the dock
+
+activate system
+
+system -> system : Create dock record
+
+system -> portOfficer : Confirm Dock registration
+deactivate system
+
+
+
+@enduml
