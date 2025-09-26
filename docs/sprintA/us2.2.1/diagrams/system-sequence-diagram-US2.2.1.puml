@@ -1,0 +1,30 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Port Authority Officer" as portOfficer
+participant "System" as system
+
+title System Sequence Diagram - US2.2.1
+
+== Register a vessel type ==
+activate portOfficer
+
+portOfficer -> system : Register a vessel type
+activate system
+
+system -> portOfficer : Request Vessel type Information ("name, description, \n capacity, operational constraints")
+deactivate system
+portOfficer -> system : Provide Vessel type Information
+
+activate system
+
+system -> system : Create vessel type 
+
+system -> portOfficer : Confirm Vessel type registration
+deactivate system
+
+
+
+@enduml
