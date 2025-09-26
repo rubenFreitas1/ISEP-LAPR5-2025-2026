@@ -1,0 +1,30 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Port Authority Officer" as portOfficer
+participant "System" as system
+
+title System Sequence Diagram - US2.2.2
+
+== Register a vessel record ==
+activate portOfficer
+
+portOfficer -> system : Register a vessel
+activate system
+
+system -> portOfficer : Request Vessel Information ("IMO number, Vessel Name,\n Vessel type and Owner")
+deactivate system
+portOfficer -> system : Provide Vessel Information
+
+activate system
+
+system -> system : Create vessel record
+
+system -> portOfficer : Confirm Vessel registration
+deactivate system
+
+
+
+@enduml
