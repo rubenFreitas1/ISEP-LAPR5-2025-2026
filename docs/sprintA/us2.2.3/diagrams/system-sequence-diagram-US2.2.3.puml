@@ -14,7 +14,7 @@ activate portOfficer
 portOfficer -> system : Register a dock
 activate system
 
-system -> portOfficer : Request Dock ("Unique Identifier, Dock Name,\n Location within the Port, Length, Depth, Max Draft")
+system -> portOfficer : Request Dock Information("Unique Identifier, Dock Name,\n Location within the Port, Length, Depth, Max Draft")
 deactivate system
 portOfficer -> system : Provide Dock Information
 

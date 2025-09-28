@@ -1,0 +1,40 @@
+@startuml 2.2.4
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Port Authority Officer" as portOfficer
+participant "System" as system
+
+title System Sequence Diagram - US2.2.4
+
+== Register a Storage Area ==
+activate portOfficer
+
+portOfficer -> system : Register a storage area
+activate system
+
+system -> portOfficer : Request Storage Area Information("Unique Identifier, Type,\n Location within the Port")
+deactivate system
+portOfficer -> system : Provide Storage Area Information
+
+activate system
+system -> portOfficer : Request information about the docks served by the storage area
+deactivate system
+portOfficer -> system : Provide all the docks served by the storage area
+
+activate system
+system -> portOfficer : Request distances between the docks and storage area
+deactivate system
+portOfficer -> system : Provide all the distances 
+
+activate system
+
+system -> system : Create storage area record
+
+system -> portOfficer : Confirm storage area registration
+deactivate system
+
+
+
+@enduml

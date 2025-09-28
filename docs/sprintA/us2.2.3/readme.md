@@ -1,4 +1,3 @@
-
 # US 2.2.3
 
 ## 1. Context
@@ -7,7 +6,7 @@
 
 ## 2. Requirements
 
-**US 2.2.2** As a Port Authority Officer, I want to register and update docks, so that the system accurately reflects the docking capacity of the port.
+**US 2.2.3** As a Port Authority Officer, I want to register and update docks, so that the system accurately reflects the docking capacity of the port.
 
 **Acceptance Criteria:**
 
