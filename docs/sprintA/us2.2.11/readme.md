@@ -1,36 +1,49 @@
-# US 2.2.3
+# US 2.2.11
 
 ## 1. Context
 
-*Ports operate with multiple docks that accommodate vessels of different sizes and characteristics. To ensure proper port management, the system must allow the registration and update of dock information, including their identifiers, physical characteristics, and the vessel types they support.*
+*Since many resources cannot function autonomously, the system must incorporate operating staff management information to support realistic scheduling and allocation. 
+Despite their identification and contact data such as the mecanographic number, short name, email and phone, it is necessary to capture: Operations Window, Qualification, Current Status.*
 
 ## 2. Requirements
 
-**US 2.2.3** As a Port Authority Officer, I want to register and update docks, so that the system accurately reflects the docking capacity of the port.
+**US 2.2.3** As a Logistics Operator, I want to register and manage operating staff members (create, update, deactivate), so that the system can accurately reflect staff availability and ensure that only qualified personnel are assigned to resources during scheduling.
 
 **Acceptance Criteria:**
 
-- A dock record must include a unique identifier, name/number, location within the port, and physical characteristics (e.g., length, depth, max draft).
+- Each staff member must have a unique mecanographic number (ID), short name, contact details (email, phone),  qualifications, operational window, and current status (e.g., available, unavailable).
 
-- The officer must specify the vessel types allowed to berth there.
+- Deactivation/reactivation must not delete staff data but preserve it for audit and historical planning purposes.
 
-- Docks must be searchable and filterable by name, vessel type, and location.
+- Staff members must be searchable and filterable by id, name, status, and qualifications.
 
 
 **Dependencies/References:**
 
-*There is a dependency with US2.2.1, since a vessel type must exist so it can be assigned on the record.*
+*There is a dependency with US2.2.13, a qualification must be already registered in the system so i can assigned them to a staff menber.*
 
 **Forum Insight:**
 
->> Regarding this user story, can you confirm if a dock supports only one vessel type?
+>> In US 2.2.11, the process of updating a staff member is mentioned. With the introduction of this action, a few questions have arisen:
+When updating a staff member, can all previously entered information be modified?
+Is it possible to leave a staff member’s record incomplete — for example, register some information now and complete the rest later — given that this could occur with the update action?
+When a staff member is registered, do they automatically become available (with the status "available" )?
 > 
-> No! That is clearly wrong. An acceptance criteria states that "The officer must specify the vessel types allowed to berth there.". On a given dock may berth several vessel types (e.g. Feeder and Panamax).
+> The mecanographic number cannot be modified. Everything else might be modified.
+When registering a staff member, (s)he must be, by default, available.
+Mandatory information comprehends, the mecanographic number , short name, contacts and status.
 
 
 ## 3. Analysis
 
 Record Registration
 
-![System Sequence Diagram ](images/system-sequence-diagram-US2.2.3.png)
+![System Sequence Diagram ](images/system-sequence-diagram-US2.2.11.png)
 
+Record Update
+
+![System Sequence Diagram ](images/system-sequence-diagram-US2.2.11(1).png)
+
+Record Deactivation
+
+![System Sequence Diagram ](images/system-sequence-diagram-US2.2.11(2).png)

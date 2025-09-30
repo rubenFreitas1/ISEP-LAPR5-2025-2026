@@ -1,0 +1,37 @@
+@startuml 2.2.11
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Logistics Operator" as LogisticsOperator
+participant "System" as system
+
+title System Sequence Diagram - US2.2.11
+
+== Update a staff menber ==
+activate LogisticsOperator
+
+LogisticsOperator -> system : Asks to update staff menbers
+activate system
+
+system --> LogisticsOperator : Displays staff menbers
+deactivate system
+
+LogisticsOperator -> system : Selects a staff menber
+activate system
+
+system --> LogisticsOperator : Displays and request wich attribute the user wants to update
+deactivate system
+LogisticsOperator -> system : Selects the attribute
+
+activate system
+system --> LogisticsOperator : Request data according to the selected attribute
+deactivate system
+
+LogisticsOperator -> system : Types request data
+activate system
+system --> LogisticsOperator : Displays operation success
+deactivate system
+
+
+@enduml

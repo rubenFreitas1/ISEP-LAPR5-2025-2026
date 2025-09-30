@@ -6,9 +6,9 @@ skinparam shadowing false
 actor "Logistics Operator" as LogisticsOperator
 participant "System" as system
 
-title System Sequence Diagram - US2.2.3
+title System Sequence Diagram - US2.2.11
 
-== Register a dock ==
+== Register a staff menber ==
 activate LogisticsOperator
 
 LogisticsOperator -> system : Asks to register staff menbers
