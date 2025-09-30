@@ -17,10 +17,11 @@ Despite their identification and contact data such as the mecanographic number, 
 
 - Staff members must be searchable and filterable by id, name, status, and qualifications.
 
+- To update or deactivate a staff member the system must guarantee a staff member is already registered in the system
 
 **Dependencies/References:**
 
-*There is a dependency with US2.2.13, a qualification must be already registered in the system so i can assigned them to a staff menber.*
+*There is no dependencies associated to this US.*
 
 **Forum Insight:**
 
