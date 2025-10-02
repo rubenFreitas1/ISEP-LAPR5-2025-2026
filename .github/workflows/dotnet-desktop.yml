@@ -19,7 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x' # muda se usares outra versão
+          dotnet-version: '8.0.414'
 
       - name: Restaurar dependências
         run: dotnet restore
