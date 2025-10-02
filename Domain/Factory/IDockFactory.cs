@@ -4,5 +4,5 @@ using Domain.Model;
 
 public interface IDockFactory
 {
-  //  Dock newDock(...);
+    //  Dock newDock(...);
 }

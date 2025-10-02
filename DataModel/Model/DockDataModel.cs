@@ -1,4 +1,4 @@
 namespace DataModel.Model
 {
-    
+
 }

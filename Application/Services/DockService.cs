@@ -7,5 +7,5 @@ using Domain.IRepository;
 
 public class DockService
 {
-    
+
 }

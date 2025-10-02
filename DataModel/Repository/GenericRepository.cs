@@ -9,7 +9,7 @@ namespace DataModel.Repository
     {
         protected readonly DbContext _context;
         public GenericRepository(DbContext context)
-        {   
+        {
             _context = context;
         }
 

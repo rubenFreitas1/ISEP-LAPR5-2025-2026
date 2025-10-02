@@ -7,5 +7,5 @@ using Domain.Factory;
 
 public class DockMapper
 {
-    
+
 }
