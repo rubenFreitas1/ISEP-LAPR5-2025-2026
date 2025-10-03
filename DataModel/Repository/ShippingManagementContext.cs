@@ -16,8 +16,7 @@ public class ShippingManagementContext : DbContext
         Database.EnsureCreated();
     }
 
-    //public virtual DbSet<ColaboratorDataModel> Colaborators { get; set; } = null!;
-    //public virtual DbSet<AddressDataModel> Address { get; set; } = null!;
+    public virtual DbSet<VesselTypeDataModel> VesselTypes { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

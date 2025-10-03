@@ -25,9 +25,9 @@ public class VesselTypeService
         return vesselTypeDTOs;
     }
 
-    public async Task<VesselTypeDTO> GetVesselTypeByName(string name)
+    public async Task<VesselTypeDTO?> GetVesselTypeByName(string name)
     {
-        VesselType vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(name);
+        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(name);
         if (vesselType != null)
         {
             VesselTypeDTO vesselTypeDTO = VesselTypeDTO.ToDTO(vesselType);
@@ -36,9 +36,9 @@ public class VesselTypeService
         return null;
     }
 
-    public async Task<VesselTypeDTO> GetVesselTypeByID(long id)
+    public async Task<VesselTypeDTO?> GetVesselTypeByID(long id)
     {
-        VesselType vesselType = await _vesselTypeRepository.GetVesselTypeByIdAsync(id);
+        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByIdAsync(id);
         if (vesselType != null)
         {
             VesselTypeDTO vesselTypeDTO = VesselTypeDTO.ToDTO(vesselType);
@@ -47,35 +47,36 @@ public class VesselTypeService
         return null;
     }
 
-    public async Task<VesselTypeDTO> GetVesselTypeByDescription(string description)
+    public async Task<IEnumerable<VesselTypeDTO?>> GetVesselTypeByDescription(string description)
     {
-        VesselType vesselType = await _vesselTypeRepository.GetVesselTypeByDescriptionAsync(description);
-        if (vesselType != null)
+        IEnumerable<VesselType?> vesselTypes = await _vesselTypeRepository.GetVesselTypeByDescriptionAsync(description);
+        if (vesselTypes != null)
         {
-            VesselTypeDTO vesselTypeDTO = VesselTypeDTO.ToDTO(vesselType);
+            var nonNullVesselTypes = vesselTypes.Where(v => v != null)!;
+            IEnumerable<VesselTypeDTO> vesselTypeDTO = VesselTypeDTO.ToDTO(nonNullVesselTypes.Cast<VesselType>());
             return vesselTypeDTO;
         }
-        return null;
+        return Enumerable.Empty<VesselTypeDTO>();
     }
 
-    public async Task<VesselTypeDTO> AddVesselType(VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
+    public async Task<VesselTypeDTO?> AddVesselType(VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
     {
 
-        VesselType vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
+        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
         if (vesselType != null)
         {
             errorMessages.Add("Vessel Type Already Exists!");
             return null;
         }
         vesselType = VesselTypeDTO.ToDomain(vesselTypeDTO);
-        VesselType vesselTypeSaved = await _vesselTypeRepository.Add(vesselType);
+        VesselType vesselTypeSaved = await _vesselTypeRepository.AddVesselType(vesselType);
         VesselTypeDTO vDTO = VesselTypeDTO.ToDTO(vesselTypeSaved);
         return vDTO;
     }
 
     public async Task<bool> UpdateVesselType(VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
     {
-        VesselType vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
+        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
         if (vesselType != null)
         {
             VesselTypeDTO.UpdateToDomain(vesselType, vesselTypeDTO);

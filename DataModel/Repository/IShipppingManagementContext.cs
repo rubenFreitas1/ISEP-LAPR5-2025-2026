@@ -6,5 +6,5 @@ using DataModel.Model;
 
 public interface IShippingManagementContext
 {
-    //DbSet<ColaboratorDataModel> Colaboradores { get; set; }
+    DbSet<VesselTypeDataModel> VesselTypes { get; set; }
 }

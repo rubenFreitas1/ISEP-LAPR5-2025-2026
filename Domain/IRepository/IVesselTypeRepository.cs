@@ -8,14 +8,16 @@ public interface IVesselTypeRepository : IGenericRepository<VesselType>
 {
     Task<IEnumerable<VesselType>> GetVesselTypesAsync();
 
-    Task<VesselType> GetVesselTypeByNameAsync(string name);
+    Task<VesselType?> GetVesselTypeByNameAsync(string name);
 
-    Task<VesselType> GetVesselTypeByIdAsync(long id);
+    Task<VesselType?> GetVesselTypeByIdAsync(long id);
 
-    Task<VesselType> GetVesselTypeByDescriptionAsync(string description);
+    Task<IEnumerable<VesselType?>> GetVesselTypeByDescriptionAsync(string description);
 
-    Task<VesselType> Add(VesselType vesselType);
+    Task<VesselType> AddVesselType(VesselType vesselType);
 
-    Task<VesselType> Update(VesselType vesselType, List<string> errorMessages);
+    Task<VesselType?> Update(VesselType vesselType, List<string> errorMessages);
+
+    Task<bool> VesselTypeExists(long id);
 
 }
