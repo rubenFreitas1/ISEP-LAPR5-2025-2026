@@ -127,13 +127,14 @@ public class VesselTypeRepository : GenericRepository<VesselType>, IVesselTypeRe
         }
         catch (Exception ex)
         {
-           errorMessages.Add($"Unexpected error: {ex.Message}");
-            throw; 
+            errorMessages.Add($"Unexpected error: {ex.Message}");
+            throw;
         }
     }
 
 
-    public async Task<bool> VesselTypeExists(long id) {
+    public async Task<bool> VesselTypeExists(long id)
+    {
         return await _context.Set<VesselTypeDataModel>().AnyAsync(v => v.Id == id);
     }
 
