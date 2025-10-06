@@ -10,7 +10,7 @@ namespace ShippingManagement.Domain.Qualifications
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-    private Qualification() { Code = string.Empty; Name = string.Empty; Description = string.Empty; }
+        private Qualification() { Code = string.Empty; Name = string.Empty; Description = string.Empty; }
 
         public Qualification(string code, string name, string description)
         {

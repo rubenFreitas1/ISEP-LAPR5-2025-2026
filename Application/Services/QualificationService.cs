@@ -34,7 +34,7 @@ namespace Application.Services
 
         public async Task<QualificationDTO?> AddQualification(QualificationDTO dto, List<string> errorMessages)
         {
-            
+
             if (dto == null)
             {
                 errorMessages.Add("Qualification data is required.");
@@ -53,7 +53,7 @@ namespace Application.Services
                 return null;
             }
 
-            
+
             if (await _qualificationRepository.QualificationCodeExistsAsync(dto.Code!))
             {
                 errorMessages.Add($"A qualification with code '{dto.Code}' already exists.");
@@ -66,7 +66,7 @@ namespace Application.Services
                 return null;
             }
 
-            
+
             Qualification domain;
             try
             {
@@ -97,7 +97,7 @@ namespace Application.Services
                 return false;
             }
 
-            
+
             if (!string.IsNullOrWhiteSpace(dto.Code) && !dto.Code!.Equals(existing.Code, StringComparison.OrdinalIgnoreCase))
             {
                 if (await _qualificationRepository.QualificationCodeExistsAsync(dto.Code!))
@@ -107,7 +107,7 @@ namespace Application.Services
                 }
             }
 
-            
+
             if (!string.IsNullOrWhiteSpace(dto.Name) && !dto.Name!.Equals(existing.Name, StringComparison.OrdinalIgnoreCase))
             {
                 if (await _qualificationRepository.QualificationNameExistsAsync(dto.Name!))
