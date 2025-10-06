@@ -1,6 +1,5 @@
-namespace Domain.Repository;
+namespace Domain.IRepository;
 
-using Domain.IRepository;
 using Domain.Model;
 using ShippingManagement.Domain.Vessels;
 

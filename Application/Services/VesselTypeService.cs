@@ -5,7 +5,6 @@ using Application.DTO;
 
 using Microsoft.EntityFrameworkCore;
 using Domain.IRepository;
-using Domain.Repository;
 using ShippingManagement.Domain.Vessels;
 
 public class VesselTypeService
@@ -74,9 +73,9 @@ public class VesselTypeService
         return vDTO;
     }
 
-    public async Task<bool> UpdateVesselType(VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
+    public async Task<bool> UpdateVesselType(string name, VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
     {
-        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
+        VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(name);
         if (vesselType != null)
         {
             VesselTypeDTO.UpdateToDomain(vesselType, vesselTypeDTO);

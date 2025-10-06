@@ -14,9 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ShippingManagementContext>(opt =>
-    //opt.UseInMemoryDatabase("AbsanteeList")
+    opt.UseInMemoryDatabase("ShippingManagementDatabase")
     //opt.UseSqlite("Data Source=AbsanteeDatabase.sqlite")
-    opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString("ShippingManagementDatabase"))
+    //opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString("ShippingManagementDatabase"))
     );
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,6 +28,12 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddTransient<IColaboratorFactory, ColaboratorFactory>();
 //builder.Services.AddTransient<ColaboratorMapper>();
 //builder.Services.AddTransient<ColaboratorService>();
+
+builder.Services.AddTransient<IVesselTypeRepository, VesselTypeRepository>();
+builder.Services.AddTransient<IVesselTypeFactory, VesselTypeFactory>();
+builder.Services.AddTransient<VesselTypeMapper>();
+builder.Services.AddTransient<VesselTypeService>();
+
 
 var app = builder.Build();
 

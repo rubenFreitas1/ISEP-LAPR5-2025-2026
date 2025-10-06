@@ -3,7 +3,7 @@ namespace DataModel.Repository;
 using System.Runtime.Serialization.Formatters;
 using DataModel.Mapper;
 using DataModel.Model;
-using Domain.Repository;
+using Domain.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ShippingManagement.Domain.Vessels;

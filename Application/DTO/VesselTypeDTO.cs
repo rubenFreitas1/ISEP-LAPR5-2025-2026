@@ -26,8 +26,15 @@ public class VesselTypeDTO
 
     static public VesselTypeDTO ToDTO(VesselType vesselType)
     {
-        VesselTypeDTO vesselTypeDTO = new VesselTypeDTO(vesselType.Name!, vesselType.Description!, vesselType.Capacity, vesselType.MaxRows, vesselType.MaxBays, vesselType.MaxTiers);
-        return vesselTypeDTO;
+        try
+        {
+            VesselTypeDTO vesselTypeDTO = new VesselTypeDTO(vesselType.Name!, vesselType.Description!, vesselType.Capacity, vesselType.MaxRows, vesselType.MaxBays, vesselType.MaxTiers);
+            return vesselTypeDTO;
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            throw new ArgumentException($"Error converting to VesselTypeDTO: {ex.Message}");
+        }
     }
 
     static public IEnumerable<VesselTypeDTO> ToDTO(IEnumerable<VesselType> vesselTypes)
@@ -37,15 +44,31 @@ public class VesselTypeDTO
         {
             VesselTypeDTO vesselTypeDTO = ToDTO(vesselType);
             vesselTypeDTOs.Add(vesselTypeDTO);
-        }
-        return vesselTypeDTOs;
+            }
+            return vesselTypeDTOs;
     }
 
 
     static public VesselType ToDomain(VesselTypeDTO vesselTypeDTO)
     {
-        if (vesselTypeDTO.Name is null) throw new InvalidOperationException("VesselType.Name não pode ser null");
-        if (vesselTypeDTO.Description is null) throw new InvalidOperationException("VesselType.Description não pode ser null");
+        if (vesselTypeDTO.Name is null)
+            throw new InvalidOperationException("VesselType.Name cannot be null");
+
+        if (vesselTypeDTO.Description is null)
+            throw new InvalidOperationException("VesselType.Description cannot be null");
+
+        if (vesselTypeDTO.MaxRows <= 0)
+            throw new ArgumentOutOfRangeException(nameof(vesselTypeDTO.MaxRows), "MaxRows must be greater than zero.");
+
+        if (vesselTypeDTO.MaxBays <= 0)
+            throw new ArgumentOutOfRangeException(nameof(vesselTypeDTO.MaxBays), "MaxBays must be greater than zero.");
+
+        if (vesselTypeDTO.MaxTiers <= 0)
+            throw new ArgumentOutOfRangeException(nameof(vesselTypeDTO.MaxTiers), "MaxTiers must be greater than zero.");
+
+        if (vesselTypeDTO.Capacity <= 0)
+            throw new ArgumentOutOfRangeException(nameof(vesselTypeDTO.Capacity), "Capacity must be greater than zero.");
+
         VesselType vesselType = new VesselType(vesselTypeDTO.Name, vesselTypeDTO.Description, vesselTypeDTO.Capacity, vesselTypeDTO.MaxRows, vesselTypeDTO.MaxBays, vesselTypeDTO.MaxTiers);
         return vesselType;
     }
