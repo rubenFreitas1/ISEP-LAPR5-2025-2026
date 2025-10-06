@@ -17,7 +17,7 @@ public class ShippingManagementContext : DbContext
     }
 
     public virtual DbSet<VesselTypeDataModel> VesselTypes { get; set; } = null!;
-
+    public virtual DbSet<QualificationDataModel> Qualifications { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
