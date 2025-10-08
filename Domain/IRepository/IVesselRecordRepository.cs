@@ -10,7 +10,7 @@ public interface IVesselRecordRepository : IGenericRepository<VesselRecord>
 
     Task<VesselRecord?> GetVesselRecordByNameAsync(string name);
 
-    Task<VesselRecord?> GetVesselRecordByImoNumberAsync(string imoNumber);
+    Task<VesselRecord?> GetVesselRecordByImoNumberAsync(int imoNumber);
 
     Task<VesselRecord?> GetVesselRecordByOperatorAsync(string operatorName);
 
