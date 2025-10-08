@@ -28,7 +28,7 @@ namespace ShippingManagement.Domain.Vessels
 
             if (string.IsNullOrWhiteSpace(vesselName))
             {
-                throw new ArgumentException("Vessel name cannot be null or empty.", nameof(name));
+                throw new ArgumentException("Vessel name cannot be null or empty.", nameof(VesselName));
             }
 
             if (vesselType == null)
