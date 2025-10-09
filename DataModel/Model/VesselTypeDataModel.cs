@@ -4,7 +4,7 @@ using ShippingManagement.Domain.Vessels;
 namespace DataModel.Model;
 
 public class VesselTypeDataModel
-{   
+{
 
     public long Id { get; set; }
 

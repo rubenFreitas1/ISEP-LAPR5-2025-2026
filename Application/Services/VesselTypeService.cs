@@ -69,13 +69,14 @@ public class VesselTypeService
         }
         try
         {
-            vesselType = VesselTypeDTO.ToDomain(vesselTypeDTO);    
-        }catch(Exception ex)
+            vesselType = VesselTypeDTO.ToDomain(vesselTypeDTO);
+        }
+        catch (Exception ex)
         {
             errorMessages.Add("Error in converting DTO to Domain: " + ex.Message);
             return null;
         }
-        
+
         VesselType vesselTypeSaved = await _vesselTypeRepository.AddVesselType(vesselType);
         VesselTypeDTO vDTO = VesselTypeDTO.ToDTO(vesselTypeSaved);
         return vDTO;
