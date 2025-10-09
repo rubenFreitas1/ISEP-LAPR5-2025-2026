@@ -1,4 +1,4 @@
-@startuml
+@startuml 2.2.1
 skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false

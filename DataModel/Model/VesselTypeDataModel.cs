@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using ShippingManagement.Domain.Vessels;
 
 namespace DataModel.Model;
 
 public class VesselTypeDataModel
-{
+{   
+
     public long Id { get; set; }
 
+    [Required]
     public string? Name { get; set; }
 
     public string? Description { get; set; }

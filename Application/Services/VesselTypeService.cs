@@ -67,7 +67,15 @@ public class VesselTypeService
             errorMessages.Add("Vessel Type Already Exists!");
             return null;
         }
-        vesselType = VesselTypeDTO.ToDomain(vesselTypeDTO);
+        try
+        {
+            vesselType = VesselTypeDTO.ToDomain(vesselTypeDTO);    
+        }catch(Exception ex)
+        {
+            errorMessages.Add("Error in converting DTO to Domain: " + ex.Message);
+            return null;
+        }
+        
         VesselType vesselTypeSaved = await _vesselTypeRepository.AddVesselType(vesselType);
         VesselTypeDTO vDTO = VesselTypeDTO.ToDTO(vesselTypeSaved);
         return vDTO;

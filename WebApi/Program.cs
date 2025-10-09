@@ -15,7 +15,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ShippingManagementContext>(opt =>
     opt.UseInMemoryDatabase("ShippingManagementDatabase")
-    //opt.UseSqlite("Data Source=AbsanteeDatabase.sqlite")
+    //opt.UseSqlite("Data Source=ShippingManagementDatabase.sqlite")
     //opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString("ShippingManagementDatabase"))
     );
 
