@@ -87,7 +87,7 @@ public class VesselTypeService
         VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByNameAsync(name);
         try
         {
-            
+
             if (vesselType != null)
             {
                 VesselTypeDTO.UpdateToDomain(vesselType, vesselTypeDTO);
@@ -99,12 +99,13 @@ public class VesselTypeService
                 errorMessages.Add("Vessel Type not found");
                 return false;
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             errorMessages.Add("Error in updating Vessel Type: " + ex.Message);
             return false;
         }
-        
+
     }
 
 

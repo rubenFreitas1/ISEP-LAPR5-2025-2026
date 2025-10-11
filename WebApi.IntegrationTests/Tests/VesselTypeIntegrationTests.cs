@@ -198,7 +198,7 @@ namespace WebApi.IntegrationTests.Tests
             var putResponse = await _client.PutAsJsonAsync($"/api/VesselType/Update/{dto.Name}", dto);
             Assert.Equal(HttpStatusCode.BadRequest, putResponse.StatusCode);
         }
-        
+
 
         [Fact]
         public async Task GetVesselTypeById_NotFound()
