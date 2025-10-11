@@ -4,11 +4,11 @@
 Person(user, "Port Authority Officer", "System user managing vessel types")
 
 System_Boundary(system, "Vessel Type Management System") {
-Container(api, "Vessel Type API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage vessel types (create, update, delete, list)")
+Container(api, "Vessel Type API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage vessel types (create, update, list)")
 ContainerDb(db, "ShippingManagement Database", "SQLite", "Stores vessel type information (name, capacity, dimensions, etc.)")
 }
 
-Rel(user, api, "Sends HTTP requests via Swagger or Postman", "HTTPS/JSON")
+Rel(user, api, "Sends HTTP requests via ...", "HTTPS/JSON")
 Rel(api, db, "Reads from and writes to", "EF Core/SQL")
 
 @enduml
