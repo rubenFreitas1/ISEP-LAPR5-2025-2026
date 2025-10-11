@@ -22,9 +22,9 @@ namespace Domain.Tests
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        [InlineData("first second")] 
-        [InlineData("123456789012345678")] 
-        [InlineData("Q1-special")] 
+        [InlineData("first second")]
+        [InlineData("123456789012345678")]
+        [InlineData("Q1-special")]
         public void Constructor_InvalidCode_ShouldThrow(string code)
         {
             Assert.Throws<ArgumentException>(() => new Qualification(code, "Valid Name", "Valid description here"));
@@ -33,8 +33,8 @@ namespace Domain.Tests
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        [InlineData("123")] 
-        [InlineData("Name-Special")] 
+        [InlineData("123")]
+        [InlineData("Name-Special")]
         public void Constructor_InvalidName_ShouldThrow(string name)
         {
             Assert.Throws<ArgumentException>(() => new Qualification("ValidCode", name, "Valid description here"));
@@ -52,8 +52,8 @@ namespace Domain.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        [InlineData("123")] 
-        [InlineData("Name-Special")] 
+        [InlineData("123")]
+        [InlineData("Name-Special")]
         public void ChangeName_InvalidName_ShouldThrow(string name)
         {
             var qualification = new Qualification("Q1", "Old Name", "Valid description here");
@@ -72,7 +72,7 @@ namespace Domain.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        [InlineData("OneWord")] 
+        [InlineData("OneWord")]
         [InlineData("This is way too long description that definitely exceeds one hundred fifty characters limit and should throw an exception when trying to set it as description")] // Too long
         public void ChangeDescription_InvalidDescription_ShouldThrow(string description)
         {
@@ -81,11 +81,11 @@ namespace Domain.Tests
         }
 
         [Theory]
-        [InlineData("Short")] 
-        [InlineData("A")] 
-        [InlineData("")] 
-        [InlineData("   ")]   
-        [InlineData(null)] 
+        [InlineData("Short")]
+        [InlineData("A")]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(null)]
         [InlineData("This is a very long description that exceeds the maximum allowed length of one hundred and fifty characters which should definitely fail validation because it is way too long")] // Too long (over 150 chars)
         public void Constructor_InvalidDescription_ShouldThrow(string description)
         {

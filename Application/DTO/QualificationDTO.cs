@@ -34,7 +34,7 @@ namespace Application.DTO
 
         public static void UpdateToDomain(Qualification q, QualificationDTO dto)
         {
-           
+
             if (!string.IsNullOrWhiteSpace(dto.Name)) q.ChangeName(dto.Name!);
             if (!string.IsNullOrWhiteSpace(dto.Description)) q.ChangeDescription(dto.Description!);
         }
