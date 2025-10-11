@@ -4,5 +4,5 @@ using Domain.Model;
 
 public interface IDockFactory
 {
-    //  Dock newDock(...);
+    Dock NewDock(string name, string location, int length, int depth, int maxDraft, List<VesselType> vesselTypes);
 }
