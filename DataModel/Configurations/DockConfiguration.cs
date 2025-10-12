@@ -23,5 +23,5 @@ public class DockConfiguration : IEntityTypeConfiguration<DockDataModel>
         builder.HasMany(d => d.VesselTypesAllowed)
             .WithMany().UsingEntity(j => j.ToTable("DockVesselTypeAllowed"));
     }
-    
+
 }

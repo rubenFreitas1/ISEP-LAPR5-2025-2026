@@ -10,9 +10,9 @@ public class DockDTO
 
     public int Length { get; set; }
 
-    public int Depth { get;  set; }
+    public int Depth { get; set; }
 
-    public int MaxDraft { get;  set; }
+    public int MaxDraft { get; set; }
 
     public List<VesselType>? VesselTypesAllowed { get; set; }
 

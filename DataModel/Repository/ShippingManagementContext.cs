@@ -24,7 +24,7 @@ public class ShippingManagementContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new VesselTypeConfiguration());
         modelBuilder.ApplyConfiguration(new DockConfiguration());
-        
+
         // necessário se Domain.Model.Colaborator fosse usado para persistência, e se pretendesse que os atributos/propriedades fossem privadas
 
         // var property = typeof(Colaborator).GetProperty("Name", BindingFlags.NonPublic | BindingFlags.Instance);

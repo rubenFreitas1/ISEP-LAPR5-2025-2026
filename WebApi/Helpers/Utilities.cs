@@ -6,7 +6,8 @@ using DataModel.Model;
 using Domain.Model;
 
 
-public static class Utilities{
+public static class Utilities
+{
 
     public static void InitializeDbForApp(WebApplication app)
     {
@@ -16,7 +17,7 @@ public static class Utilities{
             if (!db.VesselTypes.Any())
             {
                 db.VesselTypes.AddRange(GetSeedingVesselTypesDataModel());
-                db.SaveChanges(); 
+                db.SaveChanges();
             }
             if (!db.Docks.Any())
             {
@@ -26,7 +27,7 @@ public static class Utilities{
             }
         }
     }
-    
+
     public static List<VesselTypeDataModel> GetSeedingVesselTypesDataModel()
     {
         return new List<VesselTypeDataModel>()

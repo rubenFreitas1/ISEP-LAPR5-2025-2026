@@ -90,7 +90,7 @@ public class DockController : ControllerBase
         {
             return BadRequest("Dock data must be provided.");
         }
-        
+
         DockDTO? createdDock = await _dockService.AddDock(dockDTO, _errorMessages);
         if (createdDock == null && _errorMessages.Any())
         {
