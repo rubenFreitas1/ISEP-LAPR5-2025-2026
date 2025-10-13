@@ -5,13 +5,13 @@ using Domain.Model;
 public class VesselRecordDTO
 {
 
-    public string? IMONumber { get;  set; }
+    public string? IMONumber { get; set; }
 
-    public string? VesselName { get;  set; }
+    public string? VesselName { get; set; }
 
-    public VesselTypeDTO? VesselType { get;  set; }
+    public VesselTypeDTO? VesselType { get; set; }
 
-    public string? Operator { get;  set; }
+    public string? Operator { get; set; }
 
     public VesselRecordDTO() { }
 
@@ -59,7 +59,7 @@ public class VesselRecordDTO
         if (vesselRecordDTO.Operator is null)
             throw new InvalidOperationException("VesselRecord.Operator cannot be null");
 
-        if (vesselRecordDTO.IMONumber.Length !=7)
+        if (vesselRecordDTO.IMONumber.Length != 7)
             throw new ArgumentOutOfRangeException("IMONumber must have 7 digits.");
 
         VesselType vesselType = VesselTypeDTO.ToDomain(vesselRecordDTO.VesselType);

@@ -159,9 +159,8 @@ public class VesselRecordRepository : GenericRepository<VesselRecord>, IVesselRe
         return await _context.Set<VesselRecordDataModel>().AnyAsync(v => v.Id == id);
     }
 }
-    
 
-        
-    
 
-    
+
+
+

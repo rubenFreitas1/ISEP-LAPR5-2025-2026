@@ -86,7 +86,7 @@ public class VesselRecordController : ControllerBase
         return Ok();
     }
 
-    
+
     [HttpPost]
 
     public async Task<ActionResult<VesselRecordDTO>> PostVesselRecord(VesselRecordDTO vesselRecordDTO)

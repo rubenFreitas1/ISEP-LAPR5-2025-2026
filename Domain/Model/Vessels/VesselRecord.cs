@@ -51,7 +51,7 @@ public class VesselRecord
     {
         if (newIMONumber.Length != 7)
         {
-           throw new ArgumentOutOfRangeException(nameof(newIMONumber), "IMO number must have 7 digits.");
+            throw new ArgumentOutOfRangeException(nameof(newIMONumber), "IMO number must have 7 digits.");
         }
 
         IMONumber = newIMONumber;
