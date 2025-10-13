@@ -8,7 +8,7 @@ public class VesselRecord
 
     public long Id { get; set; }
 
-    public int IMONumber { get; private set; }
+    public string? IMONumber { get; private set; }
 
     public string? VesselName { get; private set; }
 
@@ -19,9 +19,9 @@ public class VesselRecord
 
     private VesselRecord() { }
 
-    public VesselRecord(int imoNumber, string vesselName, VesselType vesselType, string operatorName)
+    public VesselRecord(string imoNumber, string vesselName, VesselType vesselType, string operatorName)
     {
-        if (imoNumber >= 1000000 && imoNumber <= 9999999)
+        if (imoNumber.Length != 7)
         {
             throw new ArgumentOutOfRangeException(nameof(imoNumber), "IMO number must have 7 digits.");
         }
@@ -47,9 +47,9 @@ public class VesselRecord
         Operator = operatorName;
     }
 
-    public void ChangeIMONumber(int newIMONumber)
+    public void ChangeIMONumber(string newIMONumber)
     {
-        if (newIMONumber >= 1000000 && newIMONumber <= 9999999)
+        if (newIMONumber.Length != 7)
         {
            throw new ArgumentOutOfRangeException(nameof(newIMONumber), "IMO number must have 7 digits.");
         }

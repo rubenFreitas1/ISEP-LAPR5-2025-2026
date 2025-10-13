@@ -9,13 +9,13 @@ public class VesselRecordDataModel
     public long Id { get; set; }
 
     [Required]
-    public int IMONumber { get; set; }
+    public string? IMONumber { get; set; }
 
     [Required]
     public string? VesselName { get; set; }
 
     [Required]
-    public VesselType? VesselType { get; set; }
+    public VesselTypeDataModel? VesselType { get; set; }
 
     [Required]
     public string? Operator { get; set; }
@@ -27,7 +27,8 @@ public class VesselRecordDataModel
         Id = vesselRecord.Id;
         IMONumber = vesselRecord.IMONumber;
         VesselName = vesselRecord.VesselName;
-        VesselType = vesselRecord.VesselType;
+        if (vesselRecord.VesselType != null)
+            VesselType = new VesselTypeDataModel(vesselRecord.VesselType);
         Operator = vesselRecord.Operator;
     }
 

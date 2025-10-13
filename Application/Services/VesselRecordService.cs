@@ -22,7 +22,7 @@ public class VesselRecordService
         return vesselRecordDTOs;
     }
 
-    public async Task<VesselRecordDTO?> GetVesselRecordByIMONumber(int imoNumber)
+    public async Task<VesselRecordDTO?> GetVesselRecordByIMONumber(string imoNumber)
     {
         VesselRecord? vesselRecord = await _vesselRecordRepository.GetVesselRecordByImoNumberAsync(imoNumber);
         if (vesselRecord != null)
@@ -80,7 +80,7 @@ public class VesselRecordService
         return vrDTO;
     }
 
-    public async Task<bool> UpdateVesselRecord(int imoNumber, VesselRecordDTO vesselRecordDTO, List<string> errorMessages)
+    public async Task<bool> UpdateVesselRecord(string imoNumber, VesselRecordDTO vesselRecordDTO, List<string> errorMessages)
     {
         VesselRecord? vesselRecord = await _vesselRecordRepository.GetVesselRecordByImoNumberAsync(imoNumber);
         if (vesselRecord != null)

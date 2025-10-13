@@ -5,7 +5,6 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
-using Domain.Factory;
 
 [ApiController]
 [Route("api/VesselRecord")]
@@ -29,7 +28,7 @@ public class VesselRecordController : ControllerBase
     }
 
     [HttpGet("ByIMONumber/{imoNumber}")]
-    public async Task<ActionResult<VesselRecordDTO>> GetVesselRecordByIMONumber(int imoNumber)
+    public async Task<ActionResult<VesselRecordDTO>> GetVesselRecordByIMONumber(string imoNumber)
     {
         VesselRecordDTO? vesselRecord = await _vesselRecordService.GetVesselRecordByIMONumber(imoNumber);
         if (vesselRecord == null)
@@ -73,7 +72,7 @@ public class VesselRecordController : ControllerBase
     }
 
     [HttpPut("Update/{imoNumber}")]
-    public async Task<IActionResult> PutVesselRecord(int imoNumber, VesselRecordDTO vesselRecordDTO)
+    public async Task<IActionResult> PutVesselRecord(string imoNumber, VesselRecordDTO vesselRecordDTO)
     {
         if (imoNumber != vesselRecordDTO.IMONumber)
         {

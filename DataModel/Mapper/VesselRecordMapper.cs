@@ -7,15 +7,21 @@ using Domain.Model;
 public class VesselRecordMapper
 {
     private IVesselRecordFactory _vesselRecordFactory;
+    private VesselTypeMapper _vesselTypeMapper;
 
-    public VesselRecordMapper(IVesselRecordFactory vesselRecordFactory)
+    public VesselRecordMapper(IVesselRecordFactory vesselRecordFactory, VesselTypeMapper vesselTypeMapper)
     {
         _vesselRecordFactory = vesselRecordFactory;
+        _vesselTypeMapper = vesselTypeMapper;
     }
 
     public VesselRecord ToDomain(VesselRecordDataModel vesselRecordDM)
     {
-        VesselRecord vesselRecordDomain = _vesselRecordFactory.NewVesselRecord(vesselRecordDM.IMONumber, vesselRecordDM.VesselName!, vesselRecordDM.VesselType!, vesselRecordDM.Operator!);
+        VesselType? vesselType = null;
+        if (vesselRecordDM.VesselType != null)
+            vesselType = _vesselTypeMapper.ToDomain(vesselRecordDM.VesselType);
+
+        VesselRecord vesselRecordDomain = _vesselRecordFactory.NewVesselRecord(vesselRecordDM.IMONumber, vesselRecordDM.VesselName!, vesselType!, vesselRecordDM.Operator!);
         vesselRecordDomain.Id = vesselRecordDM.Id;
         return vesselRecordDomain;
     }
@@ -35,6 +41,8 @@ public class VesselRecordMapper
     public VesselRecordDataModel ToDataModel(VesselRecord vesselRecord)
     {
         VesselRecordDataModel vesselRecordDataModel = new VesselRecordDataModel(vesselRecord);
+        if (vesselRecord.VesselType != null)
+            vesselRecordDataModel.VesselType = new VesselTypeDataModel(vesselRecord.VesselType);
         return vesselRecordDataModel;
     }
 
@@ -42,7 +50,8 @@ public class VesselRecordMapper
     {
         vesselRecordDM.IMONumber = vesselRecord.IMONumber;
         vesselRecordDM.VesselName = vesselRecord.VesselName;
-        vesselRecordDM.VesselType = vesselRecord.VesselType;
+        if (vesselRecord.VesselType != null)
+            vesselRecordDM.VesselType = new VesselTypeDataModel(vesselRecord.VesselType);
         vesselRecordDM.Operator = vesselRecord.Operator;
     }
 }

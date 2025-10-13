@@ -31,7 +31,7 @@ public class VesselRecordRepository : GenericRepository<VesselRecord>, IVesselRe
         }
     }
 
-    public async Task<VesselRecord?> GetVesselRecordByImoNumberAsync(int imoNumber)
+    public async Task<VesselRecord?> GetVesselRecordByImoNumberAsync(string imoNumber)
     {
         try
         {
