@@ -5,6 +5,7 @@ using Domain.Model;
 
 public class DockDataModel
 {
+    public DateTime LastModifiedAt { get; set; }
     public long Id { get; set; }
 
     [Required]
@@ -36,5 +37,6 @@ public class DockDataModel
         Depth = dock.Depth;
         MaxDraft = dock.MaxDraft;
         VesselTypesAllowed = dock.VesselTypesAllowed?.ConvertAll(vt => new VesselTypeDataModel(vt));
+        LastModifiedAt = dock.LastModifiedAt;
     }
 }

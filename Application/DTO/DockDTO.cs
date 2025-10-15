@@ -38,6 +38,7 @@ public class DockDTO
         try
         {
             DockDTO dockDTO = new DockDTO(dock.Id, dock.Name!, dock.Location!, dock.Length, dock.Depth, dock.MaxDraft, dock.VesselTypesAllowed!.Select(v => v.Name).ToList()!);
+            dockDTO.LastModifiedAt = dock.LastModifiedAt;
             return dockDTO;
         }
         catch (ArgumentOutOfRangeException ex)

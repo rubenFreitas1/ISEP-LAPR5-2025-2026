@@ -21,6 +21,7 @@ public class DockMapper
     {
         Dock dockDomain = _dockFactory.NewDock(dockDM.Name!, dockDM.Location!, dockDM.Length, dockDM.Depth, dockDM.MaxDraft, dockDM.VesselTypesAllowed!.Select(vt => new VesselTypeMapper(new Domain.Factory.VesselTypeFactory()).ToDomain(vt)).ToList());
         dockDomain.Id = dockDM.Id;
+        dockDomain.LastModifiedAt = dockDM.LastModifiedAt;
         return dockDomain;
     }
 
@@ -39,6 +40,7 @@ public class DockMapper
     public DockDataModel ToDataModel(Dock dock)
     {
         DockDataModel dockDM = new DockDataModel(dock);
+        dockDM.LastModifiedAt = dock.LastModifiedAt;
         return dockDM;
     }
 
@@ -49,6 +51,7 @@ public class DockMapper
         dockDM.Length = dock.Length;
         dockDM.Depth = dock.Depth;
         dockDM.MaxDraft = dock.MaxDraft;
+        dockDM.LastModifiedAt = dock.LastModifiedAt;
 
         dockDM.VesselTypesAllowed!.Clear();
 

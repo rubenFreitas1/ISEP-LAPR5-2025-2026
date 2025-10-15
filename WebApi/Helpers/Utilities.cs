@@ -49,7 +49,8 @@ public static class Utilities
                 Length = 500,
                 Depth = 30,
                 MaxDraft = 15,
-                VesselTypesAllowed = new List<VesselTypeDataModel> { vesselTypes[0], vesselTypes[1] }
+                VesselTypesAllowed = new List<VesselTypeDataModel> { vesselTypes[0], vesselTypes[1] },
+                LastModifiedAt = DateTime.UtcNow
             },
             new DockDataModel
             {
@@ -58,7 +59,8 @@ public static class Utilities
                 Length = 300,
                 Depth = 20,
                 MaxDraft = 10,
-                VesselTypesAllowed = new List<VesselTypeDataModel> { vesselTypes[0], vesselTypes[1], vesselTypes[2] }
+                VesselTypesAllowed = new List<VesselTypeDataModel> { vesselTypes[0], vesselTypes[1], vesselTypes[2] },
+                LastModifiedAt = DateTime.UtcNow
             },
         };
     }

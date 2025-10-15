@@ -90,7 +90,6 @@ public class VesselTypeService
             return false;
         }
 
-        // Validações de domínio primeiro
         if (string.IsNullOrWhiteSpace(vesselTypeDTO.Name))
         {
             errorMessages.Add("Vessel Type name cannot be null or empty.");
@@ -122,7 +121,6 @@ public class VesselTypeService
             return false;
         }
 
-        // Só depois verifica unicidade
         VesselType? vesselTypeByName = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
         if (vesselTypeByName != null && vesselTypeByName.Id != id)
         {

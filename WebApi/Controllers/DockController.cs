@@ -84,7 +84,7 @@ public class DockController : ControllerBase
         {
             if (_errorMessages.Any(msg =>
                 msg.Contains("already exists", StringComparison.OrdinalIgnoreCase) ||
-                msg.Contains("já existe", StringComparison.OrdinalIgnoreCase)))
+                msg.Contains("Already exists", StringComparison.OrdinalIgnoreCase)))
             {
                 return Conflict(_errorMessages);
             }

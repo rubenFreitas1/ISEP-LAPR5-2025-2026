@@ -153,7 +153,6 @@ public class DockService
 
     public async Task<bool> UpdateDock(long id, DockDTO dockDTO, List<string> errorMessages)
     {
-        // Validações de domínio primeiro
         if (string.IsNullOrWhiteSpace(dockDTO.Name))
         {
             errorMessages.Add("Dock name cannot be null or empty.");
