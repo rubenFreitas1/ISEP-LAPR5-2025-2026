@@ -45,7 +45,7 @@ public static class Utilities
     {
         return new List<VesselRecordDataModel>()
         {
-            
+
             new VesselRecordDataModel
             {
                 IMONumber = "9811000",

@@ -27,15 +27,15 @@ public class VesselRecord
         {
             throw new ArgumentOutOfRangeException(nameof(imoNumber), "IMO number must have exactly 7 digits.");
         }
-        if(CheckImoNumber(imoNumber) == false)
+        if (CheckImoNumber(imoNumber) == false)
         {
             throw new ArgumentException("Invalid IMO number: check digit does not match.", nameof(imoNumber));
         }
 
         if (string.IsNullOrWhiteSpace(vesselName))
-            {
-                throw new ArgumentException("Vessel name cannot be null or empty.", nameof(VesselName));
-            }
+        {
+            throw new ArgumentException("Vessel name cannot be null or empty.", nameof(VesselName));
+        }
 
         if (vesselType == null)
         {
@@ -53,7 +53,7 @@ public class VesselRecord
         Operator = operatorName;
         LastModifiedAt = DateTime.UtcNow;
     }
-    
+
     public bool CheckImoNumber(string imoNumber)
     {
         int result = 0;
@@ -64,10 +64,10 @@ public class VesselRecord
             int multiplier = 7 - i;
             result += digit * multiplier;
         }
-        
+
         int calculatedCheckDigit = result % 10;
         int actualCheckDigit = imoNumber[6] - '0';
-        
+
         return calculatedCheckDigit == actualCheckDigit;
     }
 
