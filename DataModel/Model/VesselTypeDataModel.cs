@@ -26,6 +26,9 @@ public class VesselTypeDataModel
     [Required]
     public int MaxTiers { get; set; }
 
+    public DateTime LastModifiedAt { get; set; }
+
+
     public VesselTypeDataModel() { }
 
     public VesselTypeDataModel(VesselType vesselType)
@@ -37,6 +40,7 @@ public class VesselTypeDataModel
         MaxRows = vesselType.MaxRows;
         MaxBays = vesselType.MaxBays;
         MaxTiers = vesselType.MaxTiers;
+        LastModifiedAt = vesselType.LastModifiedAt;
     }
 
 }

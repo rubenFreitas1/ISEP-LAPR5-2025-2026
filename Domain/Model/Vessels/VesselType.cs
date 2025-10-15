@@ -19,6 +19,9 @@ public class VesselType
 
     public int MaxTiers { get; private set; }
 
+    public DateTime LastModifiedAt { get; set; }
+
+
     private VesselType() { }
 
     public VesselType(string name, string description, int capacity, int maxRows, int maxBays, int maxTiers)
@@ -59,6 +62,7 @@ public class VesselType
         MaxRows = maxRows;
         MaxBays = maxBays;
         MaxTiers = maxTiers;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
 
@@ -70,6 +74,7 @@ public class VesselType
         }
 
         MaxBays = bays;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void ChangeMaxTiers(int tiers)
@@ -80,6 +85,7 @@ public class VesselType
         }
 
         MaxTiers = tiers;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void ChangeMaxRows(int rows)
@@ -90,6 +96,7 @@ public class VesselType
         }
 
         MaxRows = rows;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void ChangeCapacity(int capacity)
@@ -100,6 +107,7 @@ public class VesselType
         }
 
         Capacity = capacity;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void ChangeDescription(string description)
@@ -110,6 +118,7 @@ public class VesselType
         }
 
         Description = description;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void ChangeName(string name)
@@ -120,6 +129,7 @@ public class VesselType
         }
 
         Name = name;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
 }
