@@ -21,9 +21,9 @@ public class VesselRecord
 
     public VesselRecord(string imoNumber, string vesselName, VesselType vesselType, string operatorName)
     {
-        if (imoNumber.Length != 7)
+        if (string.IsNullOrWhiteSpace(imoNumber) || imoNumber.Length != 7 || !imoNumber.All(char.IsDigit))
         {
-            throw new ArgumentOutOfRangeException(nameof(imoNumber), "IMO number must have 7 digits.");
+            throw new ArgumentOutOfRangeException(nameof(imoNumber), "IMO number must have exactly 7 digits.");
         }
 
         if (string.IsNullOrWhiteSpace(vesselName))
@@ -45,16 +45,6 @@ public class VesselRecord
         VesselName = vesselName;
         VesselType = vesselType;
         Operator = operatorName;
-    }
-
-    public void ChangeIMONumber(string newIMONumber)
-    {
-        if (newIMONumber.Length != 7)
-        {
-            throw new ArgumentOutOfRangeException(nameof(newIMONumber), "IMO number must have 7 digits.");
-        }
-
-        IMONumber = newIMONumber;
     }
 
     public void ChangeVesselName(string newVesselName)
