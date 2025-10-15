@@ -17,6 +17,7 @@ public class VesselTypeMapper
     {
         VesselType vesselTypeDomain = _vesselTypeFactory.NewVesselType(vesselTypeDM.Name!, vesselTypeDM.Description!, vesselTypeDM.Capacity, vesselTypeDM.MaxRows, vesselTypeDM.MaxBays, vesselTypeDM.MaxTiers);
         vesselTypeDomain.Id = vesselTypeDM.Id;
+        vesselTypeDomain.LastModifiedAt = vesselTypeDM.LastModifiedAt;
         return vesselTypeDomain;
     }
 
@@ -35,6 +36,7 @@ public class VesselTypeMapper
     public VesselTypeDataModel ToDataModel(VesselType vesselType)
     {
         VesselTypeDataModel vesselTypeDataModel = new VesselTypeDataModel(vesselType);
+        vesselTypeDataModel.LastModifiedAt = vesselType.LastModifiedAt;
         return vesselTypeDataModel;
     }
 
@@ -46,6 +48,7 @@ public class VesselTypeMapper
         vesselTypeDM.MaxRows = vesselType.MaxRows;
         vesselTypeDM.MaxBays = vesselType.MaxBays;
         vesselTypeDM.MaxTiers = vesselType.MaxTiers;
+        vesselTypeDM.LastModifiedAt = vesselType.LastModifiedAt;
     }
 
 

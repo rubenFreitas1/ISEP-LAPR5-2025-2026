@@ -12,6 +12,9 @@ public class VesselTypeDTO
     public int MaxBays { get; set; }
     public int MaxTiers { get; set; }
 
+    public DateTime LastModifiedAt { get; set; }
+
+
     public VesselTypeDTO() { }
 
     public VesselTypeDTO(long id, string name, string description, int capacity, int maxRows, int maxBays, int maxTiers)
@@ -30,6 +33,7 @@ public class VesselTypeDTO
         try
         {
             VesselTypeDTO vesselTypeDTO = new VesselTypeDTO(vesselType.Id, vesselType.Name!, vesselType.Description!, vesselType.Capacity, vesselType.MaxRows, vesselType.MaxBays, vesselType.MaxTiers);
+            vesselTypeDTO.LastModifiedAt = vesselType.LastModifiedAt;
             return vesselTypeDTO;
         }
         catch (ArgumentOutOfRangeException ex)
