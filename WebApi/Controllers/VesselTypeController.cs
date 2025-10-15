@@ -67,6 +67,8 @@ public class VesselTypeController : ControllerBase
         bool wasUpdated = await _vesselTypeService.UpdateVesselType(id, vesselTypeDTO, _errorMessages);
         if (!wasUpdated && _errorMessages.Any())
         {
+            if (_errorMessages.Any(msg => msg.Contains("already exists") || msg.Contains("Already Exists")))
+                return Conflict(_errorMessages);
             return BadRequest(_errorMessages);
         }
         return Ok();

@@ -210,6 +210,41 @@ namespace WebApi.IntegrationTests.Tests
         }
 
 
+        [Theory]
+        [InlineData(null, "teste", 100, 10, 5, 3)]
+        [InlineData("   ", "teste", 100, 10, 5, 3)]
+        [InlineData("", "teste", 100, 10, 5, 0)]
+        public async Task PutVesselType_NullName_ReturnsBadRequest(string? name, string? description, int capacity, int maxRows, int maxBays, int maxTiers)
+        {
+            var response = await _client.GetAsync("/api/VesselType/ByName/Teste1");
+            var vesselType = await response.Content.ReadFromJsonAsync<VesselTypeDTO>();
+            Assert.NotNull(vesselType);
+            Assert.Equal("Teste1", vesselType.Name);
+
+            vesselType.Name = name;
+            vesselType.Description = description;
+            vesselType.Capacity = capacity;
+            vesselType.MaxRows = maxRows;
+            vesselType.MaxBays = maxBays;
+            vesselType.MaxTiers = maxTiers;
+            var putResponse = await _client.PutAsJsonAsync($"/api/VesselType/Update/{vesselType.Id}", vesselType);
+            Assert.Equal(HttpStatusCode.BadRequest, putResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task PutVesselType_DuplicateName_ReturnsConflict()
+        {
+            var response = await _client.GetAsync("/api/VesselType/ByName/Teste1");
+            var vesselType = await response.Content.ReadFromJsonAsync<VesselTypeDTO>();
+            Assert.NotNull(vesselType);
+            Assert.Equal("Teste1", vesselType.Name);
+
+            vesselType.Name = "Teste2"; // Name that already exists
+            var putResponse = await _client.PutAsJsonAsync($"/api/VesselType/Update/{vesselType.Id}", vesselType);
+            Assert.Equal(HttpStatusCode.Conflict, putResponse.StatusCode);
+        }
+
+
         [Fact]
         public async Task GetVesselTypeById_NotFound()
         {

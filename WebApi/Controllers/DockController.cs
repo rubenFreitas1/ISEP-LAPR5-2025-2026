@@ -82,6 +82,12 @@ public class DockController : ControllerBase
         bool wasUpdated = await _dockService.UpdateDock(id, dockDTO, _errorMessages);
         if (!wasUpdated && _errorMessages.Any())
         {
+            if (_errorMessages.Any(msg =>
+                msg.Contains("already exists", StringComparison.OrdinalIgnoreCase) ||
+                msg.Contains("já existe", StringComparison.OrdinalIgnoreCase)))
+            {
+                return Conflict(_errorMessages);
+            }
             return BadRequest(_errorMessages);
         }
         return Ok();

@@ -84,20 +84,57 @@ public class VesselTypeService
     public async Task<bool> UpdateVesselType(long id, VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
     {
         VesselType? vesselType = await _vesselTypeRepository.GetVesselTypeByIdAsync(id);
+        if (vesselType == null)
+        {
+            errorMessages.Add("Vessel Type not found");
+            return false;
+        }
+
+        // Validações de domínio primeiro
+        if (string.IsNullOrWhiteSpace(vesselTypeDTO.Name))
+        {
+            errorMessages.Add("Vessel Type name cannot be null or empty.");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(vesselTypeDTO.Description))
+        {
+            errorMessages.Add("Vessel Type description cannot be null or empty.");
+            return false;
+        }
+        if (vesselTypeDTO.Capacity <= 0)
+        {
+            errorMessages.Add("Capacity must be greater than zero.");
+            return false;
+        }
+        if (vesselTypeDTO.MaxRows <= 0)
+        {
+            errorMessages.Add("MaxRows must be greater than zero.");
+            return false;
+        }
+        if (vesselTypeDTO.MaxBays <= 0)
+        {
+            errorMessages.Add("MaxBays must be greater than zero.");
+            return false;
+        }
+        if (vesselTypeDTO.MaxTiers <= 0)
+        {
+            errorMessages.Add("MaxTiers must be greater than zero.");
+            return false;
+        }
+
+        // Só depois verifica unicidade
+        VesselType? vesselTypeByName = await _vesselTypeRepository.GetVesselTypeByNameAsync(vesselTypeDTO.Name!);
+        if (vesselTypeByName != null && vesselTypeByName.Id != id)
+        {
+            errorMessages.Add("Vessel Type Already Exists!");
+            return false;
+        }
+
         try
         {
-
-            if (vesselType != null)
-            {
-                VesselTypeDTO.UpdateToDomain(vesselType, vesselTypeDTO);
-                await _vesselTypeRepository.Update(vesselType, errorMessages);
-                return true;
-            }
-            else
-            {
-                errorMessages.Add("Vessel Type not found");
-                return false;
-            }
+            VesselTypeDTO.UpdateToDomain(vesselType, vesselTypeDTO);
+            await _vesselTypeRepository.Update(vesselType, errorMessages);
+            return true;
         }
         catch (Exception ex)
         {

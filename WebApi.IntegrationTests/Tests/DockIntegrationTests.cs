@@ -180,9 +180,9 @@ namespace WebApi.IntegrationTests.Tests
         }
 
         [Theory]
-        [InlineData("Dock A", "Port 2", 600, 35, 18, new[] { "Teste1", "Teste2" })]
-        [InlineData("Dock B", "Port 1", 700, 40, 20, new[] { "Teste1" })]
-        public async Task PutDock_DuplicateLocation_ReturnsBadRequest(string name, string location, string[] vesselTypeNames)
+        [InlineData("Dock A", "Port 2")]
+        [InlineData("Dock B", "Port 1")]
+        public async Task PutDock_DuplicateLocation_ReturnsConflict(string name, string location)
         {
             var response = await _client.GetAsync($"/api/Dock/ByName/{name}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -192,11 +192,11 @@ namespace WebApi.IntegrationTests.Tests
             dock.Location = location;
 
             var putResponse = await _client.PutAsJsonAsync($"/api/Dock/Update/{dock.Id}", dock);
-            Assert.Equal(HttpStatusCode.BadRequest, putResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, putResponse.StatusCode);
         }
 
         [Fact]
-        public async Task PutDock_DuplicateName_ReturnsBadRequest()
+        public async Task PutDock_DuplicateName_ReturnsConflict()
         {
             var response = await _client.GetAsync($"/api/Dock/ByName/Dock A");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -206,7 +206,7 @@ namespace WebApi.IntegrationTests.Tests
             dock.Name = "Dock B";
 
             var putResponse = await _client.PutAsJsonAsync($"/api/Dock/Update/{dock.Id}", dock);
-            Assert.Equal(HttpStatusCode.BadRequest, putResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, putResponse.StatusCode);
         }
 
         [Theory]

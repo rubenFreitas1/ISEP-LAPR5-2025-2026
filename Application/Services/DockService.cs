@@ -153,18 +153,51 @@ public class DockService
 
     public async Task<bool> UpdateDock(long id, DockDTO dockDTO, List<string> errorMessages)
     {
+        // Validações de domínio primeiro
+        if (string.IsNullOrWhiteSpace(dockDTO.Name))
+        {
+            errorMessages.Add("Dock name cannot be null or empty.");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(dockDTO.Location))
+        {
+            errorMessages.Add("Dock location cannot be null or empty.");
+            return false;
+        }
+        if (dockDTO.Length <= 0)
+        {
+            errorMessages.Add("Dock length must be greater than zero.");
+            return false;
+        }
+        if (dockDTO.Depth <= 0)
+        {
+            errorMessages.Add("Dock depth must be greater than zero.");
+            return false;
+        }
+        if (dockDTO.MaxDraft <= 0)
+        {
+            errorMessages.Add("Dock max draft must be greater than zero.");
+            return false;
+        }
+        if (dockDTO.VesselTypesAllowed == null || dockDTO.VesselTypesAllowed.Count == 0)
+        {
+            errorMessages.Add("At least one valid vessel type must be provided.");
+            return false;
+        }
+
         Dock? dockname = await _dockRepository.GetDockByNameAsync(dockDTO.Name!);
-        if (dockname != null)
+        if (dockname != null && dockname.Id != id)
         {
             errorMessages.Add($"A dock with the name '{dockDTO.Name}' already exists.");
             return false;
         }
         Dock? dockByLocation = await _dockRepository.GetDockByLocationAsync(dockDTO.Location!);
-        if (dockByLocation != null)
+        if (dockByLocation != null && dockByLocation.Id != id)
         {
             errorMessages.Add($"A dock with the location '{dockDTO.Location}' already exists.");
             return false;
         }
+
         Dock? dock = await _dockRepository.GetDockByIdAsync(id);
         if (dock == null)
         {
@@ -185,35 +218,21 @@ public class DockService
                 return false;
             }
         }
-
         if (vesselTypes.Count != dockDTO.VesselTypesAllowed!.Count)
         {
             errorMessages.Add("One or more vessel types are invalid.");
             return false;
         }
-        else if (vesselTypes.Count == 0)
-        {
-            errorMessages.Add("At least one valid vessel type must be provided.");
-            return false;
-        }
         try
         {
-            if (dock != null)
-            {
-                dock.ChangeName(dockDTO.Name!);
-                dock.ChangeLocation(dockDTO.Location!);
-                dock.ChangeLength(dockDTO.Length);
-                dock.ChangeDepth(dockDTO.Depth);
-                dock.ChangeMaxDraft(dockDTO.MaxDraft);
-                dock.ChangeVesselTypesAllowed(vesselTypes);
-                await _dockRepository.Update(dock, errorMessages);
-                return true;
-            }
-            else
-            {
-                errorMessages.Add("Dock not found");
-                return false;
-            }
+            dock.ChangeName(dockDTO.Name!);
+            dock.ChangeLocation(dockDTO.Location!);
+            dock.ChangeLength(dockDTO.Length);
+            dock.ChangeDepth(dockDTO.Depth);
+            dock.ChangeMaxDraft(dockDTO.MaxDraft);
+            dock.ChangeVesselTypesAllowed(vesselTypes);
+            await _dockRepository.Update(dock, errorMessages);
+            return true;
         }
         catch (Exception ex)
         {
