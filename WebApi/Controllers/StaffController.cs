@@ -3,6 +3,8 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Domain.IRepository;
+using ShippingManagement.Domain.Qualifications;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,17 +14,20 @@ using System.Threading.Tasks;
 public class StaffController : ControllerBase
 {
     private readonly StaffService _staffService;
+    private readonly IQualificationRepository _qualificationRepository;
     List<string> _errorMessages = new List<string>();
-    public StaffController(StaffService staffService)
+
+    public StaffController(StaffService staffService, IQualificationRepository qualificationRepository)
     {
         _staffService = staffService;
+        _qualificationRepository = qualificationRepository;
     }
 
     [HttpGet("ByName/{name}")]
-    public async Task<ActionResult<StaffDTO>> GetStaffByName(string name)
+    public async Task<ActionResult<IEnumerable<StaffDTO>>> GetStaffByName(string name)
     {
-        StaffDTO? staffDTO = await _staffService.GetStaffByName(name);
-        if (staffDTO == null)
+        IEnumerable<StaffDTO>? staffDTO = await _staffService.GetStaffByName(name);
+        if (staffDTO == null || !staffDTO.Any())
         {
             return NotFound($"Staff with name '{name}' not found.");
         }
@@ -36,8 +41,12 @@ public class StaffController : ControllerBase
         {
             return BadRequest("Staff data is null.");
         }
-
-        StaffDTO? createdStaff = await _staffService.AddStaff(staffDTO, _errorMessages);
+        if (staffDTO.QualificationCodes == null || !staffDTO.QualificationCodes.Any())
+        {
+            return BadRequest("At least one QualificationCode must be provided to create a Staff.");
+        }
+        IEnumerable<Qualification> qualification = await _qualificationRepository.GetQualificationsByCodesAsync(staffDTO.QualificationCodes!);
+        StaffDTO? createdStaff = await _staffService.AddStaff(staffDTO, qualification, _errorMessages);
         if (createdStaff == null)
         {
             return BadRequest(_errorMessages);

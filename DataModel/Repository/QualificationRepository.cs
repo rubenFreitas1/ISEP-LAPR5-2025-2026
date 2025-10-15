@@ -1,3 +1,4 @@
+using System.Linq;
 using DataModel.Mapper;
 using DataModel.Model;
 using Domain.IRepository;
@@ -79,5 +80,13 @@ public class QualificationRepository : GenericRepository<Qualification>, IQualif
     public async Task<bool> QualificationNameExistsAsync(string name)
     {
         return await _context.Set<QualificationDataModel>().AnyAsync(q => q.Name == name);
+    }
+
+    public async Task<IEnumerable<Qualification>> GetQualificationsByCodesAsync(IEnumerable<string> codes)
+    {
+        var dms = await _context.Set<QualificationDataModel>()
+            .Where(q => q.Code != null && codes.Contains(q.Code))
+            .ToListAsync();
+        return _mapper.ToDomain(dms);
     }
 }

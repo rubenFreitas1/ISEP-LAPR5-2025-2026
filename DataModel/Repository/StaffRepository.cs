@@ -20,6 +20,7 @@ public class StaffRepository : GenericRepository<Staff>, IStaffRepository
     public async Task<Staff?> GetStaffByIDAsync(long id)
     {
         StaffDataModel? staffDM = await _context.Set<StaffDataModel>()
+        .Include(s => s.Qualification)
         .SingleOrDefaultAsync(s => s.Id == id);
         if (staffDM != null)
         {
@@ -31,6 +32,7 @@ public class StaffRepository : GenericRepository<Staff>, IStaffRepository
     public async Task<Staff?> GetStaffByEmailAsync(String email)
     {
         StaffDataModel? staffDM = await _context.Set<StaffDataModel>()
+        .Include(s => s.Qualification)
         .SingleOrDefaultAsync(s => s.Email == email);
         if (staffDM != null)
         {
@@ -42,6 +44,7 @@ public class StaffRepository : GenericRepository<Staff>, IStaffRepository
     public async Task<Staff?> GetStaffByPhoneAsync(String phone)
     {
         StaffDataModel? staffDM = await _context.Set<StaffDataModel>()
+        .Include(s => s.Qualification)
         .SingleOrDefaultAsync(s => s.Phone == phone);
         if (staffDM != null)
         {
@@ -50,22 +53,45 @@ public class StaffRepository : GenericRepository<Staff>, IStaffRepository
         }
         return null;
     }
-    public async Task<Staff?> GetStaffByNameAsync(String name)
-    { 
-        StaffDataModel? staffDM = await _context.Set<StaffDataModel>()
-        .SingleOrDefaultAsync(s => s.Name == name);
-        if (staffDM != null)
+    public async Task<IEnumerable<Staff>> GetStaffByNameAsync(string name)
+    {
+        var staffDMs = await _context.Set<StaffDataModel>()
+            .Include(s => s.Qualification)
+            .Where(s => s.Name == name)
+            .ToListAsync();
+
+        var result = new List<Staff>();
+        foreach (var staffDM in staffDMs)
         {
-            Staff staff = _sMapper.ToDomain(staffDM);
-            return staff;
+            if (staffDM != null)
+                result.Add(_sMapper.ToDomain(staffDM));
         }
-        return null;
+        return result;
     }
     public async Task<Staff> AddStaff(Staff staff)
     {
         try
         {
             StaffDataModel staffDM = _sMapper.ToDataModel(staff);
+
+            if (staffDM.Qualification is IEnumerable<QualificationDataModel> qColl)
+            {
+                List<QualificationDataModel> qList = qColl.ToList();
+                for (int i = 0; i < qList.Count; i++)
+                {
+                    QualificationDataModel qdm = qList[i];
+                    if (qdm != null && qdm.Id != 0)
+                    {
+                        var existing = await _context.Set<QualificationDataModel>().FindAsync(qdm.Id);
+                        if (existing != null)
+                        {
+                            qList[i] = existing;
+                        }
+                    }
+                }
+                staffDM.Qualification = qList;
+            }
+
             EntityEntry<StaffDataModel> staffDM_EE = _context.Set<StaffDataModel>().Add(staffDM);
             await _context.SaveChangesAsync();
             StaffDataModel staffDMSaved = staffDM_EE.Entity;

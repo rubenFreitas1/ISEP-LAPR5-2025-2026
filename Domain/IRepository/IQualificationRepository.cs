@@ -10,6 +10,7 @@ namespace Domain.IRepository
         Task<Qualification?> GetQualificationByIdAsync(long id);
         Task<IEnumerable<Qualification>> GetQualificationsByNameAsync(string name);
         Task<Qualification?> GetQualificationByCodeAsync(string code);
+        Task<IEnumerable<Qualification>> GetQualificationsByCodesAsync(IEnumerable<string> codes);
         Task<Qualification> AddQualificationAsync(Qualification qualification);
         Task<Qualification?> UpdateQualificationAsync(Qualification qualification, List<string> errorMessages);
         Task<bool> QualificationExists(long id);

@@ -4,6 +4,7 @@ using Domain.Model;
 
 using Microsoft.EntityFrameworkCore;
 using Domain.IRepository;
+using ShippingManagement.Domain.Qualifications;
 using Application.DTO;
 
 public class StaffService
@@ -13,19 +14,25 @@ public class StaffService
     {
         _staffRepository = staffRepository;
     }
-    
-    public async Task<StaffDTO?> GetStaffByName(String name){
-        Staff? staff = await _staffRepository.GetStaffByNameAsync(name);
-        if (staff != null)
+
+    public async Task<IEnumerable<StaffDTO>> GetStaffByName(String name)
+    {
+        IEnumerable<Staff> staffs = await _staffRepository.GetStaffByNameAsync(name);
+        List<StaffDTO> dtos = new List<StaffDTO>();
+        foreach (var s in staffs)
         {
-            StaffDTO staffDTO = StaffDTO.ToDTO(staff);
-            return staffDTO;
+            dtos.Add(StaffDTO.ToDTO(s));
         }
-        return null;
+        return dtos;
     }
 
-    public async Task<StaffDTO?> AddStaff(StaffDTO staffDTO, List<String> errorMessages)
+    public async Task<StaffDTO?> AddStaff(StaffDTO staffDTO, IEnumerable<Qualification> qualifications, List<String> errorMessages)
     {
+        if (qualifications == null)
+        {
+            errorMessages.Add("At least one valid QualificationCode must be provided to create a Staff.");
+            return null;
+        }
         Staff staff;
         Staff? staffByID = await _staffRepository.GetStaffByIDAsync(staffDTO.Id!.Value);
         if (staffByID != null)
@@ -50,7 +57,7 @@ public class StaffService
 
         try
         {
-            staff = StaffDTO.ToDomain(staffDTO);
+            staff = StaffDTO.ToDomain(staffDTO, qualifications);
         }
         catch (Exception ex)
         {

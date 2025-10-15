@@ -32,6 +32,12 @@ namespace Application.Services
             return QualificationDTO.ToDTO(q);
         }
 
+        public async Task<IEnumerable<Qualification>> GetAllQualificationsByCode(IEnumerable<string> codes)
+        {
+            IEnumerable<Qualification> qs = await _qualificationRepository.GetQualificationsByCodesAsync(codes);
+            return qs;
+        }
+
         public async Task<QualificationDTO?> AddQualification(QualificationDTO dto, List<string> errorMessages)
         {
 
