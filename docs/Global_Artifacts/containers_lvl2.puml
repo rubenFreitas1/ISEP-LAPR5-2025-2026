@@ -1,0 +1,74 @@
+@startuml DockContainers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+left to right direction
+skinparam linetype ortho
+skinparam nodesep 120
+skinparam ranksep 140
+skinparam padding 8
+
+Person(POA, "Port Authority Officer", "System user managing docks")
+Person(SAR, "Shipping Agent Representative", "System user managing shipping operations")
+Person(LOA, "Logistics Operator", "System user managing logistics operations")
+
+System_Boundary(sms, "Shipping Management System") {
+Container(Dockapi, "Dock API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage docks (create, update, list)")
+Container(Qualificationapi, "Qualification API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage qualifications (create, update, list)")
+Container(Vesselapi, "Vessel API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage vessels (create, update, list)")
+Container(VesselTypeapi, "Vessel Type API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage vessel types (create, update, list)")
+Container(Containerapi, "Container API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage containers (create, update, list)")
+Container(CargoManifestapi, "Cargo Manifest API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage cargo manifests (create, update, list)")
+Container(StorageAreaapi, "Storage Area API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage storage areas (create, update, list)")
+Container(Resourcesapi, "Resources API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage resources (create, update, list)")
+Container(Staffapi, "Staff API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage staff (create, update, list)")
+Container(VesselVisitsapi, "Vessel Visits API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage vessel visits (create, update, list)")
+Container(ShippingAgentOrganizationapi, "Shipping Agent Organization API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage shipping agents (create, update, list)")
+Container(ShippingAgentRepresentativeapi, "Shipping Agent Representative API", ".NET 8 (ASP.NET Core Web API)", "Provides endpoints to manage shipping agent representatives (create, update, list)")
+ContainerDb(db, "Shipping Management Database", "SQL Server", "Stores all data related to shipping management")
+}
+
+Lay_Distance(Dockapi, db, 3)
+Lay_Distance(Vesselapi, VesselTypeapi, 1)
+Lay_Distance(CargoManifestapi, Containerapi, 1)
+Lay_Distance(VesselVisitsapi, Vesselapi, 1)
+Lay_Distance(Staffapi, Qualificationapi, 1)
+Lay_Distance(ShippingAgentOrganizationapi, ShippingAgentRepresentativeapi, 1)
+
+Rel(POA, Dockapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, VesselTypeapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, Vesselapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, StorageAreaapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, ShippingAgentOrganizationapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, ShippingAgentRepresentativeapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(POA, VesselVisitsapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(SAR, VesselVisitsapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(SAR, CargoManifestapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(SAR, Containerapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(LOA, Staffapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(LOA, Resourcesapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(LOA,Qualificationapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+Rel(SAR, ShippingAgentRepresentativeapi, "Sends HTTP requests via ...", "HTTPS/JSON")
+
+Rel(Dockapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(Qualificationapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(Vesselapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(VesselTypeapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(Containerapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(CargoManifestapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(StorageAreaapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(Resourcesapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(Staffapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(VesselVisitsapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(ShippingAgentOrganizationapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel(ShippingAgentRepresentativeapi, db, "Reads from and writes to", "EF Core/SQL")
+Rel((Vesselapi), (VesselTypeapi), "Gets vessel type information from", "HTTPS/JSON")
+Rel((VesselVisitsapi), (Vesselapi), "Gets vessel information from", "HTTPS/JSON")
+Rel((VesselVisitsapi), (Dockapi), "Gets dock information from", "HTTPS/JSON")
+Rel((VesselVisitsapi), (CargoManifestapi), "Gets vessel visit information from", "HTTPS/JSON")
+Rel((CargoManifestapi), (Containerapi), "Gets container information from", "HTTPS/JSON")
+Rel((Staffapi), (Qualificationapi), "Gets qualification information from", "HTTPS/JSON")
+Rel((Staffapi), (Resourcesapi), "Gets resource information from", "HTTPS/JSON")
+Rel((ShippingAgentRepresentativeapi), (ShippingAgentOrganizationapi), "Gets shipping agent organization information from", "HTTPS/JSON")
+
+@enduml

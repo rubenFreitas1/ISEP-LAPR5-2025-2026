@@ -1,0 +1,18 @@
+@startuml DockContext
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(POA, "Port Authority Officer", "System user responsible for managing docks")
+System(SMS, "Shipping  Management System", "Manages all operations and related data")
+Person(SAR, "Shipping Agent Representative", "System user responsible for managing shipping operations")
+Person(CREW, "Crew", "System user responsible for ship operations")
+Person(LO, "Logistics Operator", "System user responsible for logistics operations")
+Person(STAFF, "Staff", "System user responsible for general operations")
+
+
+Rel(POA, SMS, "Uses")
+Rel(SAR, SMS, "Uses")
+Rel(CREW, SMS, "Uses")
+Rel(LO, SMS, "Uses")
+Rel(STAFF, SMS, "Uses")
+
+@enduml
