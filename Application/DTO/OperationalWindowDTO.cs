@@ -6,7 +6,7 @@ public class OperationalWindowDTO
 {
     public DayOfWeek? StartDay { get; set; }
     public DayOfWeek? EndDay { get; set; }
-    public string? StartTime { get; set; } 
+    public string? StartTime { get; set; }
     public string? EndTime { get; set; }
     public OperationalWindowDTO() { }
     public OperationalWindowDTO(DayOfWeek? startDay, DayOfWeek? endDay, string? startTime, string? endTime)
@@ -39,7 +39,7 @@ public class OperationalWindowDTO
 
         if (dto.StartTime == null)
             throw new InvalidOperationException("StartTime cannot be null.");
-        
+
         if (dto.EndTime == null)
             throw new InvalidOperationException("EndTime cannot be null.");
 

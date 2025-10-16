@@ -24,11 +24,11 @@ public class StaffConfiguration : IEntityTypeConfiguration<StaffDataModel>
 
         builder.OwnsOne(s => s.OperationalWindow, ow =>
             {
-            ow.Property(o => o.StartDay).HasColumnName("OperationalWindow_StartDay").IsRequired();
-            ow.Property(o => o.EndDay).HasColumnName("OperationalWindow_EndDay").IsRequired();
-            ow.Property(o => o.StartTime).HasColumnName("OperationalWindow_StartTime").IsRequired();
-            ow.Property(o => o.EndTime).HasColumnName("OperationalWindow_EndTime").IsRequired();
-        });
+                ow.Property(o => o.StartDay).HasColumnName("OperationalWindow_StartDay").IsRequired();
+                ow.Property(o => o.EndDay).HasColumnName("OperationalWindow_EndDay").IsRequired();
+                ow.Property(o => o.StartTime).HasColumnName("OperationalWindow_StartTime").IsRequired();
+                ow.Property(o => o.EndTime).HasColumnName("OperationalWindow_EndTime").IsRequired();
+            });
     }
 
 }

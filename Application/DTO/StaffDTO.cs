@@ -57,7 +57,7 @@ public class StaffDTO
             throw new InvalidOperationException("OperationalWindow cannot be null.");
 
         ResourceStatus status = dto.Status ?? ResourceStatus.Available;
-        
+
         return new Staff(dto.Name!, qualifications, dto.Email!, dto.Phone!, operationalWindow, status);
     }
 }
