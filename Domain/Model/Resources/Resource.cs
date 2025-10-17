@@ -28,11 +28,35 @@ namespace Domain.Model
         {
             ValidateName(name);
             ValidateQualification(qualification);
-
+            ValidateOperationalWindow(operationalWindow);
+            
             Name = name.Trim();
             Qualification = qualification;
             OperationalWindow = operationalWindow;
             Status = status;
+        }
+
+        public void ChangeName(string name)
+        {
+            ValidateName(name);
+            Name = name.Trim();
+        }
+
+        public void ChangeQualifications(IEnumerable<Qualification> qualification)
+        {
+            ValidateQualification(qualification);
+            Qualification = qualification;
+        }
+
+        public void ChangeStatus(ResourceStatus status)
+        {
+            Status = status;
+        }
+
+        public void ChangeOperationalWindow(OperationalWindow operationalWindow)
+        {   
+            ValidateOperationalWindow(operationalWindow);
+            OperationalWindow = operationalWindow;
         }
 
         private static void ValidateName(string name)
@@ -53,8 +77,14 @@ namespace Domain.Model
 
         private static void ValidateQualification(IEnumerable<Qualification> qualification)
         {
-            if (qualification is null)
-                throw new ArgumentNullException(nameof(qualification), "Qualification cannot be null.");
+            if (qualification == null || !qualification.Any())
+                throw new ArgumentNullException(nameof(qualification), "At least one valid QualificationCode must be provided to update a Staff.");
+        }
+
+        private static void ValidateOperationalWindow(OperationalWindow operationalWindow)
+        {
+            if (operationalWindow == null)
+                throw new ArgumentNullException(nameof(operationalWindow), "OperationalWindow cannot be null.");
         }
     }
 }

@@ -68,6 +68,21 @@ public class StaffRepository : GenericRepository<Staff>, IStaffRepository
         }
         return result;
     }
+    public async Task<IEnumerable<Staff>> GetStaffByQualificationCodeAsync(string qualificationCode)
+    {
+        var staffDMs = await _context.Set<StaffDataModel>()
+            .Include(s => s.Qualification)
+            .Where(s => s.Qualification != null && s.Qualification.Any(q => q.Code == qualificationCode))
+            .ToListAsync();
+
+        var result = new List<Staff>();
+        foreach (var staffDM in staffDMs)
+        {
+            if (staffDM != null)
+                result.Add(_sMapper.ToDomain(staffDM));
+        }
+        return result;
+    }
     public async Task<Staff> AddStaff(Staff staff)
     {
         try
