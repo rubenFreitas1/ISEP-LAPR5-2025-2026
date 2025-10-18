@@ -34,3 +34,21 @@ Record Registration
 
 ![System Sequence Diagram ](images/system-sequence-diagram-US2.2.2.png)
 
+
+## 4. C4 Model
+
+#### Context - Level 1
+
+![Context](images/context_lvl1.png)
+
+#### Containers - Level 2
+
+![Containers](images/containers_lvl2.png)
+
+#### Components - Level 3
+
+![Components](images/components_lvl3.png)
+
+#### Code - Level 4
+
+![Code](images/code_lvl4.png)

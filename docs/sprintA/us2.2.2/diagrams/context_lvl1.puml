@@ -1,0 +1,9 @@
+@startuml VesselRecordContext
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Port Authority Officer", "System user responsible for managing vessel records")
+System(system, "Vessel Record Management System", "Manages vessel Records and related data")
+
+Rel(user, system, "Uses")
+
+@enduml

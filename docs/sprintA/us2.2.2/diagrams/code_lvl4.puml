@@ -1,0 +1,109 @@
+@startuml VesselTypeCode
+
+
+class VesselTypeController {
+	+GetAllVesselTypes()
+	+GetVesselTypeByName()
+	+GetVesselTypeById()
+	+GetVesselTypeByDescription()
+	+PutVesselType()
+	+PostVesselType()
+}
+class VesselTypeService {
+	+GetAllVesselTypes()
+	+GetVesselTypeByName()
+	+GetVesselTypeByID()
+	+GetVesselTypeByDescription()
+	+AddVesselType()
+	+UpdateVesselType()
+}
+
+class VesselTypeDTO{
+    -Name: string
+    -Description: string
+    -Capacity: int
+    -MaxRows: int
+    -MaxBays: int
+    -MaxTiers: int
+    +ToDTO()
+    +ToDomain()
+    +UpdateToDomain()
+}
+
+
+interface IVesselTypeRepository{
+    +GetVesselTypesAsync()
+    +GetVesselTypeByNameAsync() 
+    +GetVesselTypeByIdAsync()
+    +GetVesselTypeByDescriptionAsync()
+    +AddVesselType()
+    +Update()
+}
+
+class VesselTypeRepository{
+    +GetVesselTypesAsync()
+    +GetVesselTypeByNameAsync() 
+    +GetVesselTypeByIdAsync()
+    +GetVesselTypeByDescriptionAsync()
+    +AddVesselType()
+    +Update()
+}
+
+
+class VesselType{
+    -Id: long
+    -Name: string
+    -Description: string
+    -Capacity: int
+    -MaxRows: int
+    -MaxBays: int
+    -MaxTiers: int
+    +ChangeMaxBays()
+    +ChangeMaxTiers()
+    +ChangeMaxRows()
+    +ChangeCapacity()
+    +ChangeDescription()
+    +ChangeName()
+    
+}
+
+class VesselTypeMapper{
+    +ToDomain()
+    +ToDataModel()
+    +UpdateDataModel()
+}
+
+interface IVesselTypeFactory{
+    +NewVesselType()
+}
+
+class VesselTypeDataModel{
+    -Id: long
+    -Name: string
+    -Description: string
+    -Capacity: int
+    -MaxRows: int
+    -MaxBays: int
+    -MaxTiers: int
+}
+
+class VesselTypeFactory{
+    +NewVesselType()
+}
+
+
+VesselTypeController --> VesselTypeService: uses 
+VesselTypeService --> IVesselTypeRepository: uses
+VesselTypeService --> VesselTypeDTO: uses
+
+VesselTypeRepository --> VesselTypeMapper: uses
+VesselTypeMapper --> VesselTypeDataModel : uses
+VesselTypeMapper --> IVesselTypeFactory : uses
+VesselTypeFactory --> VesselType: creates
+
+
+VesselTypeFactory ..|> IVesselTypeFactory : implements
+
+VesselTypeRepository ..|> IVesselTypeRepository : implements
+
+@enduml
