@@ -61,6 +61,6 @@ namespace Domain.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new StorageAreaDock(sa, dock, distance));
         }
 
-       
+
     }
 }

@@ -197,7 +197,7 @@ namespace WebApi.IntegrationTests.Tests
             var postResponse = await _client.PostAsJsonAsync("/api/StorageArea", newStorageArea);
             Assert.Equal(HttpStatusCode.BadRequest, postResponse.StatusCode);
         }
-        
+
         [Fact]
         public async Task PostStorageArea_InvalidDocks_ReturnsBadRequest()
         {
@@ -285,7 +285,7 @@ namespace WebApi.IntegrationTests.Tests
             var putResponse = await _client.PutAsJsonAsync($"/api/StorageArea/Update/{storageArea.Id}", storageArea);
             Assert.Equal(HttpStatusCode.BadRequest, putResponse.StatusCode);
         }
-        
+
         [Fact]
         public async Task PutStorageArea_InvalidDocks_ReturnsBadRequest()
         {
