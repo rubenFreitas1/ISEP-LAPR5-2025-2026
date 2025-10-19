@@ -133,7 +133,7 @@ public class StorageAreaRepository : GenericRepository<StorageArea>, IStorageAre
                 storageAreaDM.StorageAreaDocks = newSadList;
             }
 
-            EntityEntry<StorageAreaDataModel> addedEntry =  _context.Set<StorageAreaDataModel>().Add(storageAreaDM);
+            EntityEntry<StorageAreaDataModel> addedEntry = _context.Set<StorageAreaDataModel>().Add(storageAreaDM);
             await _context.SaveChangesAsync();
             StorageArea addedStorageArea = _storageAreaMapper.ToDomain(addedEntry.Entity);
             return addedStorageArea;

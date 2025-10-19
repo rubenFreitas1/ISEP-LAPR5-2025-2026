@@ -20,7 +20,7 @@ public class StorageAreaDockConfiguration : IEntityTypeConfiguration<StorageArea
                .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(sad => sad.Dock)
-       .WithMany() 
+       .WithMany()
        .HasForeignKey(sad => sad.DockId)
        .OnDelete(DeleteBehavior.Cascade);
 

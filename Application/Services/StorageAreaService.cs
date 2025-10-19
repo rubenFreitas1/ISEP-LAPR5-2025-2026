@@ -132,7 +132,8 @@ public class StorageAreaService
             errorMessages.Add($"Storage area with location {storageAreaDTO.Location} already exists.");
             return false;
         }
-        if(storageAreaDTO.StorageAreaType != storageArea.Type){
+        if (storageAreaDTO.StorageAreaType != storageArea.Type)
+        {
             errorMessages.Add("Its not possible to update the storage area type.");
             return false;
         }

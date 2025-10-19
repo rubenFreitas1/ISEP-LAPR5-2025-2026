@@ -29,5 +29,5 @@ public class StorageAreaDataModel
         LastModifiedAt = storageArea.LastModifiedAt;
         StorageAreaDocks = storageArea.StorageAreaDocks?.ConvertAll(sad => new StorageAreaDockDataModel(sad));
     }
-    
+
 }

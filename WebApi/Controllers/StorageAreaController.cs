@@ -76,7 +76,7 @@ public class StorageAreaController : ControllerBase
         }
         return CreatedAtAction(nameof(GetStorageAreaById), new { id = createdStorageAreaDTO.Id }, createdStorageAreaDTO);
     }
-    
+
     [HttpPut("Update/{id}")]
     public async Task<IActionResult> PutStorageArea(long id, StorageAreaDTO storageAreaDTO)
     {
