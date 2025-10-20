@@ -110,7 +110,7 @@ public class RepresentativeRepository : GenericRepository<Representative>, IRepr
 
         var filteredReps = representativeDMs
             .Where(r => r.Organization != null && r.Organization.Id == organizationDM.Id);
-            
+
         return _repMapper.ToDomain(filteredReps);
     }
 
