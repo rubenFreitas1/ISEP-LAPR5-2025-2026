@@ -2,6 +2,8 @@ namespace Application.DTO;
 
 using Domain.Model;
 using ShippingManagement.Domain.Qualifications;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class StaffDTO
 {
@@ -11,6 +13,7 @@ public class StaffDTO
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public OperationalWindowDTO? OperationalWindow { get; set; }
+    [JsonConverter(typeof(ResourceStatusNumberConverter))]
     public ResourceStatus? Status { get; set; }
 
     public StaffDTO() { }
@@ -61,3 +64,30 @@ public class StaffDTO
         return new Staff(dto.Name!, qualifications, dto.Email!, dto.Phone!, operationalWindow, status);
     }
 }
+
+    internal class ResourceStatusNumberConverter : JsonConverter<ResourceStatus?>
+    {
+        public override ResourceStatus? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null) return null;
+            if (reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out var i))
+            {
+                if (Enum.IsDefined(typeof(ResourceStatus), i)) return (ResourceStatus)i;
+                return null;
+            }
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                var s = reader.GetString();
+                if (string.IsNullOrWhiteSpace(s)) return null;
+                if (int.TryParse(s, out var i2) && Enum.IsDefined(typeof(ResourceStatus), i2)) return (ResourceStatus)i2;
+                if (Enum.TryParse<ResourceStatus>(s, true, out var parsed)) return parsed;
+            }
+            return null;
+        }
+
+        public override void Write(Utf8JsonWriter writer, ResourceStatus? value, JsonSerializerOptions options)
+        {
+            if (!value.HasValue) { writer.WriteNullValue(); return; }
+            writer.WriteNumberValue((int)value.Value);
+        }
+    }
