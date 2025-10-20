@@ -65,29 +65,29 @@ public class StaffDTO
     }
 }
 
-    internal class ResourceStatusNumberConverter : JsonConverter<ResourceStatus?>
+internal class ResourceStatusNumberConverter : JsonConverter<ResourceStatus?>
+{
+    public override ResourceStatus? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override ResourceStatus? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        if (reader.TokenType == JsonTokenType.Null) return null;
+        if (reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out var i))
         {
-            if (reader.TokenType == JsonTokenType.Null) return null;
-            if (reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out var i))
-            {
-                if (Enum.IsDefined(typeof(ResourceStatus), i)) return (ResourceStatus)i;
-                return null;
-            }
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                var s = reader.GetString();
-                if (string.IsNullOrWhiteSpace(s)) return null;
-                if (int.TryParse(s, out var i2) && Enum.IsDefined(typeof(ResourceStatus), i2)) return (ResourceStatus)i2;
-                if (Enum.TryParse<ResourceStatus>(s, true, out var parsed)) return parsed;
-            }
+            if (Enum.IsDefined(typeof(ResourceStatus), i)) return (ResourceStatus)i;
             return null;
         }
-
-        public override void Write(Utf8JsonWriter writer, ResourceStatus? value, JsonSerializerOptions options)
+        if (reader.TokenType == JsonTokenType.String)
         {
-            if (!value.HasValue) { writer.WriteNullValue(); return; }
-            writer.WriteNumberValue((int)value.Value);
+            var s = reader.GetString();
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            if (int.TryParse(s, out var i2) && Enum.IsDefined(typeof(ResourceStatus), i2)) return (ResourceStatus)i2;
+            if (Enum.TryParse<ResourceStatus>(s, true, out var parsed)) return parsed;
         }
+        return null;
     }
+
+    public override void Write(Utf8JsonWriter writer, ResourceStatus? value, JsonSerializerOptions options)
+    {
+        if (!value.HasValue) { writer.WriteNullValue(); return; }
+        writer.WriteNumberValue((int)value.Value);
+    }
+}

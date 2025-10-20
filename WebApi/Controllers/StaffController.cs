@@ -32,7 +32,7 @@ public class StaffController : ControllerBase
             return NotFound("No staff available.");
         return Ok(staffDTOs);
     }
-    
+
     [HttpGet("ByName/{name}")]
     public async Task<ActionResult> GetStaffByName(string name)
     {
@@ -78,7 +78,7 @@ public class StaffController : ControllerBase
         }
 
         ResourceStatus rs = (ResourceStatus)status;
-        
+
         if (rs != ResourceStatus.Available && rs != ResourceStatus.Unavailable)
         {
             return NotFound();

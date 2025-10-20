@@ -9,11 +9,11 @@ namespace Application.DTO
 
     public class OperationalWindowDTO
     {
-    [JsonConverter(typeof(DayOfWeekNumberConverter))]
-    public DayOfWeek? StartDay { get; set; }
+        [JsonConverter(typeof(DayOfWeekNumberConverter))]
+        public DayOfWeek? StartDay { get; set; }
 
-    [JsonConverter(typeof(DayOfWeekNumberConverter))]
-    public DayOfWeek? EndDay { get; set; }
+        [JsonConverter(typeof(DayOfWeekNumberConverter))]
+        public DayOfWeek? EndDay { get; set; }
         public string? StartTime { get; set; }
         public string? EndTime { get; set; }
 

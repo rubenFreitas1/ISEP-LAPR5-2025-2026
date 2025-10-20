@@ -103,7 +103,7 @@ namespace WebApi.IntegrationTests.Tests
             var response = await _client.GetAsync($"/api/Staff/ByStatus/{status}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-         
+
         [Theory]
         [InlineData(2)]
         [InlineData(99)]
@@ -221,12 +221,12 @@ namespace WebApi.IntegrationTests.Tests
 
         // Invalid Time Formats
         [Theory]
-        [InlineData("9:00")]      
-        [InlineData("09-00")]     
-        [InlineData("25:00")]     
-        [InlineData("12:60")]     
-        [InlineData("abc")]       
-        [InlineData("")]          
+        [InlineData("9:00")]
+        [InlineData("09-00")]
+        [InlineData("25:00")]
+        [InlineData("12:60")]
+        [InlineData("abc")]
+        [InlineData("")]
         public async Task PostStaff_InvalidTimeFormat_ReturnsBadRequest(string startTime)
         {
             var dto = new StaffDTO
@@ -240,7 +240,7 @@ namespace WebApi.IntegrationTests.Tests
                     StartDay = DayOfWeek.Monday,
                     EndDay = DayOfWeek.Friday,
                     StartTime = startTime,
-                    EndTime = "17:00"  
+                    EndTime = "17:00"
                 },
                 Status = ResourceStatus.Available
             };
