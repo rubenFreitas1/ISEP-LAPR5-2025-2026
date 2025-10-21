@@ -1,0 +1,185 @@
+@startuml 2.2.13
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Logistics Officer" as logisticsOfficer
+participant "Staff Controller" as staffController
+participant "Staff Service" as staffService
+participant "StaffDTO" as staffDTO
+participant "Operational Window DTO" as operationalWindowDTO
+participant "Qualification Repository" as qualificationRepository
+participant "Staff Repository" as staffRepository
+participant "Staff Mapper" as staffMapper
+participant "Qualification Mapper" as QualificationMapper
+participant "Operational window" as operationalWindow
+participant "staff" as staff
+participant "Staff Data Model" as staffDataModel
+participant "Staff Factory" as staffFactory
+participant "Shipping Management Context" as shippingManagementContext
+participant "Shipping Management Database" as database
+
+title System Sequence Diagram - US2.2.13 (Create staff)
+
+activate logisticsOfficer   
+    
+    logisticsOfficer -> staffController:  POST /api/Staff
+    activate staffController
+
+        staffController -> qualificationRepository: GetQualificationsByCodesAsync(staffDTO.QualificationCodes!)
+        activate qualificationRepository
+
+            qualificationRepository -> database: Set<QualificationDataModel>().Where(q => q.Code != null && codes.Contains(q.Code)).ToListAsync()
+            activate database
+
+                database --> qualificationRepository: qualifications
+            deactivate database
+
+            qualificationRepository --> staffController: qualifications
+        deactivate qualificationRepository
+        
+        staffController -> staffService: AddStaff(staffDTO, qualification, _errorMessages)
+        activate staffService
+            
+            staffService -> staffRepository: GetStaffByIDAsync(staffDTO.Id.Value)
+            activate staffRepository
+
+                staffRepository -> database: Set<StaffDataModel>().Include(s => s.Qualification).SingleOrDefaultAsync(s => s.Id == id)
+                activate database
+
+                    database --> staffRepository: staffById
+                deactivate database
+
+                staffRepository --> staffService: staffById
+            deactivate staffRepository
+
+            staffService -> staffRepository: GetStaffByEmailAsync(staffDTO.Email!)
+            activate staffRepository
+
+                staffRepository -> database: Set<StaffDataModel>().Include(s => s.Qualification).SingleOrDefaultAsync(s => s.Email == email)
+                activate database
+
+                    database --> staffRepository: staffByEmail
+                deactivate database
+
+                staffRepository --> staffService: staffByEmail
+            deactivate staffRepository
+            
+            staffService -> staffRepository: GetStaffByPhoneAsync(staffDTO.Phone!)
+            activate staffRepository
+
+                staffRepository -> database: Set<StaffDataModel>().AsNoTracking().ToListAsync()
+                activate database
+
+                    database --> staffRepository: staffByPhone
+                deactivate database
+
+                staffRepository --> staffService: staffByPhone
+            deactivate staffRepository
+            
+            staffService -> operationalWindowDTO: ToDomain(staffDTO.OperationalWindow)
+            activate operationalWindowDTO
+
+                operationalWindowDTO -> operationalWindow: new OperationalWindow(dto.StartDay.Value, dto.EndDay.Value, startTime, endTime)
+                activate operationalWindow
+
+                    operationalWindow --> operationalWindowDTO: operationalWindow
+                deactivate operationalWindow
+
+                operationalWindowDTO --> staffService: operationalWindow
+            deactivate operationalWindowDTO
+
+            staffService -> staffDTO: ToDomain(staffDTO, qualifications, opWindow)
+            activate staffDTO
+            
+                staffDTO -> staff: Staff(dto.Name!, qualifications, dto.Email!, dto.Phone!, operationalWindow, status)
+                activate staff
+            
+                    staff --> staffDTO: staff
+                deactivate staff
+            
+                staffDTO --> staffService: staff
+            deactivate staffDTO
+        
+            staffService -> staffRepository: AddStaff(staff)
+            activate staffRepository
+            
+                staffRepository -> staffMapper: ToDataModel(staff)
+                activate staffMapper
+                
+                    staffMapper -> staffDataModel: new staffDataModel(staff)
+                    activate staffDataModel
+                    
+                        staffDataModel --> staffMapper: staffDataModel
+                    deactivate staffDataModel
+                
+                    staffMapper --> staffRepository: staffDataModel
+                deactivate staffMapper
+        
+                staffRepository -> shippingManagementContext: Set<QualificationDataModel>().FindAsync(qdm.Id)
+                activate shippingManagementContext
+    
+                    shippingManagementContext --> staffRepository: EntityEntry<QualificationDataModel>
+                deactivate shippingManagementContext
+
+                staffRepository -> shippingManagementContext: Set<StaffDataModel>().Add(staffDM)
+                activate shippingManagementContext
+
+                    shippingManagementContext --> staffRepository: EntityEntry<staffDataModel>
+                deactivate shippingManagementContext
+
+                staffRepository -> shippingManagementContext: SaveChangesAsync()
+                activate shippingManagementContext
+        
+                    shippingManagementContext -> database: INSERT INTO staffs
+                    activate database
+                    
+                        database --> shippingManagementContext: Success
+                    deactivate database
+            
+                    shippingManagementContext --> staffRepository: int (affected rows)
+                deactivate shippingManagementContext
+                
+                staffRepository -> staffMapper: ToDomain(staffDMSaved)
+                activate staffMapper
+
+                    staffMapper -> QualificationMapper: ToDomain(qualificationsData)
+                    activate QualificationMapper
+
+                        QualificationMapper --> staffMapper: qualifications
+                    deactivate QualificationMapper
+
+                    staffMapper -> staffFactory: NewStaff(staffDM.Name!, qualifications, staffDM.Email!, staffDM.Phone!, staffDM.OperationalWindow!, status)
+                    activate staffFactory
+
+                        staffFactory --> staffMapper: staff
+                    deactivate staffFactory
+
+                    staffMapper --> staffRepository: staff
+                deactivate staffMapper
+                
+                staffRepository --> staffService: staff
+            deactivate staffRepository
+            
+            staffService -> staffDTO: ToDTO(staffSaved)
+            activate staffDTO
+                
+                staffDTO -> operationalWindowDTO: ToDTO(s.OperationalWindow!)
+                activate operationalWindowDTO
+
+                    operationalWindowDTO -> operationalWindowDTO: new OperationalWindowDTO(operationalWindow.StartDay,\noperationalWindow.EndDay,operationalWindow.StartTime.ToString(@"hh\:mm"),\noperationalWindow.EndTime.ToString(@"hh\:mm")
+                    operationalWindowDTO --> staffDTO: opWindowDTO
+                deactivate operationalWindowDTO
+                
+                staffDTO -> staffDTO: new StaffDTO(s.Id!, s.Name!, qualCodes, s.Email, s.Phone, opWindowDTO, s.Status)
+                staffDTO --> staffService: staffDTO
+            deactivate staffDTO
+
+            staffService --> staffController: staffDTO
+        deactivate staffService
+        
+        staffController --> logisticsOfficer: 201 Created (staffDTO)
+    deactivate staffController
+    
+deactivate logisticsOfficer
+@enduml

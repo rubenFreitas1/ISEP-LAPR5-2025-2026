@@ -8,27 +8,22 @@ participant "System" as system
 
 title System Sequence Diagram - US2.2.11
 
-== Update a staff menber ==
+== Update a staff ==
 activate LogisticsOperator
 
-LogisticsOperator -> system : Asks to update staff menbers
+LogisticsOperator -> system : Asks to update staff
 activate system
 
-system --> LogisticsOperator : Displays staff menbers
+system --> LogisticsOperator : Asks for staff id
 deactivate system
 
-LogisticsOperator -> system : Selects a staff menber
+LogisticsOperator -> system : Types staff id
 activate system
 
-system --> LogisticsOperator : Displays and request wich attribute the user wants to update
-deactivate system
-LogisticsOperator -> system : Selects the attribute
-
-activate system
-system --> LogisticsOperator : Request data according to the selected attribute
+system --> LogisticsOperator : Request data that the user wishes to update
 deactivate system
 
-LogisticsOperator -> system : Types request data
+LogisticsOperator -> system : Types data
 activate system
 system --> LogisticsOperator : Displays operation success
 deactivate system

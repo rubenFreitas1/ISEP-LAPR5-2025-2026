@@ -1,0 +1,163 @@
+@startuml VesselTypeCode
+
+
+class StaffController {
+	+GetAll()
+	+GetStaffByName(string name)
+	+GetStaffById(long id)
+	+GetStaffByQualification(string qualification)
+    +GetStaffByStatus(int status)
+	+PostStaff(StaffDTO staffDTO)
+    +PutStaff(string id, StaffDTO staffDTO)
+}
+class StaffService {
+	+GetStaffByName(string name)
+	+GetStaffByID(long id)
+	+GetStaffByQualification(string qualificationCode)
+	+GetStaffByStatus(ResourceStatus status, List<string> errorMessages)
+	+GetAllStaff()
+    +AddStaff(StaffDTO staffDTO, IEnumerable<Qualification> qualifications, List<String> errorMessages)
+	+UpdateStaff(long id, StaffDTO staffDTO, IEnumerable<Qualification> qualifications, List<string> errorMessages)
+}
+
+class StaffDTO{
+    -Name: string
+    -QualificationCodes: IEnumerable<string>
+    -Email: string
+    -PhoneNumber: string
+    -OperationalWindowDTO: OperationalWindow
+    -Status: ResourceStatus
+    +ToDTO(Staff s)
+    +ToDomain(StaffDTO dto, IEnumerable<Qualification> qualifications, OperationalWindow operationalWindow)
+}
+
+class OperationalWindowDTO{
+    -StartDate: DayOfWeek
+    -EndDate: DayOfWeek
+    -StartTime: string
+    -EndTime: string
+    +ToDTO(OperationalWindow operationalWindow)
+    +ToDomain(OperationalWindowDTO dto)
+    +IsValidTimeFormat(string time)
+}
+
+enum ResourceStatus {
+    Available
+    Unavailable
+    Maintenance
+}
+
+interface IStaffRepository{
+    +GetStaffByIdAsync(long id)
+    +GetStaffByEmailAsync(string email)
+    +GetStaffByPhone(string phone)
+    +GetStaffByNameAsync(string name)
+    +AddStaffAsync(Staff staff)
+    +GetStaffByQualificationCodeAsync(string qualificationCode)
+    +GetStaffByStatusAsync(ResourceStatus status)
+    +GetAllStaffAsync()
+    +Update(Staff staff, List<string> errorMessages)
+}
+
+class StaffRepository{
+    +GetAllStaffAsync()
+    +GetStaffByIDAsync(long id)
+    +GetStaffByEmailAsync(string email)
+    +GetStaffByPhoneAsync(string phone)
+    +GetStaffByNameAsync(string name)
+    +GetStaffByQualificationCodeAsync(string qualificationCode)
+    +GetStaffByStatusAsync(ResourceStatus status)
+    +AddStaffAsync(Staff staff)
+    +Update(Staff staff, List<string> errorMessages)
+}
+
+
+class Staff{
+    -Email: string
+    -PhoneNumber: string
+    +ChangeEmail(string email)
+    +ChangePhone(string phone)
+    +ValidateEmail(string email)
+    +ValidatePhone(string phone)
+    
+}
+
+class Resource{
+    -Id: long
+    -Name: string
+    -Qualification: IEnumerable<Qualification>
+    -OperationalWindow: OperationalWindow
+    -Status: ResourceStatus
+    +ChangeName(string name)
+    +ChangeQualification(IEnumerable<Qualification> qualification)
+    +ChangeStatus(ResourceStatus status)
+    +ChangeOperationalWindow(OperationalWindow operationalWindow)
+    +ValidateName(string name)
+    +ValidateQualification(IEnumerable<Qualification> qualification)
+    +ValidateOperationalWindow(OperationalWindow operationalWindow)
+}
+
+class OperationalWindow{
+    -StartDate: DayOfWeek
+    -EndDate: DayOfWeek
+    -StartTime: TimeSpan
+    -EndTime: TimeSpan
+    +validateDays(DayOfWeek startDay, DayOfWeek endDay)
+    +validateTimes(TimeSpan startTime, TimeSpan endTime)
+}
+
+class Qualification{
+    -Id: long
+    -Code: string
+    -Name: string
+    -Description: string
+    +ChangeName(string name)
+    +ChangeDescription(string description)
+    +ValidateCode(string code)
+    +ValidateName(string name)
+    +ValidateDescription(string description)
+}
+
+class StaffMapper{
+    +ToDomain(StaffDataModel staffDM)
+    +ToDataModel(Staff staff)
+    +UpdateDataModel(StaffDataModel staffDM, Staff staff)
+}
+
+interface IStaffFactory{
+    +NewStaff(string name, IEnumerable<Qualification> qualification,\n string email, string phone, OperationalWindow operationalWindow,\n ResourceStatus status)
+}
+
+class StaffDataModel{
+    -Id: long
+    -Name: string
+    -Email: string
+    -PhoneNumber: string
+    -Qualification: QualificationDataModel
+    -OperationalWindow: OperationalWindow
+    -Status: ResourceStatus
+}
+
+class StaffFactory{
+    +NewStaff(string name, IEnumerable<Qualification> qualification,\n string email, string phone, OperationalWindow operationalWindow,\n ResourceStatus status)
+}
+
+
+StaffController --> StaffService: uses 
+StaffService --> IStaffRepository: uses
+StaffService --> StaffDTO: uses
+StaffDTO --> OperationalWindowDTO: uses
+
+StaffRepository --> StaffMapper: uses
+StaffMapper --> StaffDataModel : uses
+StaffMapper --> IStaffFactory : uses
+StaffFactory --> Staff: creates
+Resource --> OperationalWindow: uses
+Resource --> Qualification: uses
+
+StaffFactory ..|> IStaffFactory : implements
+Resource ..|> Staff : extends
+Resource --> ResourceStatus: uses
+StaffRepository ..|> IStaffRepository : implements
+
+@enduml

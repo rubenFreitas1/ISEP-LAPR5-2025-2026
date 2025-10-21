@@ -8,19 +8,19 @@ participant "System" as system
 
 title System Sequence Diagram - US2.2.11
 
-== Deactivate a staff menber ==
+== Deactivate a staff ==
 activate LogisticsOperator
 
-LogisticsOperator -> system : Asks to update staff menbers
+LogisticsOperator -> system : Asks to update staff 
 activate system
 
-system --> LogisticsOperator : Displays staff menbers
+system --> LogisticsOperator : Asks for staff id
 deactivate system
 
-LogisticsOperator -> system : Selects a staff menber
+LogisticsOperator -> system : Types staff id
 activate system
 
-system --> LogisticsOperator : Deactivates the staff menber\nand displays operation success
+system --> LogisticsOperator : Deactivates the staff and displays operation success
 
 
 @enduml

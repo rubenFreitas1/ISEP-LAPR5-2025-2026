@@ -34,6 +34,32 @@ When a staff member is registered, do they automatically become available (with 
 When registering a staff member, (s)he must be, by default, available.
 Mandatory information comprehends, the mecanographic number , short name, contacts and status.
 
+>>Just to clarify, if some information (outside the mandatory) is missing at registration because it will be provided later, should the staff member be marked as "available" or "unavailable"?
+>
+>The user - logistic operator - may choose.
+Notice that, for instance, if the operational window is not specified, latter (on another US) the system will not be able to assign task to this staff member.
+
+>>Como é que nós representamos a operational window? Ou seja, Temos uma disponibilidade do trabalhador e os turnos são calculados daí, ou temos os turnos já definidos que os trabalhadores fazem, e a operational window é logo calculada a partir daí?
+>
+>Bem, há diferentes formas (técnicas) de representação. Adotem a que for mais interessante...
+Exemplos da informação a capturar pode ajudar à decisão.
+Exemplo 1:\
+. 2º feira: das 7h00 às 10h00; das 10h30 às 13h30; das 15h00 às 18h00;\
+. 3º feira: das 7h00 às 10h00; das 10h30 às 13h30; das 15h00 às 18h00;\
+. 4º feira: das 09h30 às 12h30; das 14h00 às 17h00;\
+. 5º feira: das 14h00 às 17h00; das 17h30 às 20h30;\
+. 6º feira: das 14h00 às 17h00; das 17h30 às 20h30;\
+. Sábado: das 09h30 às 12h30;\
+. Domingo: n/d;\
+Exemplo 2:\
+. 2º feira: das 13h00 às 17h00; das 18h00 às 21h00;\
+. 3º feira: das 13h00 às 17h00; das 18h00 às 21h00;\
+. 4º feira: n/d;\
+. 5º feira: das 13h00 às 17h00; das 18h00 às 21h00;\
+. 6º feira: das 13h00 às 17h00; das 18h00 às 21h00;\
+. Sábado: das 13h00 às 17h00; das 18h00 às 21h00;\
+. Domingo: n/d;\
+
 
 ## 3. Analysis
 
@@ -48,3 +74,29 @@ Record Update
 Record Deactivation
 
 ![System Sequence Diagram ](images/system-sequence-diagram-US2.2.11(2).png)
+
+## 4. C4 Model
+
+#### Context - Level 1
+
+![Context](/docs/Global_Artifacts/context_lvl1.png)
+
+#### Containers - Level 2
+
+![Containers](/docs/Global_Artifacts/containers_lvl2.png)
+
+#### Components - Level 3
+
+![Components](images/code_lvl3.png)
+
+#### Code - Level 4
+
+![Code](images/code_lvl3.png)
+
+#### Level +1
+
+Qualification POST
+![nivel+1](images/code_+1_Post.png)
+
+Qualification UPDATE
+![nivel+1](images/code_+1_Put.png)
