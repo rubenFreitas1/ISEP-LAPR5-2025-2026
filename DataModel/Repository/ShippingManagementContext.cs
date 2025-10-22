@@ -19,30 +19,24 @@ public class ShippingManagementContext : DbContext
     public virtual DbSet<VesselTypeDataModel> VesselTypes { get; set; } = null!;
     public virtual DbSet<QualificationDataModel> Qualifications { get; set; } = null!;
     public virtual DbSet<DockDataModel> Docks { get; set; } = null!;
-
     public virtual DbSet<StorageAreaDataModel> StorageAreas { get; set; } = null!;
-
     public virtual DbSet<StorageAreaDockDataModel> StorageAreaDocks { get; set; } = null!;
-
     public virtual DbSet<VesselRecordDataModel> VesselRecords { get; set; } = null!;
     public virtual DbSet<StaffDataModel> Staffs { get; set; } = null!;
     public virtual DbSet<ShippingAgentOrganizationDataModel> ShippingAgentOrganizations { get; set; } = null!;
     public virtual DbSet<RepresentativeDataModel> Representatives { get; set; } = null!;
-
     public virtual DbSet<VesselVisitNotificationDataModel> VesselVisitNotifications { get; set; } = null!;
-
     public virtual DbSet<CargoManifestDataModel> CargoManifests { get; set; } = null!;
-
     public virtual DbSet<CargoManifestEntryDataModel> CargoManifestEntries { get; set; } = null!;
-
     public virtual DbSet<CrewMemberDataModel> CrewMembers { get; set; } = null!;
-
+    public virtual DbSet<PhysicalResourceDataModel> PhysicalResources { get; set; } = null!; 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new VesselTypeConfiguration());
         modelBuilder.ApplyConfiguration(new DockConfiguration());
         modelBuilder.ApplyConfiguration(new StaffConfiguration());
+        modelBuilder.ApplyConfiguration(new PhysicalResourceConfiguration());
         modelBuilder.ApplyConfiguration(new VesselRecordConfiguration());
         modelBuilder.ApplyConfiguration(new StorageAreaConfiguration());
         modelBuilder.ApplyConfiguration(new StorageAreaDockConfiguration());
