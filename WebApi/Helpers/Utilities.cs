@@ -33,7 +33,7 @@ public static class Utilities
             }
             if (!db.ShippingAgentOrganizations.Any())
             {
-                var orgsAndReps = GetSampleOrganizationDataModelsAndRepresentatives();
+                var orgsAndReps = GetSeedingOrganizationDataModelsAndRepresentatives();
                 foreach (var (orgDM, repsDM) in orgsAndReps)
                 {
                     db.ShippingAgentOrganizations.Add(orgDM);
@@ -194,7 +194,7 @@ public static class Utilities
             Type = CargoManifestType.Loading.ToString(),
             Entries = new List<CargoManifestEntryDataModel>()
         };
-        var sa1 = storageAreas[0];
+        
         cm1.Entries.Add(new CargoManifestEntryDataModel { Container = "ABCU1112222", Row = 1, Bay = 1, Tier = 1, StorageArea = storageAreas[0], StorageAreaId = storageAreas[0].Id });
         cm1.Entries.Add(new CargoManifestEntryDataModel { Container = "ABCU2223334", Row = 2, Bay = 1, Tier = 1, StorageArea = storageAreas[0], StorageAreaId = storageAreas[0].Id });
         n1.CargoManifests.Add(cm1);
@@ -300,7 +300,7 @@ public static class Utilities
     }
 
 
-    public static List<(ShippingAgentOrganizationDataModel organization, List<RepresentativeDataModel> representatives)> GetSampleOrganizationDataModelsAndRepresentatives()
+    public static List<(ShippingAgentOrganizationDataModel organization, List<RepresentativeDataModel> representatives)> GetSeedingOrganizationDataModelsAndRepresentatives()
     {
         var org1 = new ShippingAgentOrganizationDataModel {
             Code = "AAA1",

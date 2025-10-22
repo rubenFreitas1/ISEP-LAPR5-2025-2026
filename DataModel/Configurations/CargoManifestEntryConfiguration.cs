@@ -26,6 +26,6 @@ public class CargoManifestEntryConfiguration : IEntityTypeConfiguration<CargoMan
         builder.HasOne(e => e.StorageArea)
             .WithMany()
             .HasForeignKey(e => e.StorageAreaId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
