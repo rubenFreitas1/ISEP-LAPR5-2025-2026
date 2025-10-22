@@ -18,4 +18,13 @@ public interface IShippingManagementContext
 
     DbSet<StorageAreaDataModel> StorageAreas { get; set; }
     DbSet<StorageAreaDockDataModel> StorageAreaDocks { get; set; }
+
+
+    DbSet<VesselVisitNotificationDataModel> VesselVisitNotifications { get; set; }
+
+    DbSet<CargoManifestDataModel> CargoManifests { get; set; }
+
+    DbSet<CargoManifestEntryDataModel> CargoManifestEntries { get; set; }
+
+    DbSet<CrewMemberDataModel> CrewMembers { get; set; }
 }

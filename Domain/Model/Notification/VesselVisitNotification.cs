@@ -13,7 +13,7 @@ public enum CargoType
 public enum VisitStatus
 {
 
-    Pending,
+    Submitted,
     Approved,
     Rejected,
     InProgress
@@ -27,15 +27,18 @@ public class VesselVisitNotification
 
     public string Code { get; private set; } = string.Empty;
 
-    public VesselRecord Vessel { get; private set; } = null!;
 
+    public long VesselId { get; set; }
+    public VesselRecord Vessel { get; private set; } = null!;
+    
+    public long RepresentativeId { get; set; }
     public Representative Representative { get; private set; } = null!;
 
     public DateTime ETA { get; private set; }
 
     public DateTime ETD { get; private set; }
 
-    public List<CargoManifest> CargoManifests { get; private set; } = new List<CargoManifest>();
+    public List<CargoManifest> CargoManifests { get; set; } = new List<CargoManifest>();
 
     public CargoType CargoType { get; private set; }
 
@@ -45,7 +48,7 @@ public class VesselVisitNotification
 
     public Dock? AssignedDock { get; private set; } = null;
 
-    public VisitStatus VisitStatus { get; private set; }
+    public VisitStatus VisitStatus { get;  set; }
 
     public DateTime LastModifiedAt { get; set; }
 
@@ -72,6 +75,8 @@ public class VesselVisitNotification
         CargoManifests = cargoManifests ?? new List<CargoManifest>();
         Volume = volume;
         CrewMembers = crewMembers;
+        VesselId = vessel.Id;
+        RepresentativeId = representative.Id;
         LastModifiedAt = DateTime.UtcNow;
         VisitStatus = VisitStatus.InProgress;
     }
@@ -156,9 +161,34 @@ public class VesselVisitNotification
             throw new ArgumentException("There must be at least one crew member with the rank of Captain.");
         }
 
+        if (crewMembers.Any(cm => cm.Rank == CrewRank.Captain) && crewMembers.Count(cm => cm.Rank == CrewRank.Captain) > 1)
+        {
+            throw new ArgumentException("There cannot be more than one crew member with the rank of Captain.");
+        }
         if (!crewMembers.Any(cm => cm.Rank == CrewRank.SafetyOfficer) && CargoType == CargoType.Hazardous)
         {
             throw new ArgumentException("There must be at least one crew member with the rank of Safety Officer.");
+        }
+        List<string> validCitizenIds = new List<string>();
+        foreach (var crewMember in crewMembers)
+        {
+            if (string.IsNullOrWhiteSpace(crewMember.Name))
+            {
+                throw new ArgumentException("Crew member name cannot be null or empty.");
+            }
+            if (string.IsNullOrWhiteSpace(crewMember.CitizenId))
+            {
+                throw new ArgumentException("Crew member citizen ID cannot be null or empty.");
+            }
+            if (string.IsNullOrWhiteSpace(crewMember.Nationality))
+            {
+                throw new ArgumentException("Crew member nationality cannot be null or empty.");
+            }
+            if (validCitizenIds.Contains(crewMember.CitizenId))
+            {
+                throw new ArgumentException($"Duplicate crew member citizen ID found: {crewMember.CitizenId}");
+            }
+            validCitizenIds.Add(crewMember.CitizenId);
         }
     }
 

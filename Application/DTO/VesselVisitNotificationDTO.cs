@@ -8,6 +8,7 @@ using Domain.Model;
 
 public class VesselVisitNotificationDTO
 {
+    public long Id { get; set; }
     public string Code { get; set; } = string.Empty;
     public string VesselIMO { get; set; } = null!;
     public string RepresentativeCitizenID { get; set; } = null!;
@@ -29,8 +30,9 @@ public class VesselVisitNotificationDTO
     private VesselVisitNotificationDTO() { }
 
 
-    public VesselVisitNotificationDTO(string code, string vesselIMO, string representativeCitizenID, DateTime eta, DateTime etd, List<CargoManifestDTO>? cargoManifests, CargoType cargoType, double volume, List<CrewMemberDTO> crewMembers, VisitStatus visitStatus)
+    public VesselVisitNotificationDTO(long id, string code, string vesselIMO, string representativeCitizenID, DateTime eta, DateTime etd, List<CargoManifestDTO>? cargoManifests, CargoType cargoType, double volume, List<CrewMemberDTO> crewMembers, VisitStatus visitStatus)
     {
+        Id = id;
         Code = code;
         VesselIMO = vesselIMO;
         RepresentativeCitizenID = representativeCitizenID;
@@ -41,7 +43,6 @@ public class VesselVisitNotificationDTO
         Volume = volume;
         CrewMembers = crewMembers;
         VisitStatus = visitStatus;
-        LastModifiedAt = DateTime.UtcNow;
     }
 
     static public VesselVisitNotificationDTO ToDTO(VesselVisitNotification vesselVisitNotification)
@@ -74,7 +75,7 @@ public class VesselVisitNotificationDTO
                 Nationality = cm.Nationality
             }
             ).ToList();
-            VesselVisitNotificationDTO vesselVisitNotificationDTO = new VesselVisitNotificationDTO(vesselVisitNotification.Code, vesselVisitNotification.Vessel.IMONumber!, vesselVisitNotification.Representative.CitizenId!, vesselVisitNotification.ETA, vesselVisitNotification.ETD, cargoManifestDTOs, vesselVisitNotification.CargoType, vesselVisitNotification.Volume, crewMemberDTOs, vesselVisitNotification.VisitStatus);
+            VesselVisitNotificationDTO vesselVisitNotificationDTO = new VesselVisitNotificationDTO(vesselVisitNotification.Id,vesselVisitNotification.Code, vesselVisitNotification.Vessel.IMONumber!, vesselVisitNotification.Representative.CitizenId!, vesselVisitNotification.ETA, vesselVisitNotification.ETD, cargoManifestDTOs, vesselVisitNotification.CargoType, vesselVisitNotification.Volume, crewMemberDTOs, vesselVisitNotification.VisitStatus);
             vesselVisitNotificationDTO.LastModifiedAt = vesselVisitNotification.LastModifiedAt;
             return vesselVisitNotificationDTO;
         }

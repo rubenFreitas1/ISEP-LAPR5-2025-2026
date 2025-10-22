@@ -14,6 +14,7 @@ public class CargoManifestEntry
 
     public int Tier { get; private set; }
 
+    public long StorageAreaId { get;  set; }
     public StorageArea StorageArea { get; private set; } = null!;
 
     public long CargoManifestId { get; private set; }
@@ -34,6 +35,7 @@ public class CargoManifestEntry
         Row = row;
         Bay = bay;
         Tier = tier;
+        StorageAreaId = storageArea.Id;
         StorageArea = storageArea;
         CargoManifestId = cargoManifest.Id;
         CargoManifest = cargoManifest;

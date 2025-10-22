@@ -90,38 +90,67 @@ public class VesselVisitNotificationService
         return notificationDTOs;
     }
 
-    public async Task<VesselVisitNotificationDTO> AddVesselVisitNotification(VesselVisitNotificationDTO notificationDTO)
+    public async Task<VesselVisitNotificationDTO?> AddVesselVisitNotification(VesselVisitNotificationDTO notificationDTO, List<string> errorMessages)
     {
-        string code = await GenerateUniqueVisitCodeAsync();
+        string code = await GenerateUniqueVisitCodeAsync(notificationDTO.Eta);
         notificationDTO.Code = code;
         VesselVisitNotification? vesselVisitNotification = await _vesselVisitNotificationRepository.GetVisitByCodeAsync(notificationDTO.Code);
         if (vesselVisitNotification != null)
         {
-            throw new Exception("Vessel Visit Notification with the same code already exists.");
+            errorMessages.Add("Vessel Visit Notification with the same code already exists.");
+            return null;
         }
         IEnumerable<VesselVisitNotification?> overlappingVisit = await _vesselVisitNotificationRepository.GetVisitsByVesselIMOAsync(notificationDTO.VesselIMO);
         if (overlappingVisit != null && overlappingVisit.Any(v => notificationDTO.Eta < v!.ETD && notificationDTO.Etd > v!.ETA))
         {
-            throw new Exception("There is an overlapping visit for the same vessel.");
+            errorMessages.Add("There is an overlapping visit for the same vessel.");
+            return null;
         }
         if (!Enum.IsDefined(typeof(CargoType), notificationDTO.CargoType))
         {
-            throw new Exception("Invalid Cargo Type.");
+            errorMessages.Add("Invalid Cargo Type.");
+            return null;
         }
         VesselRecord? vessel = await _vesselRecordRepository.GetVesselRecordByImoNumberAsync(notificationDTO.VesselIMO);
         if (vessel == null)
         {
-            throw new Exception("Vessel Record not found.");
+            errorMessages.Add("Vessel Record not found.");
+            return null;
         }
         Representative? representative = await _representativeRepository.GetRepresentativeByCitizenIdAsync(notificationDTO.RepresentativeCitizenID);
         if (representative == null)
         {
-            throw new Exception("Representative not found.");
+            errorMessages.Add("Representative not found.");
+            return null;
         }
         List<CrewMember> crewMembers = new List<CrewMember>();
         if (notificationDTO.CrewMembers != null)
         {
             crewMembers = ConvertCrewMemberDTOsToCrewMembers(notificationDTO.CrewMembers);
+        }
+        if (notificationDTO.CargoManifests != null)
+        {
+            foreach (var cmDto in notificationDTO.CargoManifests)
+            {
+                if (cmDto.Entries == null) continue;
+                var seenContainers = new HashSet<string>();
+                foreach (var entryDto in cmDto.Entries)
+                {
+                    if (entryDto == null) continue;
+                    var normalizedContainer = (entryDto.ContainerNumber ?? string.Empty).Trim().ToUpperInvariant();
+                    if (string.IsNullOrWhiteSpace(normalizedContainer))
+                    {
+                        errorMessages.Add("Container number cannot be empty.");
+                        return null;
+                    }
+                    if (seenContainers.Contains(normalizedContainer))
+                    {
+                        errorMessages.Add($"Duplicate container detected in the same cargo manifest: container '{entryDto.ContainerNumber}'. A container may appear only once per manifest.");
+                        return null;
+                    }
+                    seenContainers.Add(normalizedContainer);
+                }
+            }
         }
         try
         {
@@ -139,7 +168,8 @@ public class VesselVisitNotificationService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error creating Vessel Visit Notification: {ex.Message}");
+            errorMessages.Add($"Error creating Vessel Visit Notification: {ex.Message}");
+            return null;
         }
 
         var cargoManifests = new List<CargoManifest>();
@@ -159,12 +189,14 @@ public class VesselVisitNotificationService
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception($"Invalid container in cargo manifest entry: {ex.Message}");
+                            errorMessages.Add($"Invalid container in cargo manifest entry: {ex.Message}");
+                            return null;
                         }
                         var storageArea = await _storageAreaRepository.GetStorageAreaByCodeAsync(entryDto.StorageAreaCode);
                         if (storageArea == null)
                         {
-                            throw new Exception($"Storage area with code '{entryDto.StorageAreaCode}' not found.");
+                            errorMessages.Add($"Storage area with code '{entryDto.StorageAreaCode}' not found.");
+                            return null;
                         }
                         var manifestEntry = new CargoManifestEntry(container, entryDto.Row, entryDto.Bay, entryDto.Tier, storageArea, manifest);
                         manifest.Entries!.Add(manifestEntry);
@@ -194,18 +226,25 @@ public class VesselVisitNotificationService
         return crewMembers;
     }
 
-    private async Task<string> GenerateUniqueVisitCodeAsync()
+    private async Task<string> GenerateUniqueVisitCodeAsync(DateTime eta)
     {
         string portCode = "PA";
-        int currentYear = DateTime.UtcNow.Year;
-        var existingVisits = await _vesselVisitNotificationRepository.GetVisitsByYearAsync(currentYear);
+        int year = eta.Year;
+
+        var existingVisits = await _vesselVisitNotificationRepository.GetAllVisitsAsync();
+        
+        var relevantCodes = existingVisits
+            .Select(v => v.Code)
+            .Where(code => code.StartsWith($"{year}-{portCode}-"))
+            .ToList();
+
         int nextSeq = 1;
-        if (existingVisits != null && existingVisits.Any())
+        if (relevantCodes.Any())
         {
-            var seqNumbers = existingVisits
-                .Select(v =>
+            var seqNumbers = relevantCodes
+                .Select(code =>
                 {
-                    var parts = v.Code.Split('-');
+                    var parts = code.Split('-');
                     if (parts.Length == 3 && int.TryParse(parts[2], out int seq))
                         return seq;
                     return 0;
@@ -216,10 +255,12 @@ public class VesselVisitNotificationService
         }
 
         string sequentialNumber = nextSeq.ToString("D6");
-        string code = $"{currentYear}-{portCode}-{sequentialNumber}";
+        string code = $"{year}-{portCode}-{sequentialNumber}";
+
         Console.WriteLine($"Generated Vessel Visit Code: {code}");
         return code;
     }
+
 
 
     public async Task<bool> UpdateVesselVisitNotification(string visitCode, VesselVisitNotificationDTO notificationDTO, List<string> errorMessages)
@@ -239,6 +280,46 @@ public class VesselVisitNotificationService
         {
             errorMessages.Add("Only visits with 'InProgress' status can be updated.");
             return false;
+        }
+        if(notificationDTO.VisitStatus != VisitStatus.InProgress && notificationDTO.VisitStatus != VisitStatus.Submitted)
+        {
+            errorMessages.Add("Visit status can only be changed to 'InProgress' or 'Submitted'.");
+            return false;
+
+        }
+        IEnumerable<VesselVisitNotification?> overlappingVisit = await _vesselVisitNotificationRepository.GetVisitsByVesselIMOAsync(notificationDTO.VesselIMO);
+        if (overlappingVisit != null)
+        {
+            var otherVisits = overlappingVisit.Where(v => v != null && v.Code != visitCode);
+            if (otherVisits.Any(v => notificationDTO.Eta < v!.ETD && notificationDTO.Etd > v!.ETA))
+            {
+                errorMessages.Add("There is an overlapping visit for the same vessel.");
+                return false;
+            }
+        }
+        if (notificationDTO.CargoManifests != null)
+        {
+            foreach (var cmDto in notificationDTO.CargoManifests)
+            {
+                if (cmDto.Entries == null) continue;
+                var seenContainers = new HashSet<string>();
+                foreach (var entryDto in cmDto.Entries)
+                {
+                    if (entryDto == null) continue;
+                    var normalizedContainer = (entryDto.ContainerNumber ?? string.Empty).Trim().ToUpperInvariant();
+                    if (string.IsNullOrWhiteSpace(normalizedContainer))
+                    {
+                        errorMessages.Add("Container number cannot be empty.");
+                        return false;
+                    }
+                    if (seenContainers.Contains(normalizedContainer))
+                    {
+                        errorMessages.Add($"Duplicate container detected in the same cargo manifest: container '{entryDto.ContainerNumber}'. A container may appear only once per manifest.");
+                        return false;
+                    }
+                    seenContainers.Add(normalizedContainer);
+                }
+            }
         }
         VesselRecord? vessel = await _vesselRecordRepository.GetVesselRecordByImoNumberAsync(notificationDTO.VesselIMO);
         if (vessel == null)

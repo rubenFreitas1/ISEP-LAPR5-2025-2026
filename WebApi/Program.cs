@@ -72,6 +72,12 @@ builder.Services.AddTransient<IRepresentativeFactory, RepresentativeFactory>();
 builder.Services.AddTransient<RepresentativeMapper>();
 builder.Services.AddTransient<RepresentativeService>();
 
+builder.Services.AddTransient<IVesselVisitNotificationRepository, VesselVisitNotificationRepository>();
+builder.Services.AddTransient<IVesselVisitNotificationFactory, VesselVisitNotificationFactory>();
+builder.Services.AddTransient<VesselVisitNotificationMapper>();
+builder.Services.AddTransient<VesselVisitNotificationService>();
+
+
 var app = builder.Build();
 
 Utilities.InitializeDbForApp(app);

@@ -147,6 +147,26 @@ namespace Domain.Tests
         }
 
         [Fact]
+        public void Constructor_WithMoreThanOneCaptain_ShouldThrow()
+        {
+            var eta = DateTime.UtcNow;
+            var etd = eta.AddHours(2);
+            var crew = new List<CrewMember> { new CrewMember("Captain", "C001", CrewRank.Captain, "PT"), new CrewMember("Captain2", "C002", CrewRank.Captain, "PT") };
+
+            Assert.Throws<ArgumentException>(() => new VesselVisitNotification(
+                "2025-PA-000001",
+                CreateValidVessel(),
+                CreateValidRepresentative(),
+                eta,
+                etd,
+                new List<CargoManifest>(),
+                CargoType.General,
+                1000,
+                crew
+            ));
+        }
+
+        [Fact]
         public void AssignDock_ShouldSetDockAndUpdateTime()
         {
             var eta = DateTime.UtcNow;
