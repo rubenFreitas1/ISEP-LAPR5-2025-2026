@@ -116,7 +116,7 @@ public class RepresentativeController : ControllerBase
             return BadRequest(_errorMessages);
         }
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost]

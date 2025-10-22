@@ -105,7 +105,8 @@ public class ShippingAgentOrganizationController : ControllerBase
         if (!wasUpdated && _errorMessages.Any())
         {
             if (_errorMessages.Any(msg =>
-                msg.Contains("already exists", StringComparison.OrdinalIgnoreCase)))
+                msg.Contains("already exists", StringComparison.OrdinalIgnoreCase) ||
+                msg.Contains("Another Shipping Agent Organization", StringComparison.OrdinalIgnoreCase)))
             {
                 return Conflict(_errorMessages);
             }
@@ -153,7 +154,9 @@ public class ShippingAgentOrganizationController : ControllerBase
         ShippingAgentOrganizationWithRepresentativeDTO? createdOrganization = await _shippingAgentOrganizationService.AddShippingAgentOrganizationWithRepresentative(organizationRepDTO, _errorMessages);
         if (createdOrganization == null && _errorMessages.Any())
         {
-            if (_errorMessages.Any(e => e.Contains("Shipping Agent Organization Already Exists!", StringComparison.OrdinalIgnoreCase)))
+            if (_errorMessages.Any(e => 
+                e.Contains("already exists", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("Shipping Agent Organization Already Exists!", StringComparison.OrdinalIgnoreCase)))
                 return Conflict(_errorMessages);
             return BadRequest(_errorMessages);
         }
