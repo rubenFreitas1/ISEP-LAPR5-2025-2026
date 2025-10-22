@@ -163,7 +163,8 @@ public class VesselVisitNotificationService
                 new List<CargoManifest>(),
                 notificationDTO.CargoType,
                 notificationDTO.Volume,
-                crewMembers
+                crewMembers,
+                notificationDTO.NumberOfCrewMembers
             );
         }
         catch (Exception ex)
@@ -350,6 +351,7 @@ public class VesselVisitNotificationService
             existingNotification.ChangeVessel(vessel);
             existingNotification.ChangeRepresentative(representative);
             existingNotification.ChangeETAETD(notificationDTO.Eta, notificationDTO.Etd);
+            existingNotification.ChangeNumberOfCrewMembers(notificationDTO.NumberOfCrewMembers);
             var cargoManifests = new List<CargoManifest>();
             if (notificationDTO.CargoManifests != null)
             {

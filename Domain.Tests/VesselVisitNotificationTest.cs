@@ -38,7 +38,8 @@ namespace Domain.Tests
                 cargoManifests,
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
 
             Assert.Equal("2025-PA-000001", vvn.Code);
@@ -64,7 +65,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             ));
         }
 
@@ -83,7 +85,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             ));
         }
 
@@ -102,7 +105,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             ));
         }
 
@@ -122,7 +126,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Hazardous,
                 1000,
-                crew
+                crew,
+                10
             ));
         }
 
@@ -142,7 +147,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.General,
                 1000,
-                crew
+                crew,
+                10
             ));
         }
 
@@ -162,7 +168,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.General,
                 1000,
-                crew
+                crew,
+                10
             ));
         }
 
@@ -180,7 +187,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
             var vesselType = new VesselType("Type1", "Desc", 4, 4, 4, 4);
             var dock = new Dock("Dock1", "Location1", 5000, 2000, 10, new List<VesselType> { vesselType });
@@ -206,7 +214,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
 
             vvn.ChangeVolume(2000);
@@ -228,7 +237,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
 
             var newETA = eta.AddHours(1);
@@ -238,6 +248,55 @@ namespace Domain.Tests
 
             Assert.Equal(newETA, vvn.ETA);
             Assert.Equal(newETD, vvn.ETD);
+        }
+
+        [Fact]
+        public void Constructor_WithNumberLessThanCrew_ThrowsArgumentException()
+        {
+            // arrange
+            var vesselType = new VesselType("type","desc",100,1,1,1);
+            var vessel = new VesselRecord("9781889", "Vessel", vesselType, "Operator");
+            var org = new ShippingAgentOrganization("ORG1","Legal","Alt","Address","TAX");
+            var rep = new Representative(org, "Rep", "CIDX", "PT", "rep@example.com", "900000000");
+            var crew = new List<CrewMember>
+            {
+                new CrewMember("Captain", "C1", CrewRank.Captain, "PT"),
+                new CrewMember("Second", "C2", CrewRank.Officer, "PT")
+            };
+            Assert.Throws<ArgumentException>(() => new VesselVisitNotification("2025-PA-000100", vessel, rep, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2), new List<CargoManifest>(), CargoType.Container, 10.0, crew, 2));
+        }
+
+        [Fact]
+        public void ChangeNumberOfCrewMembers_ToLessOrEqualThanCurrent_ThrowsArgumentException()
+        {
+            var vesselType2 = new VesselType("type","desc",100,1,1,1);
+            var vessel2 = new VesselRecord("9781889", "Vessel", vesselType2, "Operator");
+            var org2 = new ShippingAgentOrganization("ORG1","Legal","Alt","Address","TAX");
+            var rep = new Representative(org2, "Rep", "CIDX", "PT", "rep@example.com", "900000000");
+            var crew = new List<CrewMember>
+            {
+                new CrewMember("Captain", "C1", CrewRank.Captain, "PT"),
+                new CrewMember("Second", "C2", CrewRank.Officer, "PT")
+            };
+            var vvn = new VesselVisitNotification("2025-PA-000101", vessel2, rep, DateTime.UtcNow.AddDays(3), DateTime.UtcNow.AddDays(4), new List<CargoManifest>(), CargoType.Container, 10.0, crew, 5);
+
+            Assert.Throws<ArgumentException>(() => vvn.ChangeNumberOfCrewMembers(2));
+        }
+
+        [Fact]
+        public void ChangeNumberOfCrewMembers_ToGreaterThanCurrent_Succeeds()
+        {
+            var vesselType3 = new VesselType("type","desc",100,1,1,1);
+            var vessel3 = new VesselRecord("9781889", "Vessel", vesselType3, "Operator");
+            var org3 = new ShippingAgentOrganization("ORG1","Legal","Alt","Address","TAX");
+            var rep = new Representative(org3, "Rep", "CIDX", "PT", "rep@example.com", "900000000");
+            var crew = new List<CrewMember>
+            {
+                new CrewMember("Captain", "C1", CrewRank.Captain, "PT")
+            };
+            var vvn = new VesselVisitNotification("2025-PA-000102", vessel3, rep, DateTime.UtcNow.AddDays(3), DateTime.UtcNow.AddDays(4), new List<CargoManifest>(), CargoType.Container, 10.0, crew, 2);
+            vvn.ChangeNumberOfCrewMembers(3);
+            Assert.Equal(3, vvn.NumberOfCrewMembers);
         }
     }
 }

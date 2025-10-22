@@ -49,7 +49,8 @@ public class VesselVisitNotificationMapper
             cargoManifests,
             Enum.Parse<CargoType>(vesselVisitDM.CargoType!),
             vesselVisitDM.Volume
-            , crewMembers
+            , crewMembers,
+            vesselVisitDM.NumberOfCrewMembers
         );
         vesselVisitDomain.Id = vesselVisitDM.Id;
         vesselVisitDomain.LastModifiedAt = vesselVisitDM.LastModifiedAt;
@@ -110,7 +111,7 @@ public class VesselVisitNotificationMapper
         dm.Volume = domain.Volume;
         dm.VisitStatus = domain.VisitStatus.ToString();
         dm.LastModifiedAt = domain.LastModifiedAt;
-
+        dm.NumberOfCrewMembers = domain.NumberOfCrewMembers;
         if (domain.AssignedDock != null)
         {
             var dockDM = await context.Set<DockDataModel>().FindAsync(domain.AssignedDock.Id);

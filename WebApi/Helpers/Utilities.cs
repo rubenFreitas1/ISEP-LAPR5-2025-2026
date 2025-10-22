@@ -186,7 +186,8 @@ public static class Utilities
             },
             AssignedDock = null,
             VisitStatus = VisitStatus.InProgress.ToString(),
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
         };
 
         var cm1 = new CargoManifestDataModel
@@ -219,7 +220,8 @@ public static class Utilities
             },
             AssignedDock = null,
             VisitStatus = VisitStatus.InProgress.ToString(),
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
         };
 
 
@@ -253,7 +255,8 @@ public static class Utilities
             },
             AssignedDock = null,
             VisitStatus = VisitStatus.InProgress.ToString(),
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
         };
 
         if (storageAreas.Count > 0)
@@ -288,7 +291,8 @@ public static class Utilities
             },
             AssignedDock = null,
             VisitStatus = VisitStatus.InProgress.ToString(),
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
         };
 
         notifications.Add(n1);

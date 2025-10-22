@@ -273,7 +273,7 @@ namespace WebApi.IntegrationTests.Tests
             }, CargoType.Container, 100.0, new List<CrewMemberDTO>
             {
                 new CrewMemberDTO { Name = "Captain Test", CitizenID = "CPTTEST", Rank = CrewRank.Captain, Nationality = "PT" }
-            }, VisitStatus.InProgress);
+            }, VisitStatus.InProgress, 5);
         }
 
         [Fact]
@@ -491,6 +491,19 @@ namespace WebApi.IntegrationTests.Tests
         }
 
         [Fact]
+        public async Task Post_NumberOfCrewMembers_LessOrEqualToCrew_ReturnsBadRequest()
+        {
+            var dto = BuildValidDto();
+            dto.NumberOfCrewMembers = 1;
+
+            var response = await _client.PostAsJsonAsync("/api/VesselVisitNotification", dto);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var errors = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+            Assert.Contains(errors, e => e.Contains("Number of crew members must be greater than the current number of crew members") || e.Contains("Number of crew members"));
+        }
+
+        [Fact]
         public async Task Put_UpdateValid_ReturnsOk()
         {
             var dto = BuildValidDto();
@@ -638,6 +651,23 @@ namespace WebApi.IntegrationTests.Tests
             Assert.Equal(HttpStatusCode.BadRequest, updResp.StatusCode);
             var errors = await updResp.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
             Assert.Contains(errors, e => e.Contains("Volume cannot be negative") || e.Contains("Volume cannot be"));
+        }
+
+        [Fact]
+        public async Task Put_NumberOfCrewMembers_ReduceBelowCurrent_ReturnsBadRequest()
+        {
+            var dto = BuildValidDto();
+            dto.NumberOfCrewMembers = 5;
+            var createResp = await _client.PostAsJsonAsync("/api/VesselVisitNotification", dto);
+            Assert.Equal(HttpStatusCode.Created, createResp.StatusCode);
+            var created = await createResp.Content.ReadFromJsonAsync<VesselVisitNotificationDTO>();
+            Assert.NotNull(created);
+
+            created!.NumberOfCrewMembers = 1;
+            var updResp = await _client.PutAsJsonAsync($"/api/VesselVisitNotification/Update/{created.Code}", created);
+            Assert.Equal(HttpStatusCode.BadRequest, updResp.StatusCode);
+            var errors = await updResp.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+            Assert.Contains(errors, e => e.Contains("Number of crew members must be greater than the current number of crew members") || e.Contains("Number of crew members"));
         }
 
 

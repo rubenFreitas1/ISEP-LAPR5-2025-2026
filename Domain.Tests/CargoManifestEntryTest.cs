@@ -28,10 +28,11 @@ namespace Domain.Tests
                 new Representative(CreateValidShippingAgentOrganization(), "Joao", "AA1111", "PT", "teste@gmail.com", "999999999"),    // mínimo necessário
                 DateTime.UtcNow,
                 DateTime.UtcNow.AddHours(2),
-                new List<CargoManifest>(), // vazio
+                new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
         }
 

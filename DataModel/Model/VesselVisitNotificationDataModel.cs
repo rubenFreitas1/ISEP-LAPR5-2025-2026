@@ -35,6 +35,8 @@ public class VesselVisitNotificationDataModel
 
     public DateTime LastModifiedAt { get; set; }
 
+    public int NumberOfCrewMembers { get; set; }
+
     public VesselVisitNotificationDataModel() { }
 
     public VesselVisitNotificationDataModel(VesselVisitNotification vesselVisitNotification)
@@ -51,5 +53,5 @@ public class VesselVisitNotificationDataModel
         CrewMembers = vesselVisitNotification.CrewMembers.ConvertAll(cm => new CrewMemberDataModel(cm));
         AssignedDock = vesselVisitNotification.AssignedDock != null ? new DockDataModel(vesselVisitNotification.AssignedDock) : null;
         VisitStatus = vesselVisitNotification.VisitStatus.ToString();
-    }
+        NumberOfCrewMembers = vesselVisitNotification.NumberOfCrewMembers;}
 }

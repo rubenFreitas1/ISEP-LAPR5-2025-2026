@@ -25,7 +25,8 @@ namespace Domain.Tests
                 new List<CargoManifest>(),
                 CargoType.Container,
                 1000,
-                CreateValidCrew()
+                CreateValidCrew(),
+                10
             );
         }
 

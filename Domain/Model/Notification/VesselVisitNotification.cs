@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Domain.Model;
 
 public enum CargoType
@@ -46,6 +48,8 @@ public class VesselVisitNotification
 
     public List<CrewMember> CrewMembers { get; private set; } = null!;
 
+    public int NumberOfCrewMembers { get; private set; }
+
     public Dock? AssignedDock { get; private set; } = null;
 
     public VisitStatus VisitStatus { get; set; }
@@ -56,7 +60,7 @@ public class VesselVisitNotification
     private VesselVisitNotification() { }
 
 
-    public VesselVisitNotification(string code, VesselRecord vessel, Representative representative, DateTime eta, DateTime etd, List<CargoManifest> cargoManifests, CargoType cargoType, double volume, List<CrewMember> crewMembers)
+    public VesselVisitNotification(string code, VesselRecord vessel, Representative representative, DateTime eta, DateTime etd, List<CargoManifest> cargoManifests, CargoType cargoType, double volume, List<CrewMember> crewMembers, int numberOfCrewMembers)
     {
         CargoType = cargoType;
         ValidateCode(code);
@@ -66,7 +70,8 @@ public class VesselVisitNotification
         ValidateCargoManifests(cargoManifests);
         ValidateVolume(volume);
         ValidateCrewMembers(crewMembers);
-
+        CrewMembers = crewMembers;
+        ValidateNumberOfCrewMembers(numberOfCrewMembers);
         Code = code;
         Vessel = vessel;
         Representative = representative;
@@ -74,11 +79,11 @@ public class VesselVisitNotification
         ETD = etd;
         CargoManifests = cargoManifests ?? new List<CargoManifest>();
         Volume = volume;
-        CrewMembers = crewMembers;
         VesselId = vessel.Id;
         RepresentativeId = representative.Id;
         LastModifiedAt = DateTime.UtcNow;
         VisitStatus = VisitStatus.InProgress;
+        NumberOfCrewMembers = numberOfCrewMembers;
     }
 
     public void AssignDock(Dock dock)
@@ -100,6 +105,14 @@ public class VesselVisitNotification
         var pattern = @"^\d{4}-PA-\d{6}$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(code, pattern))
             throw new ArgumentException("Code must follow the pattern YYYY-PA-000001.");
+    }
+
+    public void ValidateNumberOfCrewMembers(int numberOfCrewMembers)
+    {
+        if (numberOfCrewMembers <= CrewMembers.Count)
+        {
+            throw new ArgumentException("Number of crew members must be greater than the current number of crew members.");
+        }
     }
 
     public void ValidateETAETD(DateTime eta, DateTime etd)
@@ -211,6 +224,13 @@ public class VesselVisitNotification
     {
         ValidateVolume(volume);
         Volume = volume;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void ChangeNumberOfCrewMembers(int numberOfCrewMembers)
+    {
+        ValidateNumberOfCrewMembers(numberOfCrewMembers);
+        NumberOfCrewMembers = numberOfCrewMembers;
         LastModifiedAt = DateTime.UtcNow;
     }
 
