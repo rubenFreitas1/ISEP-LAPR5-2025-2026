@@ -1,5 +1,6 @@
 using DataModel.Model;
 using Domain.Model.Resources;
+using Domain.Model;
 using Domain.Factory;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,21 @@ namespace DataModel.Mapper
         public PhysicalResource ToDomain(PhysicalResourceDataModel dm)
         {
             var quals = (dm.QualificationRequirements ?? Enumerable.Empty<QualificationDataModel>()).Select(q => _qualificationMapper.ToDomain(q)).ToList();
-            var resource = _factory.NewPhysicalResource(dm.Code!, dm.Name!, dm.Description!, dm.Kind, quals, dm.OperationalCapacity, dm.AssignedArea, dm.SetupTimeMinutes);
+            
+            
+            var operationalWindow = new OperationalWindow(dm.StartDay, dm.EndDay, dm.StartTime, dm.EndTime);
+            
+            var resource = _factory.NewPhysicalResource(dm.Code!, dm.Name!, dm.Description!, dm.Kind, quals, dm.OperationalCapacity, operationalWindow, dm.SetupTimeMinutes);
             resource.Id = dm.Id;
-            if (!dm.IsActive) resource.Deactivate();
+            
+            
+            if (!string.IsNullOrWhiteSpace(dm.AssignedStorageAreaCode))
+                resource.AssignToStorageArea(dm.AssignedStorageAreaCode);
+            else if (!string.IsNullOrWhiteSpace(dm.AssignedDockName))
+                resource.AssignToDock(dm.AssignedDockName);
+            
+            
+            resource.ChangeStatus(dm.Status);
             return resource;
         }
 
@@ -38,9 +51,13 @@ namespace DataModel.Mapper
             dm.Kind = resource.PhysicalResourceKind;
             dm.SetupTimeMinutes = resource.PhysicalResourceSetupTimeMinutes;
             dm.OperationalCapacity = resource.PhysicalResourceOperationalCapacity;
-            dm.AssignedArea = resource.PhysicalResourceAssignedArea;
-            dm.IsActive = resource.PhysicalResourceIsActive;
-            dm.DeactivatedAt = resource.PhysicalResourceDeactivatedAt;
+            dm.AssignedStorageAreaCode = resource.PhysicalResourceAssignedStorageAreaCode;
+            dm.AssignedDockName = resource.PhysicalResourceAssignedDockName;
+            dm.StartDay = resource.OperationalWindow.StartDay;
+            dm.EndDay = resource.OperationalWindow.EndDay;
+            dm.StartTime = resource.OperationalWindow.StartTime;
+            dm.EndTime = resource.OperationalWindow.EndTime;
+            dm.Status = resource.Status;
         }
     }
 }

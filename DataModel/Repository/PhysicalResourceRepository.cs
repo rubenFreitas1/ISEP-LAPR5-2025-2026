@@ -46,8 +46,7 @@ namespace DataModel.Repository
             if (kind.HasValue) query = query.Where(p => p.Kind == kind.Value);
             if (status.HasValue)
             {
-                if (status == ResourceStatus.Available) query = query.Where(p => p.IsActive && p.DeactivatedAt == null);
-                else query = query.Where(p => !p.IsActive || p.DeactivatedAt != null);
+                query = query.Where(p => p.Status == status.Value);
             }
             var list = await query.Include(p => p.QualificationRequirements).AsNoTracking().ToListAsync();
             return list.Select(dm => _mapper.ToDomain(dm));
@@ -86,9 +85,9 @@ namespace DataModel.Repository
                     return null;
                 }
 
-                if (resource.PhysicalResourceQualificationRequirements != null)
+                if (resource.Qualification != null)
                 {
-                    var codes = resource.PhysicalResourceQualificationRequirements.Select(q => q.Code).Where(c => c != null).Select(c => c!).ToList();
+                    var codes = resource.Qualification.Select(q => q.Code).Where(c => c != null).Select(c => c!).ToList();
                     var existingQ = await _context.Set<QualificationDataModel>().Where(q => q.Code != null && codes.Contains(q.Code)).ToListAsync();
                     dm.QualificationRequirements = existingQ;
                 }

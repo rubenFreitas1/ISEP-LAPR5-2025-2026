@@ -4,6 +4,7 @@ using Application.DTO;
 using Domain.IRepository;
 using Domain.Model.Resources;
 using Domain.Model;
+using System.Linq;
 
 namespace WebApi.Controllers
 {
@@ -25,31 +26,39 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> GetAll()
         {
             var list = await _service.GetAll();
-            if (list == null || !list.Any()) return NotFound();
+            if (list == null || !list.Any()) return NotFound("No physical resources found.");
             return Ok(list);
-        }
-
-        [HttpGet("ById/{id}")]
-        public async Task<ActionResult<PhysicalResourceDTO>> GetById(long id)
-        {
-            var dto = await _service.GetById(id);
-            if (dto == null) return NotFound();
-            return Ok(dto);
         }
 
         [HttpGet("ByCode/{code}")]
         public async Task<ActionResult<PhysicalResourceDTO>> GetByCode(string code)
         {
             var dto = await _service.GetByCode(code);
-            if (dto == null) return NotFound();
+            if (dto == null) return NotFound($"Physical resource with code '{code}' not found.");
             return Ok(dto);
         }
 
-        [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> Search([FromQuery] string? code, [FromQuery] string? name, [FromQuery] string? description, [FromQuery] PhysicalResourceKind? kind, [FromQuery] ResourceStatus? status)
+        [HttpGet("ByDescription/{description}")]
+        public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> GetByDescription(string description)
         {
-            var result = await _service.Search(code, name, description, kind, status);
-            if (result == null || !result.Any()) return NotFound();
+            var result = await _service.Search(null, null, description, null, null);
+            if (result == null || !result.Any()) return NotFound($"No physical resources found with description containing '{description}'.");
+            return Ok(result);
+        }
+
+        [HttpGet("ByKind/{kind}")]
+        public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> GetByKind(PhysicalResourceKind kind)
+        {
+            var result = await _service.Search(null, null, null, kind, null);
+            if (result == null || !result.Any()) return NotFound($"No physical resources found with kind '{kind}'.");
+            return Ok(result);
+        }
+
+        [HttpGet("ByStatus/{status}")]
+        public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> GetByStatus(ResourceStatus status)
+        {
+            var result = await _service.Search(null, null, null, null, status);
+            if (result == null || !result.Any()) return NotFound($"No physical resources found with status '{status}'.");
             return Ok(result);
         }
 
@@ -76,7 +85,7 @@ namespace WebApi.Controllers
             if (dto == null) return BadRequest("Resource data must be provided.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Prevent code changes
+            
             var existing = await _service.GetById(id);
             if (existing != null && !string.Equals(existing.Code, dto.Code, StringComparison.OrdinalIgnoreCase))
             {

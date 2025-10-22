@@ -21,6 +21,7 @@ public class QualificationController : ControllerBase
     public async Task<ActionResult<IEnumerable<QualificationDTO>>> GetAll()
     {
         var qs = await _qualificationService.GetAllQualifications();
+        if (qs == null || !qs.Any()) return NotFound("No qualifications found.");
         return Ok(qs);
     }
 

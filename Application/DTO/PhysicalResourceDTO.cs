@@ -1,4 +1,5 @@
 using Domain.Model.Resources;
+using Domain.Model;
 using ShippingManagement.Domain.Qualifications;
 using System.Collections.Generic;
 
@@ -22,9 +23,11 @@ namespace Application.DTO
         [System.ComponentModel.DataAnnotations.Required]
         public string AssignedArea { get; set; } = string.Empty;
         [System.ComponentModel.DataAnnotations.Required]
-        public IEnumerable<string> QualificationCodes { get; set; } = new List<string>();
+        public string QualificationCode { get; set; } = string.Empty;
         [System.ComponentModel.DataAnnotations.Required]
-        public bool IsActive { get; set; }
+        public OperationalWindowDTO? OperationalWindow { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public ResourceStatus Status { get; set; }
 
         public PhysicalResourceDTO() { }
 
@@ -39,9 +42,10 @@ namespace Application.DTO
                 Kind = resource.PhysicalResourceKind,
                 SetupTimeMinutes = resource.PhysicalResourceSetupTimeMinutes ?? 0,
                 OperationalCapacity = resource.PhysicalResourceOperationalCapacity,
-                AssignedArea = resource.PhysicalResourceAssignedArea ?? string.Empty,
-                QualificationCodes = resource.PhysicalResourceQualificationRequirements?.Select(q => q.Code).Where(c => c != null).Select(c => c!).ToList() ?? new List<string>(),
-                IsActive = resource.PhysicalResourceIsActive
+                AssignedArea = (resource.PhysicalResourceAssignedStorageAreaCode ?? resource.PhysicalResourceAssignedDockName) ?? string.Empty,
+                QualificationCode = resource.Qualification?.FirstOrDefault()?.Code ?? string.Empty,
+                OperationalWindow = OperationalWindowDTO.ToDTO(resource.OperationalWindow),
+                Status = resource.Status
             };
         }
     }

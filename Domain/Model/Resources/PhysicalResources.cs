@@ -8,9 +8,9 @@ namespace Domain.Model.Resources
 {
     public enum PhysicalResourceKind
     {
-        CraneFixed,
-        CraneMobile,
-        Truck,
+        STSCrane,        
+        MobileCrane, 
+        Truck,           
         Other
     }
 
@@ -21,21 +21,19 @@ namespace Domain.Model.Resources
         public PhysicalResourceKind PhysicalResourceKind { get; private set; }
         public int? PhysicalResourceSetupTimeMinutes { get; private set; }
         public int PhysicalResourceOperationalCapacity { get; private set; }
-        public string? PhysicalResourceAssignedArea { get; private set; }
-        public IEnumerable<Qualification> PhysicalResourceQualificationRequirements { get; private set; }
-        public bool PhysicalResourceIsActive { get; private set; }
-        public DateTime? PhysicalResourceDeactivatedAt { get; private set; }
-
+        public string? PhysicalResourceAssignedStorageAreaCode { get; private set; }
+        public string? PhysicalResourceAssignedDockName { get; private set; }
         protected PhysicalResource() : base()
         {
             PhysicalResourceCode = string.Empty;
             PhysicalResourceDescription = string.Empty;
-            PhysicalResourceQualificationRequirements = Enumerable.Empty<Qualification>();
-            PhysicalResourceIsActive = true;
         }
 
-        public PhysicalResource(string code, string name, string description, PhysicalResourceKind kind, IEnumerable<Qualification> qualificationRequirements, int operationalCapacity, string? assignedArea = null, int? setupTimeMinutes = null, OperationalWindow? operationalWindow = null, ResourceStatus status = ResourceStatus.Available)
-            : base(name, qualificationRequirements ?? Enumerable.Empty<Qualification>(), operationalWindow ?? new OperationalWindow(startDay: DayOfWeek.Monday, endDay: DayOfWeek.Friday, startTime: new TimeSpan(9, 0, 0), endTime: new TimeSpan(17, 0, 0)), status)
+        public PhysicalResource(string code, string name, string description, PhysicalResourceKind kind, 
+            IEnumerable<Qualification> qualificationRequirements, int operationalCapacity, 
+            OperationalWindow operationalWindow, int? setupTimeMinutes = null, 
+            ResourceStatus status = ResourceStatus.Available)
+            : base(name, qualificationRequirements, operationalWindow, status)
         {
             ValidateCode(code);
             ValidateDescription(description);
@@ -44,11 +42,8 @@ namespace Domain.Model.Resources
             PhysicalResourceCode = code.Trim();
             PhysicalResourceDescription = description.Trim();
             PhysicalResourceKind = kind;
-            PhysicalResourceQualificationRequirements = qualificationRequirements ?? Enumerable.Empty<Qualification>();
             PhysicalResourceOperationalCapacity = operationalCapacity;
-            PhysicalResourceAssignedArea = string.IsNullOrWhiteSpace(assignedArea) ? null : assignedArea!.Trim();
             PhysicalResourceSetupTimeMinutes = setupTimeMinutes;
-            PhysicalResourceIsActive = true;
         }
 
         public void ChangeDescription(string description)
@@ -57,9 +52,46 @@ namespace Domain.Model.Resources
             PhysicalResourceDescription = description.Trim();
         }
 
-        public void ChangeAssignedArea(string? area)
+        public void AssignToStorageArea(string storageAreaCode)
         {
-            PhysicalResourceAssignedArea = string.IsNullOrWhiteSpace(area) ? null : area!.Trim();
+            if (PhysicalResourceKind == PhysicalResourceKind.STSCrane)
+                throw new InvalidOperationException("STS Cranes cannot be assigned to storage areas. They must be assigned to docks.");
+            
+            if (PhysicalResourceKind == PhysicalResourceKind.MobileCrane)
+                throw new InvalidOperationException("Mobile Cranes are mobile and cannot be assigned to specific areas.");
+            
+            if (string.IsNullOrWhiteSpace(storageAreaCode))
+                throw new ArgumentException("Storage area code cannot be null or empty.", nameof(storageAreaCode));
+            
+            PhysicalResourceAssignedStorageAreaCode = storageAreaCode.Trim();
+            
+            PhysicalResourceAssignedDockName = null;
+        }
+
+        public void AssignToDock(string dockName)
+        {
+            if (PhysicalResourceKind != PhysicalResourceKind.STSCrane)
+                throw new InvalidOperationException("Only STS Cranes can be assigned to docks.");
+            
+            if (string.IsNullOrWhiteSpace(dockName))
+                throw new ArgumentException("Dock name cannot be null or empty.", nameof(dockName));
+            
+            PhysicalResourceAssignedDockName = dockName.Trim();
+            
+            PhysicalResourceAssignedStorageAreaCode = null;
+        }
+
+        public void RemoveAssignment()
+        {
+            if (PhysicalResourceKind == PhysicalResourceKind.STSCrane)
+                throw new InvalidOperationException("STS Cranes must be assigned to a dock.");
+            
+            if (PhysicalResourceKind == PhysicalResourceKind.Truck)
+                throw new InvalidOperationException("Trucks must be assigned to a storage area (yard).");
+            
+        
+            PhysicalResourceAssignedStorageAreaCode = null;
+            PhysicalResourceAssignedDockName = null;
         }
 
         public void ChangeOperationalCapacity(int capacity)
@@ -79,22 +111,13 @@ namespace Domain.Model.Resources
             PhysicalResourceKind = kind;
         }
 
-        public void ChangeQualificationRequirements(IEnumerable<Qualification> qualificationRequirements)
-        {
-            PhysicalResourceQualificationRequirements = qualificationRequirements ?? Enumerable.Empty<Qualification>();
-        }
-
         public void Deactivate()
         {
-            PhysicalResourceIsActive = false;
-            PhysicalResourceDeactivatedAt = DateTime.UtcNow;
             ChangeStatus(ResourceStatus.Unavailable);
         }
 
         public void Reactivate()
         {
-            PhysicalResourceIsActive = true;
-            PhysicalResourceDeactivatedAt = null;
             ChangeStatus(ResourceStatus.Available);
         }
 

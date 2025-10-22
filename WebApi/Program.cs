@@ -77,6 +77,11 @@ builder.Services.AddTransient<IVesselVisitNotificationFactory, VesselVisitNotifi
 builder.Services.AddTransient<VesselVisitNotificationMapper>();
 builder.Services.AddTransient<VesselVisitNotificationService>();
 
+builder.Services.AddTransient<IPhysicalResourceRepository, PhysicalResourceRepository>();
+builder.Services.AddTransient<IPhysicalResourceFactory, PhysicalResourceFactory>();
+builder.Services.AddTransient<PhysicalResourceMapper>();
+builder.Services.AddTransient<PhysicalResourceService>();
+
 
 var app = builder.Build();
 
