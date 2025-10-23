@@ -1,0 +1,131 @@
+@startuml code_lvl4+1Update
+!define RECTANGLE class
+
+title Sequence Diagram - PUT VesselType Update (Level 4+1)
+
+actor Client
+participant "VesselTypeController" as Controller
+participant "VesselTypeService" as Service
+participant "VesselTypeRepository" as Repository
+participant "VesselTypeMapper" as Mapper
+participant "VesselType" as Domain
+participant "VesselTypeDataModel" as DataModel
+database "ShippingManagementContext" as Database
+
+Client -> Controller : PUT /api/VesselType/Update/{id}\n(long id, VesselTypeDTO vesselTypeDTO)
+
+activate Controller
+
+Controller -> Service : UpdateVesselType(id, vesselTypeDTO, errorMessages)
+activate Service
+
+Service -> Repository : GetVesselTypeByIdAsync(id)
+activate Repository
+Repository -> Database : SingleOrDefaultAsync(v => v.Id == id)
+activate Database
+Database --> Repository : VesselTypeDataModel or null
+deactivate Database
+
+alt VesselType not found
+    Repository --> Service : null
+    deactivate Repository
+    Service -> Service : errorMessages.Add("Vessel Type not found")
+    Service --> Controller : false
+else VesselType found
+    Repository -> Mapper : ToDomain(vesselTypeDataModel)
+    activate Mapper
+    Mapper -> Domain : new VesselType(...) + Set Id & LastModifiedAt
+    activate Domain
+    Domain --> Mapper : VesselType instance
+    deactivate Domain
+    Mapper --> Repository : VesselType
+    deactivate Mapper
+    Repository --> Service : VesselType (existing)
+    deactivate Repository
+ 
+    Service -> Service : Validate vesselTypeDTO fields\n(Name, Description, Capacity, MaxRows, MaxBays, MaxTiers)
+    
+    alt Validation fails
+        Service -> Service : errorMessages.Add(validation errors)
+        Service --> Controller : false
+    end
+    
+      
+        Service -> Repository : GetVesselTypeByNameAsync(vesselTypeDTO.Name)
+        activate Repository
+        Repository -> Database : SingleOrDefaultAsync(v => v.Name == name)
+        activate Database
+        Database --> Repository : VesselTypeDataModel or null
+        deactivate Database
+        
+        alt Name exists in different vessel type
+            Repository -> Mapper : ToDomain(vesselTypeDataModel)
+            activate Mapper
+            Mapper -> Domain : new VesselType(...) + Set Id & LastModifiedAt
+            activate Domain
+            Domain --> Mapper : VesselType instance
+            deactivate Domain
+            Mapper --> Repository : VesselType
+            deactivate Mapper
+            Repository --> Service : VesselType (with different ID)
+            deactivate Repository
+            
+            Service -> Service : Check if vesselTypeByName.Id != id
+            Service -> Service : errorMessages.Add("Vessel Type Already Exists!")
+            Service --> Controller : false
+        else Name available or same vessel type
+            Repository --> Service : null or same VesselType
+            deactivate Repository
+            
+
+            
+            Service -> Repository : Update(vesselType, errorMessages)
+            activate Repository
+            Repository -> Database : FirstOrDefaultAsync(v => v.Id == vesselType.Id)
+            activate Database
+            Database --> Repository : VesselTypeDataModel
+            deactivate Database
+            
+            Repository -> Mapper : UpdateDataModel(vesselTypeDataModel, vesselType)
+            activate Mapper
+            Mapper -> DataModel : Update properties\n(Name, Description, Capacity, MaxRows, MaxBays, MaxTiers, LastModifiedAt)
+            activate DataModel
+            DataModel --> Mapper : Updated VesselTypeDataModel
+            deactivate DataModel
+            Mapper --> Repository : void
+            deactivate Mapper
+            
+            Repository -> Database : SaveChangesAsync()
+            activate Database
+            Database --> Repository : Changes saved
+            deactivate Database
+            
+            Repository -> Mapper : ToDomain(vesselTypeDataModel)
+            activate Mapper
+            Mapper -> Domain : new VesselType(...) + Set Id & LastModifiedAt
+            activate Domain
+            Domain --> Mapper : VesselType
+            deactivate Domain
+            Mapper --> Repository : Updated VesselType
+            deactivate Mapper
+            Repository --> Service : Updated VesselType
+            deactivate Repository
+            
+            Service --> Controller : true
+        end
+    end
+
+
+deactivate Service
+
+alt Update successful
+    Controller --> Client : 200 OK
+else Conflict (Name already exists)
+    Controller --> Client : 409 Conflict\n(errorMessages)
+else Bad Request (Validation errors)
+    Controller --> Client : 400 Bad Request\n(errorMessages)
+end
+
+deactivate Controller
+
+@enduml

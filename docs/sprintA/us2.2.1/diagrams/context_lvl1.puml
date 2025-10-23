@@ -1,9 +1,0 @@
-@startuml VesselTypeContext
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
-
-Person(user, "Port Authority Officer", "System user responsible for managing vessel types")
-System(system, "Vessel Type Management System", "Manages vessel types and related data")
-
-Rel(user, system, "Uses")
-
-@enduml

@@ -3,19 +3,19 @@
 
 class VesselTypeController {
 	+GetAllVesselTypes()
-	+GetVesselTypeByName()
-	+GetVesselTypeById()
-	+GetVesselTypeByDescription()
-	+PutVesselType()
-	+PostVesselType()
+	+GetVesselTypeByName(string name)
+	+GetVesselTypeById(long id)
+	+GetVesselTypeByDescription(string description)
+	+PutVesselType(long id, VesselTypeDTO vesselTypeDTO)
+	+PostVesselType(VesselTypeDTO vesselTypeDTO)
 }
 class VesselTypeService {
 	+GetAllVesselTypes()
-	+GetVesselTypeByName()
-	+GetVesselTypeByID()
-	+GetVesselTypeByDescription()
-	+AddVesselType()
-	+UpdateVesselType()
+	+GetVesselTypeByName(string name)
+	+GetVesselTypeByID(long id)
+	+GetVesselTypeByDescription(string description)
+	+AddVesselType(VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
+	+UpdateVesselType(long id, VesselTypeDTO vesselTypeDTO, List<string> errorMessages)
 }
 
 class VesselTypeDTO{
@@ -25,28 +25,31 @@ class VesselTypeDTO{
     -MaxRows: int
     -MaxBays: int
     -MaxTiers: int
-    +ToDTO()
-    +ToDomain()
-    +UpdateToDomain()
+    +ToDTO(VesselType vesselType)
+    +ToDTO(IEnumerable<VesselType> vesselTypes)
+    +ToDomain(VesselTypeDTO vesselTypeDTO)
+    +UpdateToDomain(VesselType vesselType, VesselTypeDTO vesselTypeDTO)
 }
 
 
 interface IVesselTypeRepository{
     +GetVesselTypesAsync()
-    +GetVesselTypeByNameAsync() 
-    +GetVesselTypeByIdAsync()
-    +GetVesselTypeByDescriptionAsync()
-    +AddVesselType()
-    +Update()
+    +GetVesselTypeByNameAsync(string name) 
+    +GetVesselTypeByIdAsync(long id)
+    +GetVesselTypeByDescriptionAsync(string description)
+    +AddVesselType(VesselType vesselType)
+    +Update(VesselType vesselType, List<string> errorMessages)
+    +VesselTypeExists(long id)
 }
 
 class VesselTypeRepository{
     +GetVesselTypesAsync()
-    +GetVesselTypeByNameAsync() 
-    +GetVesselTypeByIdAsync()
-    +GetVesselTypeByDescriptionAsync()
-    +AddVesselType()
-    +Update()
+    +GetVesselTypeByNameAsync(string name) 
+    +GetVesselTypeByIdAsync(long id)
+    +GetVesselTypeByDescriptionAsync(string description)
+    +AddVesselType(VesselType vesselType)
+    +Update(VesselType vesselType, List<string> errorMessages)
+    +VesselTypeExists(long id)
 }
 
 
@@ -58,23 +61,24 @@ class VesselType{
     -MaxRows: int
     -MaxBays: int
     -MaxTiers: int
-    +ChangeMaxBays()
-    +ChangeMaxTiers()
-    +ChangeMaxRows()
-    +ChangeCapacity()
-    +ChangeDescription()
-    +ChangeName()
+    +ChangeMaxBays(int bays)
+    +ChangeMaxTiers(int tiers)
+    +ChangeMaxRows(int rows)
+    +ChangeCapacity(int capacity)
+    +ChangeDescription(string description)
+    +ChangeName(string name)
     
 }
 
 class VesselTypeMapper{
-    +ToDomain()
-    +ToDataModel()
-    +UpdateDataModel()
+    +ToDomain(VesselTypeDataModel vesselTypeDM)
+    +ToDomain(IEnumerable<VesselTypeDataModel> vesselTypeDataModels)
+    +ToDataModel(VesselType vesselType)
+    +UpdateDataModel(VesselTypeDataModel vesselTypeDM, VesselType vesselType)
 }
 
 interface IVesselTypeFactory{
-    +NewVesselType()
+    +NewVesselType(string name, string description, int capacity, int maxRows, int maxBays, int maxTiers)
 }
 
 class VesselTypeDataModel{
@@ -88,7 +92,7 @@ class VesselTypeDataModel{
 }
 
 class VesselTypeFactory{
-    +NewVesselType()
+    +NewVesselType(string name, string description, int capacity, int maxRows, int maxBays, int maxTiers)
 }
 
 

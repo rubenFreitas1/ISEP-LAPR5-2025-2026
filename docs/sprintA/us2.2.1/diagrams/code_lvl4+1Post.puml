@@ -1,0 +1,116 @@
+@startuml
+!define RECTANGLE class
+
+title Sequence Diagram - POST VesselType (Level 4+1)
+
+actor Client
+participant "VesselTypeController" as Controller
+participant "VesselTypeService" as Service
+participant "VesselTypeRepository" as Repository
+participant "VesselTypeMapper" as Mapper
+participant "VesselTypeFactory" as Factory
+participant "VesselType" as Domain
+participant "VesselTypeDataModel" as DataModel
+database "ShippingManagementContext" as Database
+
+Client -> Controller : POST /api/VesselType\n(VesselTypeDTO vesselTypeDTO)
+
+activate Controller
+Controller -> Controller : Validate vesselTypeDTO != null
+
+Controller -> Service : AddVesselType(vesselTypeDTO, errorMessages)
+activate Service
+
+
+Service -> Repository : GetVesselTypeByNameAsync(vesselTypeDTO.Name)
+activate Repository
+Repository -> Database : SingleOrDefaultAsync(v => v.Name == name)
+activate Database
+Database --> Repository : VesselTypeDataModel or null
+deactivate Database
+
+alt VesselTypeDataModel found
+    Repository -> Mapper : ToDomain(vesselTypeDataModel)
+    activate Mapper
+    Mapper -> Factory : NewVesselType(name, description, capacity, maxRows, maxBays, maxTiers)
+    activate Factory
+    Factory -> Domain : new VesselType(...)
+    activate Domain
+    Domain -> Domain : Validate parameters\n(name, description, capacity, etc.)
+    Domain --> Factory : VesselType instance
+    deactivate Domain
+    Factory --> Mapper : VesselType
+    deactivate Factory
+    Mapper --> Repository : VesselType
+    deactivate Mapper
+    Repository --> Service : VesselType (existing)
+    deactivate Repository
+    
+    Service -> Service : errorMessages.Add("Vessel Type Already Exists!")
+    Service --> Controller : null
+else VesselType not found
+    Repository --> Service : null
+    deactivate Repository
+    
+    
+    Service -> Service : VesselTypeDTO.ToDomain(vesselTypeDTO)
+    Service -> Domain : new VesselType(name, description, capacity, maxRows, maxBays, maxTiers)
+    activate Domain
+    Domain -> Domain : Validate all parameters
+    Domain --> Service : VesselType instance
+    deactivate Domain
+    
+    
+    Service -> Repository : AddVesselType(vesselType)
+    activate Repository
+    Repository -> Mapper : ToDataModel(vesselType)
+    activate Mapper
+    Mapper -> DataModel : new VesselTypeDataModel(vesselType)
+    activate DataModel
+    DataModel --> Mapper : VesselTypeDataModel
+    deactivate DataModel
+    Mapper --> Repository : VesselTypeDataModel
+    deactivate Mapper
+    
+    Repository -> Database : Add(vesselTypeDataModel)
+    activate Database
+    Repository -> Database : SaveChangesAsync()
+    Database --> Repository : EntityEntry<VesselTypeDataModel>
+    deactivate Database
+    
+    Repository -> Mapper : ToDomain(vesselTypeDataModelSaved)
+    activate Mapper
+    Mapper -> Factory : NewVesselType(...)
+    activate Factory
+    Factory -> Domain : new VesselType(...)
+    activate Domain
+    Domain --> Factory : VesselType
+    deactivate Domain
+    Factory --> Mapper : VesselType
+    deactivate Factory
+    Mapper -> Domain : Set Id and LastModifiedAt
+    activate Domain
+    Domain --> Mapper : Updated VesselType
+    deactivate Domain
+    Mapper --> Repository : VesselType (saved)
+    deactivate Mapper
+    Repository --> Service : VesselType (saved)
+    deactivate Repository
+    
+    Service -> Service : VesselTypeDTO.ToDTO(vesselTypeSaved)
+    Service --> Controller : VesselTypeDTO
+end
+
+deactivate Service
+
+alt Success
+    Controller --> Client : 201 Created\nCreatedAtAction(GetVesselTypeByName, vesselTypeDTO)
+else Conflict (Already Exists)
+    Controller --> Client : 409 Conflict\n(errorMessages)
+else Bad Request
+    Controller --> Client : 400 Bad Request\n(errorMessages)
+end
+
+deactivate Controller
+
+@enduml

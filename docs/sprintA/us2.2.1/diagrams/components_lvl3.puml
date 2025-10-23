@@ -1,16 +1,29 @@
-@startuml VesselTypeComponents
+@startuml Vessels
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-Container_Boundary(api, "Vessel Type API (.NET 8)") {
-    Component(web_api, "Web API Layer", "ASP.NET Core Controllers", "Handles HTTP requests and responses")
-    Component(application, "Application Layer", "C# Services and DTOs", "Implements use cases and coordinates domain logic")
-    Component(domain, "Domain Layer", "C# Domain Models, Factories, IRepositories", "Contains business rules and core entities")
-    Component(data_model, "Data Model Layer", "EF Core Repositories and Mappers", "Implements data persistence using SQLite")
+Person(PAO, "Port Authority Officer", "System user managing port authority operations")
+
+Container_Boundary(vessetypeapi, "Vessel Type Type API") {
+    Component(VesselTypeController, "Vessel Type Controller", "ASP.NET Core MVC Controller", "Handles HTTP requests related to Vessels")
+    Component(VesselTypeService, "Vessel Type Service", ".NET 8 (ASP.NET Core)", "Business logic for Vessels")
+    Component(VesselType, "Vessel Type", "Domain Model", "Represents a Vessel Type")
+    Component(VesselRecordRepository, "Vessel Type Repository", ".NET 8 (ASP.NET Core)", "Data access for Vessels")
+    Component(VesselRecordDbContext, "Vessel Type DbContext", ".NET 8 (Entity Framework Core)", "EF Core DbContext for Vessels")
+    ComponentDb(db, "Shipping Management Database", "SQL Server", "Stores all data related to shipping management")
 }
 
-Rel(web_api, application, "Invokes services")
-Rel(application, domain, "Uses domain logic and entities")
-Rel(application, data_model, "Accesses repositories for persistence")
-Rel(data_model, domain, "Implements repository interfaces")
+
+VesselTypeService -[hidden]right-> VesselType
+VesselRecordRepository -[hidden]right-> VesselRecordDbContext
+
+
+Rel(PAO, VesselTypeController, "Sends HTTP requests", "HTTPS/JSON")
+Rel(VesselTypeController, VesselTypeService, "Calls methods in", "Method Calls")
+Rel(VesselTypeService, VesselType, "Uses", "Domain Logic")
+Rel(VesselTypeService, VesselRecordRepository, "Uses", "Method Calls")
+Rel(VesselRecordRepository, VesselRecordDbContext, "Uses", "Method Calls")
+Rel(VesselRecordDbContext, db, "Reads from and writes to", "EF Core/SQL")
+
 
 @enduml
