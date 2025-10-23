@@ -53,7 +53,7 @@ public class DecisionMapper
         else
         {
             decisionDM.VesselVisitNotification = _vesselVisitNotificationMapper.ToDataModel(decision.VesselVisitNotification);
-            context.Attach(decisionDM.VesselVisitNotification);   
+            context.Attach(decisionDM.VesselVisitNotification);
         }
     }
 }

@@ -98,7 +98,7 @@ public class VesselVisitNotificationController : ControllerBase
         IEnumerable<VesselVisitNotificationDTO> notifications = await _vesselVisitNotificationService.GetVesselVisitNotificationsByStatus_Org(status, orgCode);
         return Ok(notifications);
     }
-    
+
     [HttpPost]
     public async Task<ActionResult<VesselVisitNotificationDTO>> PostVesselVisitNotification([FromBody] VesselVisitNotificationDTO vesselVisitNotificationDTO)
     {

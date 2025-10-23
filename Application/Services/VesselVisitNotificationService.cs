@@ -282,7 +282,7 @@ public class VesselVisitNotificationService
         {
             visitStatus = VisitStatus.Rejected;
         }
-        
+
         vesselVisitNotification.ChangeVisitStatus(visitStatus);
         await _vesselVisitNotificationRepository.UpdateVisitAsync(vesselVisitNotification, errorMessages);
 
