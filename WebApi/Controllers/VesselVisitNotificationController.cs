@@ -25,6 +25,13 @@ public class VesselVisitNotificationController : ControllerBase
         return Ok(notifications);
     }
 
+    [HttpGet("Decision")]
+    public async Task<ActionResult<IEnumerable<DecisionDTO>>> GetAllDecisions()
+    {
+        IEnumerable<DecisionDTO> decisions = await _vesselVisitNotificationService.GetAllDecisions();
+        return Ok(decisions);
+    }
+
     [HttpGet("ById/{id}")]
     public async Task<ActionResult<VesselVisitNotificationDTO>> GetVesselVisitNotificationById(int id)
     {
@@ -34,6 +41,17 @@ public class VesselVisitNotificationController : ControllerBase
             return NotFound($"Vessel Visit Notification with ID '{id}' not found.");
         }
         return Ok(notificationDTO);
+    }
+
+    [HttpGet("DecisionById/{id}")]
+    public async Task<ActionResult<DecisionDTO>> GetDecisionById(long id)
+    {
+        DecisionDTO? decisionDTO = await _vesselVisitNotificationService.GetDecisionById(id);
+        if (decisionDTO == null)
+        {
+            return NotFound($"Decision with ID '{id}' not found.");
+        }
+        return Ok(decisionDTO);
     }
 
     [HttpGet("ByCode/{code}")]
@@ -80,7 +98,7 @@ public class VesselVisitNotificationController : ControllerBase
         IEnumerable<VesselVisitNotificationDTO> notifications = await _vesselVisitNotificationService.GetVesselVisitNotificationsByStatus_Org(status, orgCode);
         return Ok(notifications);
     }
-
+    
     [HttpPost]
     public async Task<ActionResult<VesselVisitNotificationDTO>> PostVesselVisitNotification([FromBody] VesselVisitNotificationDTO vesselVisitNotificationDTO)
     {
@@ -92,7 +110,24 @@ public class VesselVisitNotificationController : ControllerBase
         VesselVisitNotificationDTO? createdNotificationDTO = await _vesselVisitNotificationService.AddVesselVisitNotification(vesselVisitNotificationDTO, _errorMessages);
         if (createdNotificationDTO == null || _errorMessages.Any())
         {
-            if (_errorMessages.Contains("Vessel Visit Notification with the same code already exists."))
+            return BadRequest(_errorMessages);
+        }
+
+        return CreatedAtAction(nameof(GetVesselVisitNotificationById), new { id = createdNotificationDTO.Id }, createdNotificationDTO);
+    }
+
+    [HttpPost("Decision")]
+    public async Task<ActionResult<DecisionDTO>> PostDecision(DecisionDTO decisionDTO)
+    {
+        _errorMessages.Clear();
+        if (decisionDTO == null)
+        {
+            return BadRequest("Decision data must be provided.");
+        }
+        DecisionDTO? createdDecisionDTO = await _vesselVisitNotificationService.AddDecision(decisionDTO, _errorMessages);
+        if (createdDecisionDTO == null || _errorMessages.Any())
+        {
+            if (_errorMessages.Contains("Vessel Visit Notification not found."))
             {
                 return Conflict(_errorMessages);
             }
@@ -101,8 +136,7 @@ public class VesselVisitNotificationController : ControllerBase
             }
             return BadRequest(_errorMessages);
         }
-
-        return CreatedAtAction(nameof(GetVesselVisitNotificationById), new { id = createdNotificationDTO.Id }, createdNotificationDTO);
+        return CreatedAtAction(nameof(GetDecisionById), new { id = createdDecisionDTO.Id }, createdDecisionDTO);
     }
 
     [HttpPut("Update/{visitCode}")]

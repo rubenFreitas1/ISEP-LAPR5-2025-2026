@@ -17,13 +17,19 @@ public class VesselVisitNotificationService
 
     private readonly IVesselVisitNotificationFactory _vesselVisitNotificationFactory;
 
-    public VesselVisitNotificationService(IVesselVisitNotificationRepository vesselVisitNotificationRepository, IVesselRecordRepository vesselRecordRepository, IVesselVisitNotificationFactory vesselVisitNotificationFactory, IRepresentativeRepository representativeRepository, IStorageAreaRepository storageAreaRepository)
+    private readonly IDecisionRepository _decisionRepository;
+
+    private readonly IDockRepository _dockRepository;
+
+    public VesselVisitNotificationService(IVesselVisitNotificationRepository vesselVisitNotificationRepository, IVesselRecordRepository vesselRecordRepository, IVesselVisitNotificationFactory vesselVisitNotificationFactory, IRepresentativeRepository representativeRepository, IStorageAreaRepository storageAreaRepository, IDecisionRepository decisionRepository, IDockRepository dockRepository)
     {
         _vesselVisitNotificationRepository = vesselVisitNotificationRepository;
         _vesselRecordRepository = vesselRecordRepository;
         _vesselVisitNotificationFactory = vesselVisitNotificationFactory;
         _representativeRepository = representativeRepository;
         _storageAreaRepository = storageAreaRepository;
+        _decisionRepository = decisionRepository;
+        _dockRepository = dockRepository;
     }
 
     public async Task<IEnumerable<VesselVisitNotificationDTO>> GetAllVesselVisitNotifications()
@@ -31,6 +37,13 @@ public class VesselVisitNotificationService
         IEnumerable<VesselVisitNotification> notifications = await _vesselVisitNotificationRepository.GetAllVisitsAsync();
         IEnumerable<VesselVisitNotificationDTO> notificationDTOs = VesselVisitNotificationDTO.ToDTO(notifications);
         return notificationDTOs;
+    }
+
+    public async Task<IEnumerable<DecisionDTO>> GetAllDecisions()
+    {
+        IEnumerable<Decision> decisions = await _decisionRepository.GetAllAsync();
+        IEnumerable<DecisionDTO> decisionDTOs = DecisionDTO.ToDTO(decisions);
+        return decisionDTOs;
     }
 
     public async Task<VesselVisitNotificationDTO?> GetVesselVisitNotificationByCode(string visitCode)
@@ -51,6 +64,17 @@ public class VesselVisitNotificationService
         {
             VesselVisitNotificationDTO notificationDTO = VesselVisitNotificationDTO.ToDTO(notification);
             return notificationDTO;
+        }
+        return null;
+    }
+
+    public async Task<DecisionDTO?> GetDecisionById(long id)
+    {
+        Decision? decision = await _decisionRepository.GetDecisionByIdAsync(id);
+        if (decision != null)
+        {
+            DecisionDTO decisionDTO = DecisionDTO.ToDTO(decision);
+            return decisionDTO;
         }
         return null;
     }
@@ -219,6 +243,62 @@ public class VesselVisitNotificationService
         return VesselVisitNotificationDTO.ToDTO(added);
     }
 
+    public async Task<DecisionDTO?> AddDecision(DecisionDTO decisionDTO, List<string> errorMessages)
+    {
+        Decision decision;
+        VisitStatus visitStatus;
+        if (!Enum.TryParse(decisionDTO.Status, true, out DecisionStatus parsedStatus) ||
+        (parsedStatus != DecisionStatus.Approved && parsedStatus != DecisionStatus.Rejected))
+        {
+            errorMessages.Add("Invalid Decision Status, must be either 'Approved' or 'Rejected'.");
+            return null;
+        }
+
+        VesselVisitNotification? vesselVisitNotification = await _vesselVisitNotificationRepository.GetVisitByCodeAsync(decisionDTO.VesselVisitNotificationCode!);
+        if (vesselVisitNotification == null)
+        {
+            errorMessages.Add("Vessel Visit Notification not found.");
+            return null;
+        }
+
+        if (vesselVisitNotification.VisitStatus != VisitStatus.Submitted)
+        {
+            errorMessages.Add("Decisions can only be made on Vessel Visit Notifications with 'Submitted' status.");
+            return null;
+        }
+
+        if (parsedStatus == DecisionStatus.Approved)
+        {
+            string dockName = decisionDTO.ResponseMessage!.Trim();
+            Dock? dockByName = await _dockRepository.GetDockByNameAsync(dockName);
+            if (dockByName == null)
+            {
+                errorMessages.Add($"Dock with name '{dockName}' not found.");
+                return null;
+            }
+            visitStatus = VisitStatus.Approved;
+        }
+        else
+        {
+            visitStatus = VisitStatus.Rejected;
+        }
+        
+        vesselVisitNotification.ChangeVisitStatus(visitStatus);
+        await _vesselVisitNotificationRepository.UpdateVisitAsync(vesselVisitNotification, errorMessages);
+
+        try
+        {
+            decision = DecisionDTO.ToDomain(decisionDTO, vesselVisitNotification);
+        }
+        catch (Exception ex)
+        {
+            errorMessages.Add("Error creating Decision: " + ex.Message);
+            return null;
+        }
+
+        Decision decisionAdded = await _decisionRepository.AddDecisionAsync(decision);
+        return DecisionDTO.ToDTO(decisionAdded);
+    }
     private List<CrewMember> ConvertCrewMemberDTOsToCrewMembers(List<CrewMemberDTO> crewMemberDTOs)
     {
         List<CrewMember> crewMembers = new List<CrewMember>();

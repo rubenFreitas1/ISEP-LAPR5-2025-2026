@@ -30,6 +30,7 @@ public class ShippingManagementContext : DbContext
     public virtual DbSet<CargoManifestEntryDataModel> CargoManifestEntries { get; set; } = null!;
     public virtual DbSet<CrewMemberDataModel> CrewMembers { get; set; } = null!;
     public virtual DbSet<PhysicalResourceDataModel> PhysicalResources { get; set; } = null!;
+    public virtual DbSet<DecisionDataModel> Decisions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,7 @@ public class ShippingManagementContext : DbContext
         modelBuilder.ApplyConfiguration(new CargoManifestConfiguration());
         modelBuilder.ApplyConfiguration(new CargoManifestEntryConfiguration());
         modelBuilder.ApplyConfiguration(new CrewMemberConfiguration());
+        modelBuilder.ApplyConfiguration(new DecisionConfiguration());
 
         // necessário se Domain.Model.Colaborator fosse usado para persistência, e se pretendesse que os atributos/propriedades fossem privadas
 

@@ -91,7 +91,7 @@ Record Deactivation
 
 #### Code - Level 4
 
-![Code](images/code_lvl3.png)
+![Code](images/code_lvl4.png)
 
 #### Level +1
 

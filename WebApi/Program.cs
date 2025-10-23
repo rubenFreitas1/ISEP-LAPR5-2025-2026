@@ -75,6 +75,9 @@ builder.Services.AddTransient<RepresentativeService>();
 builder.Services.AddTransient<IVesselVisitNotificationRepository, VesselVisitNotificationRepository>();
 builder.Services.AddTransient<IVesselVisitNotificationFactory, VesselVisitNotificationFactory>();
 builder.Services.AddTransient<VesselVisitNotificationMapper>();
+builder.Services.AddTransient<IDecisionRepository, DecisionRepository>();
+builder.Services.AddTransient<IDecisionFactory, DecisionFactory>();
+builder.Services.AddTransient<DecisionMapper>();
 builder.Services.AddTransient<VesselVisitNotificationService>();
 
 builder.Services.AddTransient<IPhysicalResourceRepository, PhysicalResourceRepository>();
