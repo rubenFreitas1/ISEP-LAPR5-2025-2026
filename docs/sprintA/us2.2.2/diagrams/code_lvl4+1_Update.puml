@@ -1,0 +1,119 @@
+@startuml code_lvl4+1_Update_VesselRecord
+!define RECTANGLE class
+
+title Sequence Diagram - PUT VesselRecord Update (Level 4+1)
+
+actor Client
+participant "VesselRecordController" as Controller
+participant "VesselRecordService" as Service
+participant "IVesselRecordRepository" as VRRepository
+participant "IVesselTypeRepository" as VTRepository
+participant "VesselRecordMapper" as Mapper
+participant "VesselRecord" as Domain
+participant "VesselRecordDataModel" as DataModel
+database "ShippingManagementContext" as Database
+
+Client -> Controller : PUT /api/VesselRecord/Update/{imoNumber}\n(string imoNumber, VesselRecordDTO vesselRecordDTO)
+
+activate Controller
+Controller -> Controller : Validate imoNumber == vesselRecordDTO.IMONumber
+
+Controller -> Service : UpdateVesselRecord(imoNumber, vesselRecordDTO, errorMessages)
+activate Service
+
+
+opt IMO numbers don't match
+    Service -> Service : errorMessages.Add("IMO number is not updatable")
+    Service --> Controller : false
+end
+
+
+Service -> VRRepository : GetVesselRecordByImoNumberAsync(imoNumber)
+activate VRRepository
+VRRepository -> Database : SingleOrDefaultAsync(v => v.IMONumber == imoNumber)\n.Include(v => v.VesselType)
+activate Database
+Database --> VRRepository : VesselRecordDataModel or null
+deactivate Database
+
+alt VesselRecord not found
+    VRRepository --> Service : null
+    deactivate VRRepository
+    Service -> Service : errorMessages.Add("Vessel Record with IMO number not found.")
+    Service --> Controller : false
+else VesselRecord found
+    VRRepository -> Mapper : ToDomain(vesselRecordDataModel)
+    activate Mapper
+    Mapper --> VRRepository : VesselRecord (existing)
+    deactivate Mapper
+    VRRepository --> Service : VesselRecord (existing)
+    deactivate VRRepository
+    
+    Service -> VTRepository : GetVesselTypeByNameAsync(vesselRecordDTO.VesselTypeName)
+    activate VTRepository
+    VTRepository -> Database : SingleOrDefaultAsync(v => v.Name == name)
+    activate Database
+    Database --> VTRepository : VesselTypeDataModel or null
+    deactivate Database
+    
+    alt VesselType not found
+        VTRepository --> Service : null
+        deactivate VTRepository
+        Service -> Service : errorMessages.Add("Vessel type does not exist.")
+        Service --> Controller : false
+    else VesselType found
+        VTRepository --> Service : VesselType
+        deactivate VTRepository
+        
+        Service -> VRRepository : Update(vesselRecord, errorMessages)
+        activate VRRepository
+        VRRepository -> Database : FirstOrDefaultAsync(v => v.Id == vesselRecord.Id)\n.Include(v => v.VesselType)
+        activate Database
+        Database --> VRRepository : VesselRecordDataModel
+        deactivate Database
+        
+        VRRepository -> Mapper : UpdateDataModelAsync(vesselRecordDataModel, vesselRecord, context)
+        activate Mapper
+        Mapper -> DataModel : Update VesselName, Operator, LastModifiedAt
+        activate DataModel
+        DataModel --> Mapper : Updated VesselRecordDataModel
+        deactivate DataModel
+        
+        Mapper -> Database : FindAsync(vesselRecord.VesselType.Id)
+        activate Database
+        Database --> Mapper : Existing VesselTypeDataModel
+        deactivate Database
+        
+        Mapper -> DataModel : Set VesselType reference
+        activate DataModel
+        DataModel --> Mapper : Updated VesselRecordDataModel
+        deactivate DataModel
+        Mapper --> VRRepository : void
+        deactivate Mapper
+        
+        VRRepository -> Database : SaveChangesAsync()
+        activate Database
+        Database --> VRRepository : Changes saved
+        deactivate Database
+        
+        VRRepository -> Mapper : ToDomain(vesselRecordDataModel)
+        activate Mapper
+        Mapper --> VRRepository : Updated VesselRecord
+        deactivate Mapper
+        VRRepository --> Service : Updated VesselRecord
+        deactivate VRRepository
+        
+        Service --> Controller : true
+    end
+end
+
+deactivate Service
+
+alt Update successful
+    Controller --> Client : 200 OK
+else Bad Request (Validation errors or IMO mismatch)
+    Controller --> Client : 400 Bad Request\n(errorMessages)
+end
+
+deactivate Controller
+
+@enduml

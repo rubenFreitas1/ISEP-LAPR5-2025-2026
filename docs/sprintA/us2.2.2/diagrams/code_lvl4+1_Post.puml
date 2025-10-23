@@ -1,0 +1,153 @@
+@startuml code_lvl4+1_Post_VesselRecord
+!define RECTANGLE class
+
+title Sequence Diagram - POST VesselRecord (Level 4+1)
+
+actor Client
+participant "VesselRecordController" as Controller
+participant "VesselRecordService" as Service
+participant "IVesselRecordRepository" as VRRepository
+participant "IVesselTypeRepository" as VTRepository
+participant "VesselRecordMapper" as Mapper
+participant "IVesselRecordFactory" as Factory
+participant "VesselRecord" as Domain
+participant "VesselRecordDataModel" as DataModel
+database "ShippingManagementContext" as Database
+
+Client -> Controller : POST /api/VesselRecord\n(VesselRecordDTO vesselRecordDTO)
+
+activate Controller
+Controller -> Controller : Validate vesselRecordDTO != null
+
+Controller -> Service : AddVesselRecord(vesselRecordDTO, errorMessages)
+activate Service
+
+
+Service -> VRRepository : GetVesselRecordByImoNumberAsync(vesselRecordDTO.IMONumber)
+activate VRRepository
+VRRepository -> Database : SingleOrDefaultAsync(v => v.IMONumber == imoNumber)\n.Include(v => v.VesselType)
+activate Database
+Database --> VRRepository : VesselRecordDataModel or null
+deactivate Database
+
+alt VesselRecord already exists
+    VRRepository -> Mapper : ToDomain(vesselRecordDataModel)
+    activate Mapper
+    Mapper -> Factory : NewVesselRecord(imoNumber, vesselName, vesselType, operator)
+    activate Factory
+    Factory -> Domain : new VesselRecord(...)
+    activate Domain
+    Domain -> Domain : Validate IMO number (7 digits + check digit)
+    Domain -> Domain : Validate vesselName, vesselType, operator
+    Domain --> Factory : VesselRecord instance
+    deactivate Domain
+    Factory --> Mapper : VesselRecord
+    deactivate Factory
+    Mapper -> Domain : Set Id & LastModifiedAt
+    activate Domain
+    Domain --> Mapper : VesselRecord
+    deactivate Domain
+    Mapper --> VRRepository : VesselRecord (existing)
+    deactivate Mapper
+    VRRepository --> Service : VesselRecord (existing)
+    deactivate VRRepository
+    
+    Service -> Service : errorMessages.Add("A vessel Record with the IMO number already exists.")
+    Service --> Controller : null
+else VesselRecord not found
+    VRRepository --> Service : null
+    deactivate VRRepository
+    
+
+    Service -> VTRepository : GetVesselTypeByNameAsync(vesselRecordDTO.VesselTypeName)
+    activate VTRepository
+    VTRepository -> Database : SingleOrDefaultAsync(v => v.Name == name)
+    activate Database
+    Database --> VTRepository : VesselTypeDataModel or null
+    deactivate Database
+    
+    alt VesselType not found
+        VTRepository --> Service : null
+        deactivate VTRepository
+        Service -> Service : errorMessages.Add("Vessel type does not exist.")
+        Service --> Controller : null
+    else VesselType found
+        VTRepository --> Service : VesselType
+        deactivate VTRepository
+        
+
+        Service -> Factory : NewVesselRecord(imoNumber, vesselName, vesselType, operator)
+        activate Factory
+        Factory -> Domain : new VesselRecord(imoNumber, vesselName, vesselType, operator)
+        activate Domain
+        Domain -> Domain : Validate IMO number length (7 digits)
+        Domain -> Domain : CheckImoNumber(imoNumber) - validate check digit
+        Domain -> Domain : Validate vesselName not null/empty
+        Domain -> Domain : Validate vesselType not null
+        Domain -> Domain : Validate operator not null/empty
+        Domain -> Domain : Set properties & LastModifiedAt = DateTime.UtcNow
+        Domain --> Factory : VesselRecord instance
+        deactivate Domain
+        Factory --> Service : VesselRecord
+        deactivate Factory
+
+        Service -> VRRepository : AddVesselRecord(vesselRecord)
+        activate VRRepository
+        VRRepository -> Mapper : ToDataModel(vesselRecord)
+        activate Mapper
+        Mapper -> DataModel : new VesselRecordDataModel(vesselRecord)
+        activate DataModel
+        DataModel -> DataModel : Set properties including VesselTypeDataModel
+        DataModel --> Mapper : VesselRecordDataModel
+        deactivate DataModel
+        Mapper --> VRRepository : VesselRecordDataModel
+        deactivate Mapper
+        
+        VRRepository -> Database : Where(vt => vt.Id == vesselRecord.VesselType.Id)
+        activate Database
+        Database --> VRRepository : Existing VesselTypeDataModel
+        deactivate Database
+        
+        VRRepository -> Database : Add(vesselRecordDataModel)
+        activate Database
+        VRRepository -> Database : SaveChangesAsync()
+        Database --> VRRepository : EntityEntry<VesselRecordDataModel>
+        deactivate Database
+        
+        VRRepository -> Mapper : ToDomain(vesselRecordDataModelSaved)
+        activate Mapper
+        Mapper -> Factory : NewVesselRecord(...)
+        activate Factory
+        Factory -> Domain : new VesselRecord(...)
+        activate Domain
+        Domain --> Factory : VesselRecord
+        deactivate Domain
+        Factory --> Mapper : VesselRecord
+        deactivate Factory
+        Mapper -> Domain : Set Id & LastModifiedAt
+        activate Domain
+        Domain --> Mapper : Updated VesselRecord
+        deactivate Domain
+        Mapper --> VRRepository : VesselRecord (saved)
+        deactivate Mapper
+        VRRepository --> Service : VesselRecord (saved)
+        deactivate VRRepository
+        
+        Service -> Service : VesselRecordDTO.ToDTO(vesselRecordSaved)
+        Service --> Controller : VesselRecordDTO
+    end
+end
+
+deactivate Service
+
+alt Success
+    Controller --> Client : 201 Created\nCreatedAtAction(GetVesselRecordByIMONumber, vesselRecordDTO)
+else Conflict (IMO already exists)
+    Controller --> Client : 409 Conflict\n(errorMessages)
+else Bad Request (Validation errors)
+    Controller --> Client : 400 Bad Request\n(errorMessages)
+end
+
+deactivate Controller
+
+@enduml

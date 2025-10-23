@@ -1,4 +1,4 @@
-@startuml
+@startuml post
 !define RECTANGLE class
 
 title Sequence Diagram - POST VesselType (Level 4+1)

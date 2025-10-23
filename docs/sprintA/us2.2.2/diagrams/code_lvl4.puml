@@ -1,109 +1,128 @@
-@startuml VesselTypeCode
+@startuml VesselRecordCode
 
 
-class VesselTypeController {
-	+GetAllVesselTypes()
-	+GetVesselTypeByName()
-	+GetVesselTypeById()
-	+GetVesselTypeByDescription()
-	+PutVesselType()
-	+PostVesselType()
+class VesselRecordController {
+	+GetAllVesselRecords()
+	+GetVesselRecordByIMONumber(string imoNumber)
+	+GetVesselRecordById(long id)
+	+GetVesselRecordByVesselName(string name)
+	+GetVesselRecordByOperator(string operatorName)
+	+PutVesselRecord(string imoNumber, VesselRecordDTO vesselRecordDTO)
+	+PostVesselRecord(VesselRecordDTO vesselRecordDTO)
 }
-class VesselTypeService {
-	+GetAllVesselTypes()
-	+GetVesselTypeByName()
-	+GetVesselTypeByID()
-	+GetVesselTypeByDescription()
-	+AddVesselType()
-	+UpdateVesselType()
-}
-
-class VesselTypeDTO{
-    -Name: string
-    -Description: string
-    -Capacity: int
-    -MaxRows: int
-    -MaxBays: int
-    -MaxTiers: int
-    +ToDTO()
-    +ToDomain()
-    +UpdateToDomain()
+class VesselRecordService {
+	+GetAllVesselRecords()
+	+GetVesselRecordByIMONumber(string imoNumber)
+	+GetVesselRecordById(long id)
+	+GetVesselRecordByVesselName(string name)
+	+GetVesselRecordByOperator(string operatorName)
+	+AddVesselRecord(VesselRecordDTO vesselRecordDTO, List<string> errorMessages)
+	+UpdateVesselRecord(string imoNumber, VesselRecordDTO vesselRecordDTO, List<string> errorMessages)
 }
 
+class VesselRecordDTO{
+    -IMONumber: string
+    -VesselName: string
+    -VesselTypeId: long
+    -Operator: string
+    +ToDTO(VesselRecord vesselRecord)
+    +ToDTO(IEnumerable<VesselRecord> vesselRecords)
+    +ToDomain(VesselRecordDTO vesselRecordDTO, VesselType vesselType)
+    +UpdateToDomain(VesselRecord vesselRecord, VesselRecordDTO vesselRecordDTO, VesselType vesselType)
+}
+
+
+interface IVesselRecordRepository{
+    +GetVesselRecordsAsync()
+    +GetVesselRecordByImoNumberAsync(string imoNumber) 
+    +GetVesselRecordByIdAsync(long id)
+    +GetVesselRecordByVesselNameAsync(string vesselName)
+    +GetVesselRecordByOperatorAsync(string operatorName)
+    +AddVesselRecord(VesselRecord vesselRecord)
+    +Update(VesselRecord vesselRecord, List<string> errorMessages)
+}
+
+class VesselRecordRepository{
+    +GetVesselRecordsAsync()
+    +GetVesselRecordByImoNumberAsync(string imoNumber) 
+    +GetVesselRecordByIdAsync(long id)
+    +GetVesselRecordByVesselNameAsync(string vesselName)
+    +GetVesselRecordByOperatorAsync(string operatorName)
+    +AddVesselRecord(VesselRecord vesselRecord)
+    +Update(VesselRecord vesselRecord, List<string> errorMessages)
+}
+
+
+class VesselRecord{
+    -Id: long
+    -IMONumber: string
+    -VesselName: string
+    -VesselType: VesselType
+    -Operator: string
+    +CheckImoNumber(string imoNumber)
+    +ChangeVesselName(string newVesselName)
+    +ChangeVesselType(VesselType newVesselType)
+    +ChangeOperator(string newOperator)
+    
+}
+
+class VesselRecordMapper{
+    +ToDomain(VesselRecordDataModel vesselRecordDM)
+    +ToDomain(IEnumerable<VesselRecordDataModel> vesselRecordDataModels)
+    +ToDataModel(VesselRecord vesselRecord)
+    +UpdateDataModel(VesselRecordDataModel vesselRecordDM, VesselRecord vesselRecord)
+}
+
+interface IVesselRecordFactory{
+    +NewVesselRecord(string imoNumber, string vesselName, VesselType vesselType, string operatorName)
+}
+
+class VesselRecordDataModel{
+    -Id: long
+    -IMONumber: string
+    -VesselName: string
+    -VesselTypeId: long
+    -Operator: string
+}
+
+class VesselRecordFactory{
+    +NewVesselRecord(string imoNumber, string vesselName, VesselType vesselType, string operatorName)
+}
 
 interface IVesselTypeRepository{
     +GetVesselTypesAsync()
-    +GetVesselTypeByNameAsync() 
-    +GetVesselTypeByIdAsync()
-    +GetVesselTypeByDescriptionAsync()
-    +AddVesselType()
-    +Update()
+    +GetVesselTypeByNameAsync(string name) 
+    +GetVesselTypeByIdAsync(long id)
+    +GetVesselTypeByDescriptionAsync(string description)
+    +AddVesselType(VesselType vesselType)
+    +Update(VesselType vesselType, List<string> errorMessages)
 }
 
 class VesselTypeRepository{
     +GetVesselTypesAsync()
-    +GetVesselTypeByNameAsync() 
-    +GetVesselTypeByIdAsync()
-    +GetVesselTypeByDescriptionAsync()
-    +AddVesselType()
-    +Update()
+    +GetVesselTypeByNameAsync(string name) 
+    +GetVesselTypeByIdAsync(long id)
+    +GetVesselTypeByDescriptionAsync(string description)
+    +AddVesselType(VesselType vesselType)
+    +Update(VesselType vesselType, List<string> errorMessages)
 }
 
-
-class VesselType{
-    -Id: long
-    -Name: string
-    -Description: string
-    -Capacity: int
-    -MaxRows: int
-    -MaxBays: int
-    -MaxTiers: int
-    +ChangeMaxBays()
-    +ChangeMaxTiers()
-    +ChangeMaxRows()
-    +ChangeCapacity()
-    +ChangeDescription()
-    +ChangeName()
-    
-}
-
-class VesselTypeMapper{
-    +ToDomain()
-    +ToDataModel()
-    +UpdateDataModel()
-}
-
-interface IVesselTypeFactory{
-    +NewVesselType()
-}
-
-class VesselTypeDataModel{
-    -Id: long
-    -Name: string
-    -Description: string
-    -Capacity: int
-    -MaxRows: int
-    -MaxBays: int
-    -MaxTiers: int
-}
-
-class VesselTypeFactory{
-    +NewVesselType()
-}
+VesselRecordService -left-> IVesselTypeRepository: uses
+VesselTypeRepository -up-> IVesselTypeRepository : implements
 
 
-VesselTypeController --> VesselTypeService: uses 
-VesselTypeService --> IVesselTypeRepository: uses
-VesselTypeService --> VesselTypeDTO: uses
+VesselRecordController --> VesselRecordService: uses 
+VesselRecordService --> IVesselRecordRepository: uses
+VesselRecordService --> VesselRecordDTO: uses
 
-VesselTypeRepository --> VesselTypeMapper: uses
-VesselTypeMapper --> VesselTypeDataModel : uses
-VesselTypeMapper --> IVesselTypeFactory : uses
-VesselTypeFactory --> VesselType: creates
+VesselRecordRepository --> VesselRecordMapper: uses
+VesselRecordMapper --> VesselRecordDataModel : uses
+VesselRecordMapper --> IVesselRecordFactory : uses
+VesselRecordFactory --> VesselRecord: creates
 
 
-VesselTypeFactory ..|> IVesselTypeFactory : implements
+VesselRecordFactory ..|> IVesselRecordFactory : implements
 
-VesselTypeRepository ..|> IVesselTypeRepository : implements
+VesselRecordRepository ..|> IVesselRecordRepository : implements
 
 @enduml

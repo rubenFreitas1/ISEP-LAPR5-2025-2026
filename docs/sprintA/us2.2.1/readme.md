@@ -25,7 +25,7 @@
 
 **Forum Insight:**
 
-* Still no questions related to this user story on forum.
+* No clarifications worth mention from the forum.
 
 ## 3. Analysis
 
@@ -53,10 +53,10 @@ Vessel type Registration
 
 #### Level +1
 
-Vessel Type POST
+##### Vessel Type POST
 ![nivel+1](images/code_lvl4+1_Post.png)
 
-Vessel Type UPDATE
+##### Vessel Type UPDATE
 ![nivel+1](images/code_lvl4+1_Update.png)
 
 
