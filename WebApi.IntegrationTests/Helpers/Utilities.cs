@@ -27,6 +27,7 @@ public static class Utilities
         db.Staffs.AddRange(GetSeedingStaffDataModel(qualifications));
         db.SaveChanges();
 
+
         if (!db.ShippingAgentOrganizations.Any())
         {
             var orgsAndReps = GetSeedingOrganizationDataModelsAndRepresentatives();
@@ -62,6 +63,7 @@ public static class Utilities
         db.Qualifications.RemoveRange(db.Qualifications);
         db.VesselTypes.RemoveRange(db.VesselTypes);
         db.ShippingAgentOrganizations.RemoveRange(db.ShippingAgentOrganizations);
+        
 
         db.SaveChanges();
 
@@ -111,7 +113,8 @@ public static class Utilities
         return new List<QualificationDataModel>()
         {
             new QualificationDataModel(new Qualification("QUAL1", "First Qualification", "Description for first qualification test")),
-            new QualificationDataModel(new Qualification("QUAL2", "Second Qualification", "Description for second qualification test"))
+            new QualificationDataModel(new Qualification("QUAL2", "Second Qualification", "Description for second qualification test")),
+            new QualificationDataModel(new Qualification("QUAL3", "Third Qualification", "Description for third qualification test"))
         };
     }
     public static List<StaffDataModel> GetSeedingStaffDataModel(List<QualificationDataModel> qualifications)
