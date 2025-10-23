@@ -72,7 +72,7 @@ public static class Utilities
                 db.Staffs.AddRange(GetSeedingStaffDataModel(db.Qualifications.ToList()));
                 db.SaveChanges();
             }
-            
+
             if (!db.PhysicalResources.Any())
             {
                 var qualifications = db.Qualifications.ToList();

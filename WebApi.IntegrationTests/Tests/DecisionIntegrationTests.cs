@@ -59,7 +59,7 @@ namespace WebApi.IntegrationTests.Tests
                 Assert.Equal(d.Id, returned.Id);
             }
         }
-        
+
         [Fact]
         public async Task PostDecision_InvalidStatus_ReturnsBadRequest()
         {
