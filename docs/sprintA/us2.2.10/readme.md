@@ -46,4 +46,66 @@ Boa tarde, quando diz que as Vessel Visit Notifications devem ser filtráveis po
 ![System Sequence Diagram ](images/system-sequence-diagram-US2.2.10.png)
 
 
+## 4. C4 Model
 
+#### Context - Level 1
+
+![Context](/docs/Global_Artifacts/context_lvl1.png)
+
+#### Containers - Level 2
+
+![Containers](/docs/Global_Artifacts/containers_lvl2.png)
+
+#### Components - Level 3
+
+![Components](images/components_lvl3.png)
+
+#### Code - Level 4
+
+![Code](images/code_lvl4.png)
+
+
+#### Level +1
+
+##### Vessel Visit Notification Status GET
+![nivel+1](images/model4+1_Get.png)
+
+
+## 5. Tests
+
+### Tests Related To Get By Status
+
+```csharp
+        [Theory]
+        [InlineData("AAA1")]
+        [InlineData("BBB2")]
+        public async Task GetVesselVisitNotificationsByStatus_Org_ReturnsOkResponse(string orgCode)
+        {
+            var status = VisitStatus.InProgress;
+
+            var response = await _client.GetAsync($"/api/VesselVisitNotification/ByStatus_Org/{status}/{orgCode}");
+            response.EnsureSuccessStatusCode();
+            var notifications = await response.Content.ReadFromJsonAsync<IEnumerable<VesselVisitNotificationDTO>>();
+            Assert.NotNull(notifications);
+            Assert.NotEmpty(notifications);
+            foreach (var notif in notifications)
+            {
+                Assert.Equal(status, notif.VisitStatus);
+            }
+        }
+
+        [Theory]
+        [InlineData("AAA1")]
+        [InlineData("NONEXISTENTORG")]
+        public async Task GetVesselVisitNotificationsByStatus_Org_NotFound(string orgCode)
+        {
+            var status = VisitStatus.Approved;
+
+            var response = await _client.GetAsync($"/api/VesselVisitNotification/ByStatus_Org/{status}/{orgCode}");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var notifications = await response.Content.ReadFromJsonAsync<IEnumerable<VesselVisitNotificationDTO>>();
+            Assert.NotNull(notifications);
+            Assert.Empty(notifications);
+        }
+
+```

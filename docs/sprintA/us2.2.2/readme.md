@@ -56,10 +56,10 @@ Record Registration
 
 #### Level +1
 
-##### Vessel Type POST
+##### Vessel Record POST
 ![nivel+1](images/code_lvl4+1_Post.png)
 
-##### Vessel Type UPDATE
+##### Vessel Record UPDATE
 ![nivel+1](images/code_lvl4+1_Update.png)
 
 ## 5. Integration Tests

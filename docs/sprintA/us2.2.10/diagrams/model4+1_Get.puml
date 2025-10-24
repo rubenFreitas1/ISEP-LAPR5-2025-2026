@@ -1,0 +1,86 @@
+@startuml us2.2.10_vesselvisit_get_by_status
+!define RECTANGLE class
+
+title Sequence Diagram - GET Vessel Visit Notifications by Status and Organization (US 2.2.10)
+
+actor "Shipping Agent Representative" as Client
+participant "VesselVisitNotificationController" as Controller
+participant "VesselVisitNotificationService" as Service
+participant "IVesselVisitNotificationRepository" as Repository
+participant "VesselVisitNotificationMapper" as Mapper
+participant "VesselVisitNotificationDTO" as DTO
+database "ShippingManagementContext" as Database
+
+Client -> Controller : GET /api/VesselVisitNotification/ByStatus_Org/{status}/{orgCode}\n(VisitStatus status, string orgCode)
+
+activate Controller
+
+Controller -> Service : GetVesselVisitNotificationsByStatus_Org(status, orgCode)
+activate Service
+
+Service -> Repository : GetVisitsByStatus_OrgAsync(status, orgCode)
+activate Repository
+
+Repository -> Database : Set<VesselVisitNotificationDataModel>()\n.Include(vvn => vvn.Vessel)!\n.ThenInclude(v => v.VesselType)\n.Include(vvn => vvn.Representative)!\n.ThenInclude(r => r.Organization)\n.Include(vvn => vvn.CargoManifests)!\n.ThenInclude(cm => cm.Entries)\n.ThenInclude(e => e.StorageArea)\n.Include(vvn => vvn.CrewMembers)!\n.Where(vvn => vvn.VisitStatus == status.ToString() && \nvvn.Representative.Organization.Code == orgCode)\n.ToListAsync()
+
+activate Database
+Database --> Repository : IEnumerable<VesselVisitNotificationDataModel>
+deactivate Database
+
+loop For each VesselVisitNotificationDataModel
+    Repository -> Mapper : ToDomain(vesselVisitNotificationDataModel)
+    activate Mapper
+
+    loop For each CrewMemberDataModel
+        Mapper -> Mapper : Parse CrewRank from string\nNew CrewMember(name, citizenId, rank, nationality)
+    end
+    
+    opt CargoManifests exist
+        loop For each CargoManifestDataModel
+            Mapper -> Mapper : Parse CargoManifestType from string\nNew CargoManifest(manifestType, entries, vesselVisit)
+            
+            opt Manifest Entries exist
+                loop For each CargoManifestEntryDataModel
+                    Mapper -> Mapper : New Container(containerNumber)\nNew CargoManifestEntry(container, row, bay, tier, storageArea, manifest)
+                end
+            end
+        end
+    end
+
+    Mapper -> Mapper : VesselVisitNotificationFactory.NewVesselVisitNotification(\ncode, vessel, representative, eta, etd,\ncargoManifests, cargoType, volume, crewMembers, numberOfCrewMembers)
+    
+
+    Mapper -> Mapper : Set Id, LastModifiedAt, VisitStatus
+    
+    Mapper --> Repository : VesselVisitNotification (domain)
+    deactivate Mapper
+end
+
+Repository --> Service : IEnumerable<VesselVisitNotification>
+deactivate Repository
+
+Service -> DTO : ToDTO(vesselVisitNotifications)
+activate DTO
+
+loop For each VesselVisitNotification
+    
+    
+    DTO -> DTO : New VesselVisitNotificationDTO(\nid, code, vesselIMO, representativeCitizenId,\neta, etd, cargoManifests, cargoType, volume,\ncrewMembers, visitStatus, numberOfCrewMembers)
+end
+
+DTO --> Service : IEnumerable<VesselVisitNotificationDTO>
+deactivate DTO
+
+Service --> Controller : IEnumerable<VesselVisitNotificationDTO>
+deactivate Service
+
+alt Success - Valid status and organization
+    Controller --> Client : 200 OK\nIEnumerable<VesselVisitNotificationDTO>
+else Invalid Parameters
+    Controller --> Client : 400 Bad Request\n"Invalid status or organization code"
+end
+
+deactivate Controller
+
+@enduml
+
