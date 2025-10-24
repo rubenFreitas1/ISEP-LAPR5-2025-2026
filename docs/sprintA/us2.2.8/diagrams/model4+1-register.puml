@@ -1,0 +1,218 @@
+@startuml us2.2.8_vesselvisit_register
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Shipping Agent Representative" as representative
+participant "VesselVisitNotification Controller" as VVNController
+participant "VesselVisitNotification Service" as VVNService
+participant "VesselVisitNotificationDTO" as VVNDTO
+participant "VesselVisitNotification Factory" as VVNFactory
+participant "CargoManifest" as CargoManifest
+participant "Container" as Container
+participant "CargoManifestEntry" as CargoManifestEntry
+participant "VesselVisitNotification" as VVNDomain
+participant "VesselVisitNotification Repository" as VVNRepository
+participant "VesselVisitNotification Mapper" as VVNMapper
+participant "VesselRecord Repository" as VesselRecordRepository
+participant "VesselRecord Mapper" as VesselRecordMapper
+participant "Representative Repository" as RepresentativeRepository
+participant "Representative Mapper" as RepresentativeMapper
+participant "StorageArea Repository" as StorageAreaRepository
+participant "StorageArea Mapper" as StorageAreaMapper
+participant "ShippingManagementContext" as DbContext
+participant "ShippingManagementDatabase" as Database
+participant "StorageArea (domain)" as StorageAreaDomain
+
+title System Sequence Diagram - POST VesselVisitNotification (US2.2.8)
+
+activate representative
+	representative -> VVNController: POST /api/VesselVisitNotification (VesselVisitNotificationDTO)
+	activate VVNController
+
+		VVNController -> VVNService: AddVesselVisitNotification(dto, errorMessages)
+		activate VVNService
+			VVNService -> VVNService: Generate unique code
+			VVNService -> VVNRepository: GetVisitByCodeAsync(dto.Code)
+			activate VVNRepository
+				VVNRepository -> DbContext: Set<VesselVisitNotificationDataModel>().Include(vvn => vvn.Vessel)!.ThenInclude(v => v.VesselType)\n.Include(vvn => vvn.Representative)!.ThenInclude(r => r.Organization)\n.Include(vvn => vvn.CargoManifests)!.ThenInclude(cm => cm.Entries)\n.ThenInclude(e => e.StorageArea).Include(vvn => vvn.CrewMembers)!.FirstOrDefaultAsync(vvn => vvn.Code == visitCode)
+				activate DbContext
+					DbContext --> Database: SELECT * FROM VesselVisitNotifications WHERE Code = @code
+					activate Database
+					Database --> DbContext: VesselVisitNotificationDataModel? (found/null)
+					deactivate Database
+					DbContext --> VVNRepository: VesselVisitNotificationDataModel? (found/null)
+				deactivate DbContext
+                VVNRepository -> VVNMapper: ToDomain(vesselVisitDM)
+                        activate VVNMapper
+                            VVNMapper --> VVNRepository: VesselVisitNotification (domain)
+                    deactivate VVNMapper    
+				alt exists
+					VVNRepository -> VVNService: VesselVisitNotification (domain)
+					VVNService -> VVNController: return null + ["Vessel Visit Notification with the same code already exists."]
+				else
+					VVNRepository --> VVNService: null
+				end
+			deactivate VVNRepository
+			VVNService -> VVNRepository: GetVisitsByVesselIMOAsync(dto.VesselIMO)
+			activate VVNRepository
+				VVNRepository -> DbContext: Set<VesselVisitNotificationDataModel>().Include(vvn => vvn.Vessel)!.ThenInclude(v => v.VesselType)\n.Include(vvn => vvn.Representative)!.ThenInclude(r => r.Organization)\n.Include(vvn => vvn.CargoManifests)!.ThenInclude(cm => cm.Entries)\n.ThenInclude(e => e.StorageArea).Include(vvn => vvn.CrewMembers)!\n.Where(vvn => vvn.Vessel!.IMONumber == imoNumber).ToListAsync()
+				activate DbContext
+					DbContext --> Database: SELECT * FROM VesselVisitNotifications WHERE Vessel_IMONumber = @imo
+					activate Database
+					Database --> DbContext: List<VesselVisitNotificationDataModel>
+					deactivate Database
+					DbContext --> VVNRepository: List<VesselVisitNotificationDataModel>
+				deactivate DbContext
+                VVNRepository --> VVNMapper: ToDomain(vesselVisitDMs)
+                        activate VVNMapper
+                            VVNMapper --> VVNRepository: List<VesselVisitNotification> (domain)
+                    deactivate VVNMapper
+				VVNRepository --> VVNService: visits (list)
+			deactivate VVNRepository
+			alt overlapping visits
+				VVNService -> VVNController: return null + ["There is an overlapping visit for the same vessel."]
+			end
+
+			VVNService -> VesselRecordRepository: GetVesselRecordByImoNumberAsync(dto.VesselIMO)
+			activate VesselRecordRepository
+				VesselRecordRepository -> DbContext: Set<VesselRecordDataModel>().Include(v => v.VesselType).SingleOrDefaultAsync(v => v.IMONumber == imoNumber);
+				activate DbContext
+					DbContext --> Database: SELECT * FROM VesselRecords WHERE IMONumber = @imo
+					activate Database
+					Database --> DbContext: VesselRecordDataModel? (found/null)
+					deactivate Database
+					DbContext --> VesselRecordRepository: VesselRecordDataModel? (found/null)
+				deactivate DbContext
+                    VesselRecordRepository -> VesselRecordMapper: ToDomain(VesselRecordDataModel)
+                    activate VesselRecordMapper
+                        VesselRecordMapper --> VesselRecordRepository: VesselRecord (domain)
+                    deactivate VesselRecordMapper
+				alt found
+					VesselRecordRepository -> VVNService: VesselRecord (domain)
+				else
+					VesselRecordRepository --> VVNService: null
+				end
+			deactivate VesselRecordRepository
+
+			VVNService -> RepresentativeRepository: GetRepresentativeByCitizenIdAsync(dto.RepresentativeCitizenID)
+			activate RepresentativeRepository
+				RepresentativeRepository -> DbContext:Set<RepresentativeDataModel>().Include(r => r.Organization).SingleOrDefaultAsync(r => r.CitizenId == citizenId)
+				activate DbContext
+					DbContext --> Database: SELECT * FROM Representatives WHERE CitizenId = @citizenId
+					activate Database
+					Database --> DbContext: RepresentativeDataModel? (found/null)
+					deactivate Database
+					DbContext --> RepresentativeRepository: RepresentativeDataModel? (found/null)
+				deactivate DbContext
+                RepresentativeRepository -> RepresentativeMapper: ToDomain(RepresentativeDataModel)
+                activate RepresentativeMapper
+                    RepresentativeMapper --> RepresentativeRepository: Representative (domain)
+                deactivate RepresentativeMapper
+				alt found
+					RepresentativeRepository -> VVNService: Representative (domain)
+				else
+					RepresentativeRepository --> VVNService: null
+				end
+			deactivate RepresentativeRepository
+
+            VVNService -> VVNService: ConvertCrewMemberDTOsToCrewMembers(notificationDTO.CrewMembers)
+
+			VVNService -> VVNFactory: NewVesselVisitNotification(code, vessel, representative, eta, etd, emptyCargoManifests, cargoType, volume, crewMembers, numberOfCrew)
+			activate VVNFactory
+				VVNFactory --> VVNDomain: <<create>> VesselVisitNotification(code, vessel, representative, eta, etd, emptyCargoManifests, cargoType, volume, crewMembers, numberOfCrew)
+                    activate VVNDomain
+                        VVNDomain --> VVNFactory: VesselVisitNotification (new instance)
+                    deactivate VVNDomain
+            VVNFactory --> VVNService: VesselVisitNotification (domain)
+			deactivate VVNFactory
+
+			loop for each cargoManifestDTO in dto.CargoManifests
+				VVNService -> CargoManifest: <<create>> new CargoManifest(cmDto.ManifestType, new List<CargoManifestEntry>(), vesselVisitNotification)
+                    activate CargoManifest
+                        CargoManifest --> VVNService: CargoManifest (domain)
+                    deactivate CargoManifest
+				loop for each entryDTO in cargoManifestDTO.Entries
+                    VVNService -> Container: <<create>> Container(entryDto.ContainerNumber)
+                        activate Container
+                            Container --> VVNService: Container (domain)
+                        deactivate Container
+					VVNService -> StorageAreaRepository: GetStorageAreaByCodeAsync(entryDTO.StorageAreaCode)
+					activate StorageAreaRepository
+						StorageAreaRepository -> DbContext: Set<StorageAreaDataModel>().Include(sa => sa.StorageAreaDocks)!.ThenInclude(sad => sad.Dock)!.FirstOrDefaultAsync(sa => sa.Code == code)
+						activate DbContext
+							DbContext --> Database: SELECT * FROM StorageAreas WHERE Code = @code
+							activate Database
+							Database --> DbContext: StorageAreaDataModel? (found/null)
+							deactivate Database
+							DbContext --> StorageAreaRepository: StorageAreaDataModel? (found/null)
+						deactivate DbContext
+                        StorageAreaRepository -> StorageAreaMapper: ToDomain(StorageAreaDataModel)
+                        activate StorageAreaMapper
+                            StorageAreaMapper --> StorageAreaRepository: storageArea (domain)
+                        deactivate StorageAreaMapper
+						alt found
+							StorageAreaRepository -> VVNService: StorageArea (domain)
+						else
+							StorageAreaRepository --> VVNService: null
+						end
+					deactivate StorageAreaRepository
+
+					alt storage area missing
+						VVNService -> VVNController: return null + ["Storage area not found"]
+					else
+						VVNService -> CargoManifestEntry: <<create>> CargoManifestEntry(container, entryDto.Row, entryDto.Bay, entryDto.Tier, storageArea, manifest)
+                            activate CargoManifestEntry
+                                CargoManifestEntry --> VVNService: CargoManifestEntry (domain)
+                            deactivate CargoManifestEntry
+					end
+				end
+			end
+
+			VVNService -> VVNDomain: ChangeCargoManifests(cargoManifests)
+                activate VVNDomain
+                    VVNDomain --> VVNService: updated VesselVisitNotification (domain)
+                deactivate VVNDomain
+			VVNService -> VVNRepository: AddNotificationAsync(VesselVisitNotification)
+			activate VVNRepository
+				VVNRepository -> VVNMapper: ToDataModel(VesselVisitNotification)
+				activate VVNMapper
+                    VVNMapper --> VVNRepository: VesselVisitNotificationDataModel
+                deactivate VVNMapper
+                VVNRepository --> VVNMapper : UpdateDataModelAsync(dm, notification, _context)
+                    activate VVNMapper
+                        VVNMapper --> VVNRepository: 
+                    deactivate VVNMapper
+				VVNRepository -> DbContext: Set<VesselVisitNotificationDataModel>().Add(vvnDM)
+					activate DbContext
+						DbContext -> Database: INSERT INTO VesselVisitNotifications ... (and related tables)
+						activate Database
+						Database --> DbContext: Inserted rows / generated ids
+						deactivate Database
+						DbContext --> VVNRepository: saved DataModel
+					deactivate DbContext
+				VVNRepository -> VVNMapper: ToDomain(VesselVisitNotificationDataModel)
+				activate VVNMapper
+					VVNMapper --> VVNRepository: VesselVisitNotification (domain)
+				deactivate VVNMapper
+			VVNRepository --> VVNService: VesselVisitNotification (domain)
+			deactivate VVNRepository
+            VVNService --> VVNDTO: ToDTO(VesselVisitNotification)
+                activate VVNDTO
+                    VVNDTO --> VVNService: VesselVisitNotificationDTO
+                deactivate VVNDTO
+			VVNService --> VVNController: return created DTO
+		deactivate VVNService
+
+		alt created
+            VVNController --> representative: 201 Created (VesselVisitNotificationDTO)
+        else validation error
+            VVNController --> representative: 400 Bad Request (errorMessages)
+        else conflict
+            VVNController --> representative: 409 Conflict (errorMessages)
+        end
+	deactivate VVNController
+deactivate representative
+
+@enduml
+

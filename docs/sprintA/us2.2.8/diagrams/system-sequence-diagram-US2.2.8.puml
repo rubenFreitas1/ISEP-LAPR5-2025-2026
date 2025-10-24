@@ -16,10 +16,10 @@ activate system
 
 system -> shippingAgentRepresentative : Request data(vessel, expected arrival, expected departure,\n cargo manifest, cargo type, crew)
 deactivate system
-shippingAgentRepresentative -> system : Types requested data
+shippingAgentRepresentative -> system : Provides requested data
 
 activate system
 system -> shippingAgentRepresentative : Displays operation success
-
+deactivate system
 
 @enduml
