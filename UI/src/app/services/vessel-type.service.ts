@@ -9,6 +9,4 @@ export class VesselTypeService {
 
   constructor(private apiService: ApiService){}
 
-  
-
 }
