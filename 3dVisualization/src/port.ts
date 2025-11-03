@@ -1,32 +1,36 @@
 import * as THREE from "three";
 
-export default class PortScene extends THREE.Scene 
+
+export function createPortStructure()
 {
-    private cube?: THREE.Mesh;
+    const portStructure = new THREE.Group();
+    const loader = new THREE.TextureLoader();
 
-    initialize()
-    {
-        const geometry = new THREE.BoxGeometry()
-        const material = new THREE.MeshPhongMaterial({ color: 0xFFAD00 })
+    const colorMap = loader.load('../textures/portConcrete/Concrete044A_1K-JPG_Color.jpg');
+    const normalMap = loader.load('../textures/portConcrete/Concrete044A_1K-JPG_NormalGL.jpg');
+    const roughnessMap = loader.load('../textures/portConcrete/Concrete044A_1K-JPG_Roughness.jpg');
 
-        this.cube = new THREE.Mesh(geometry, material)
-        this.cube.position.z = -5
-        this.cube.position.y = -1
+    
+    // Material base
+    const material = new THREE.MeshStandardMaterial({ map: colorMap, normalMap: normalMap, roughnessMap: roughnessMap });
 
-        this.add(this.cube)
+    // Cais principal
+    const dockGeometry = new THREE.BoxGeometry(400, 30, 150);
+    const dockMesh = new THREE.Mesh(dockGeometry, material);
+    dockMesh.position.y = 1; // ligeiramente acima do chão
+    portStructure.add(dockMesh);
 
+    // Doca esquerda
+    const leftDockGeometry = new THREE.BoxGeometry(70, 30, 200);
+    const leftDockMesh = new THREE.Mesh(leftDockGeometry, material);
+    leftDockMesh.position.set(-100, 1, 100); // ajusta posição conforme layout
+    portStructure.add(leftDockMesh);
 
-        const light = new THREE.DirectionalLight(0xffffff, 1)
-        light.position.set(0, 4, 2)
+    // Doca direita
+    const rightDockGeometry = new THREE.BoxGeometry(70, 30, 200);
+    const rightDockMesh = new THREE.Mesh(rightDockGeometry, material);
+    rightDockMesh.position.set(150, 1, 100);
+    portStructure.add(rightDockMesh);
 
-        this.add(light)
-    }
-
-    update()
-    {
-        if (!this.cube) return
-        this.cube.rotation.x += 0.01
-        this.cube.rotation.y += 0.01
-    }
-
+    return portStructure;
 }

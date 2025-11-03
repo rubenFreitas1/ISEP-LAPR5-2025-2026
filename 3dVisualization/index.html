@@ -28,9 +28,18 @@
 	
 	<script type="module">
 		import { createScene } from './src/main.ts';
+		import { createPortStructure } from './src/port.ts';
+		import { createSea } from './src/sea.ts';
+
 		window.addEventListener('load', () => {
 			const scene = createScene();
+			const portStructure = createPortStructure();
+			const sea = createSea();
+
+			// initialize scene with the port structure and start render loop
+			scene.initialize(portStructure, sea)
 			window.scene = scene;
+			window.portStructure = portStructure;
 			scene.start();
 		});
 	</script>
