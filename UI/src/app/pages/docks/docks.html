@@ -1,0 +1,392 @@
+<div class="page-container">
+  <h1 class="page-title">Docks</h1>
+
+  <div class="top-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search for docks..."
+        class="search-input"
+      >
+      <button
+        *ngIf="searchTerm"
+        (click)="clearSearch()"
+        class="clear-button"
+        title="Clean search"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="action-buttons">
+      <button
+        (click)="onCreateNew()"
+        class="btn btn-primary"
+        title="Create new dock"
+      >
+        New Dock
+      </button>
+      <button
+        (click)="onUpdate()"
+        class="btn btn-secondary"
+        [disabled]="!selectedDock"
+        title="Edit selected dock"
+      >
+        Edit Dock
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+    <button (click)="errorMessage = ''" class="close-error">✕</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    Loading Docks...
+  </div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Length (m)</th>
+          <th>Depth (m)</th>
+          <th>Max Draft (m)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let dock of filteredDocks"
+          [class.selected]="selectedDock?.id === dock.id"
+          (click)="selectDock(dock)"
+        >
+          <td>{{ dock.name }}</td>
+          <td>{{ dock.location }}</td>
+          <td>{{ dock.length }}</td>
+          <td>{{ dock.depth }}</td>
+          <td>{{ dock.maxDraft }}</td>
+          <td>
+            <button
+              (click)="selectDock(dock); $event.stopPropagation()"
+              class="btn-select"
+              [class.selected]="selectedDock?.id === dock.id"
+            >
+              {{ selectedDock?.id === dock.id ? 'Unselect' : 'Select' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Message when no results are found -->
+    <div *ngIf="filteredDocks.length === 0 && !isLoading" class="no-results">
+      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No docks found.' }}</p>
+    </div>
+  </div>
+
+  <!-- Information of selected dock -->
+  <div *ngIf="selectedDock" class="selected-info">
+    <h3>Selected Dock:</h3>
+    <div class="info-card">
+      <p><strong>Name:</strong> {{ selectedDock.name }}</p>
+      <p><strong>Location:</strong> {{ selectedDock.location }}</p>
+      <p><strong>Length:</strong> {{ selectedDock.length }} m</p>
+      <p><strong>Depth:</strong> {{ selectedDock.depth }} m</p>
+      <p><strong>Max Draft:</strong> {{ selectedDock.maxDraft }} m</p>
+      <p><strong>Vessel Types:</strong>
+        <span *ngIf="selectedDock.vesselTypes && selectedDock.vesselTypes.length > 0">
+          {{ selectedDock.vesselTypes.join(', ') }}
+        </span>
+        <span *ngIf="!selectedDock.vesselTypes || selectedDock.vesselTypes.length === 0">
+          None specified
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Create Dock Modal -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Dock</h2>
+      <button class="close-button" (click)="closeCreateModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error message display -->
+      <div *ngIf="modalErrorMessage" class="alert alert-danger">
+        {{ modalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveNewDock()" #dockForm="ngForm">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="newDock.name"
+            required
+            class="form-input"
+            [class.error]="hasFieldError('name')"
+            placeholder="Enter dock name"
+          >
+          <div *ngIf="hasFieldError('name')" class="field-error">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location *</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            [(ngModel)]="newDock.location"
+            required
+            class="form-input"
+            [class.error]="hasFieldError('location')"
+            placeholder="Enter dock location"
+          >
+          <div *ngIf="hasFieldError('location')" class="field-error">
+            {{ getFieldError('location') }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="length">Length (m) *</label>
+            <input
+              type="number"
+              id="length"
+              name="length"
+              [(ngModel)]="newDock.length"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasFieldError('length')"
+              placeholder="Enter length in meters"
+            >
+            <div *ngIf="hasFieldError('length')" class="field-error">
+              {{ getFieldError('length') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="depth">Depth (m) *</label>
+            <input
+              type="number"
+              id="depth"
+              name="depth"
+              [(ngModel)]="newDock.depth"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasFieldError('depth')"
+              placeholder="Enter depth in meters"
+            >
+            <div *ngIf="hasFieldError('depth')" class="field-error">
+              {{ getFieldError('depth') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="maxDraft">Max Draft (m) *</label>
+            <input
+              type="number"
+              id="maxDraft"
+              name="maxDraft"
+              [(ngModel)]="newDock.maxDraft"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasFieldError('maxDraft')"
+              placeholder="Enter max draft in meters"
+            >
+            <div *ngIf="hasFieldError('maxDraft')" class="field-error">
+              {{ getFieldError('maxDraft') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vesselTypes">Vessel Types (comma-separated)</label>
+          <input
+            type="text"
+            id="vesselTypes"
+            name="vesselTypes"
+            [(ngModel)]="vesselTypesInput"
+            class="form-input"
+            placeholder="e.g., Container Ship, Bulk Carrier"
+          >
+          <small class="form-hint">Enter vessel types separated by commas</small>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="btn btn-secondary"
+            [disabled]="isCreating"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isCreating || !dockForm.form.valid"
+          >
+            {{ isCreating ? 'Creating...' : 'Create Dock' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Dock Modal -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Dock</h2>
+      <button class="close-button" (click)="closeEditModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error message display -->
+      <div *ngIf="editModalErrorMessage" class="alert alert-danger">
+        {{ editModalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveEditDock()" #editDockForm="ngForm">
+        <div class="form-group">
+          <label for="editName">Name *</label>
+          <input
+            type="text"
+            id="editName"
+            name="editName"
+            [(ngModel)]="editDock.name"
+            required
+            class="form-input"
+            [class.error]="hasEditFieldError('name')"
+            placeholder="Enter dock name"
+          >
+          <div *ngIf="hasEditFieldError('name')" class="field-error">
+            {{ getEditFieldError('name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editLocation">Location *</label>
+          <input
+            type="text"
+            id="editLocation"
+            name="editLocation"
+            [(ngModel)]="editDock.location"
+            required
+            class="form-input"
+            [class.error]="hasEditFieldError('location')"
+            placeholder="Enter dock location"
+          >
+          <div *ngIf="hasEditFieldError('location')" class="field-error">
+            {{ getEditFieldError('location') }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editLength">Length (m) *</label>
+            <input
+              type="number"
+              id="editLength"
+              name="editLength"
+              [(ngModel)]="editDock.length"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasEditFieldError('length')"
+              placeholder="Enter length in meters"
+            >
+            <div *ngIf="hasEditFieldError('length')" class="field-error">
+              {{ getEditFieldError('length') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editDepth">Depth (m) *</label>
+            <input
+              type="number"
+              id="editDepth"
+              name="editDepth"
+              [(ngModel)]="editDock.depth"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasEditFieldError('depth')"
+              placeholder="Enter depth in meters"
+            >
+            <div *ngIf="hasEditFieldError('depth')" class="field-error">
+              {{ getEditFieldError('depth') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editMaxDraft">Max Draft (m) *</label>
+            <input
+              type="number"
+              id="editMaxDraft"
+              name="editMaxDraft"
+              [(ngModel)]="editDock.maxDraft"
+              required
+              min="1"
+              class="form-input"
+              [class.error]="hasEditFieldError('maxDraft')"
+              placeholder="Enter max draft in meters"
+            >
+            <div *ngIf="hasEditFieldError('maxDraft')" class="field-error">
+              {{ getEditFieldError('maxDraft') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editVesselTypes">Vessel Types (comma-separated)</label>
+          <input
+            type="text"
+            id="editVesselTypes"
+            name="editVesselTypes"
+            [(ngModel)]="editVesselTypesInput"
+            class="form-input"
+            placeholder="e.g., Container Ship, Bulk Carrier"
+          >
+          <small class="form-hint">Enter vessel types separated by commas</small>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="btn btn-secondary"
+            [disabled]="isEditing"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isEditing || !editDockForm.form.valid"
+          >
+            {{ isEditing ? 'Updating...' : 'Update Dock' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -18,6 +18,10 @@ export const routes: Routes = [
       {
         path: 'qualification',
         loadChildren: () => import('./routing/qualification.routes').then((m) => m.routes)
+      },
+      {
+        path: 'docks',
+        loadChildren: () => import('./routing/docks.routes').then((m) => m.routes)
       }
     ],
   },

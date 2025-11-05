@@ -1,10 +1,9 @@
-/* Estilos específicos da página de qualifications */
+/* Estilos específicos da página de docks */
 
 /* Modo escuro - título branco usando host-context */
 :host-context([data-coreui-theme="dark"]) .page-title {
   color: #FFFFFF !important;
 }
-
 
 .modal-overlay {
   position: fixed;
@@ -16,7 +15,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; 
+  z-index: 9999;
   overflow-y: auto;
   box-sizing: border-box;
   padding: 20px;
@@ -27,7 +26,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 90%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   margin: 0;
@@ -77,6 +76,18 @@
   margin-bottom: 20px;
 }
 
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -105,6 +116,14 @@
 .form-textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+/* Form hint styling */
+.form-hint {
+  color: #6c757d;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 }
 
 .modal-footer {
@@ -185,6 +204,12 @@
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
+/* Vessel types styling */
+.vessel-types-display {
+  font-style: italic;
+  color: #6c757d;
+}
+
 /* Dark mode styles for modal */
 :host-context([data-coreui-theme="dark"]) .modal-content {
   background: #2d3748;
@@ -223,6 +248,14 @@
 :host-context([data-coreui-theme="dark"]) .form-textarea:focus {
   border-color: #0d6efd;
   background-color: #4a5568;
+}
+
+:host-context([data-coreui-theme="dark"]) .form-hint {
+  color: #a0aec0;
+}
+
+:host-context([data-coreui-theme="dark"]) .vessel-types-display {
+  color: #a0aec0;
 }
 
 :host-context([data-coreui-theme="dark"]) .modal-footer {
@@ -279,6 +312,18 @@
   border-color: #4a5568;
 }
 
+/* Numeric input specific styling */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none; 
+  margin: 0;
+}
+
 /* Modal responsive styles - More specific selectors with higher priority */
 /* Base responsive styles */
 @media screen and (max-width: 1200px) {
@@ -288,7 +333,7 @@
 
   :host .modal-content {
     width: 85% !important;
-    max-width: 480px !important;
+    max-width: 550px !important;
     max-height: calc(100vh - 30px) !important;
   }
 }
@@ -300,7 +345,7 @@
 
   :host .modal-content {
     width: 90% !important;
-    max-width: 450px !important;
+    max-width: 500px !important;
     max-height: calc(100vh - 30px) !important;
   }
 }
@@ -327,6 +372,15 @@
 
   :host .modal-header h2 {
     font-size: 1.3rem !important;
+  }
+
+  :host .form-row {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  :host .form-row .form-group {
+    margin-bottom: 20px !important;
   }
 }
 
@@ -367,30 +421,48 @@
   :host .btn {
     width: 100% !important;
   }
+
+  :host .form-row {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  :host .form-row .form-group {
+    margin-bottom: 16px !important;
+  }
 }
 
 /* Specific adjustments for when sidebar is open (larger screens with sidebar) */
 @media screen and (min-width: 769px) and (max-width: 1400px) {
   body:not(.sidebar-narrow) :host .modal-content {
     width: 80% !important;
-    max-width: 420px !important;
+    max-width: 480px !important;
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1200px) {
   body:not(.sidebar-narrow) :host .modal-content {
     width: 85% !important;
-    max-width: 380px !important;
+    max-width: 450px !important;
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   body:not(.sidebar-narrow) :host .modal-content {
     width: 90% !important;
-    max-width: 350px !important;
+    max-width: 400px !important;
   }
 
   body:not(.sidebar-narrow) :host .modal-body {
     padding: 20px 16px !important;
+  }
+
+  body:not(.sidebar-narrow) :host .form-row {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  body:not(.sidebar-narrow) :host .form-row .form-group {
+    margin-bottom: 20px !important;
   }
 }

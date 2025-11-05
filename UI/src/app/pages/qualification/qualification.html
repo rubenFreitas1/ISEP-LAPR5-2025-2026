@@ -82,13 +82,13 @@
       </tbody>
     </table>
 
-    <!-- Mensagem quando não há resultados -->
+    <!-- Message when no results are found -->
     <div *ngIf="filteredQualifications.length === 0 && !isLoading" class="no-results">
       <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No qualifications found.' }}</p>
     </div>
   </div>
 
-  <!-- Informações da qualification selecionada -->
+  <!-- Information of selected qualification -->
   <div *ngIf="selectedQualification" class="selected-info">
     <h3>Selected Qualification:</h3>
     <div class="info-card">
