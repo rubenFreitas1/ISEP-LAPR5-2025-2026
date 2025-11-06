@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, OnInit } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -18,6 +18,7 @@ import {
   HeaderModule
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
+import { AuthService } from '../../../auth/auth.service';
 
 
 @Component({
@@ -26,9 +27,12 @@ import { IconDirective } from '@coreui/icons-angular';
   templateUrl: './default-header.html',
   styleUrl: './default-header.css',
 })
-export class DefaultHeader extends HeaderComponent{
+export class DefaultHeader extends HeaderComponent implements OnInit {
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
+  readonly keycloak = inject(AuthService);
+
+  userName = 'User';
 
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
@@ -45,6 +49,14 @@ export class DefaultHeader extends HeaderComponent{
   }
 
   sidebarId = input('sidebar1');
+
+  async ngOnInit() {
+    this.userName = await this.keycloak.getUserName();
+  }
+
+  logout() {
+    this.keycloak.logout();
+  }
 
 
 }

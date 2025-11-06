@@ -12,13 +12,25 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { DropdownModule, SidebarModule } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
+import { provideKeycloak } from 'keycloak-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideKeycloak({
+      config: {
+        url: 'http://localhost:8080',
+        realm: 'lapr5-realm',
+        clientId: 'lapr5-frontend'
+      },
+      initOptions:{
+        onLoad: 'login-required',
+        silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      }
+    }),
+
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(withInterceptorsFromDi()),
-    //provideAnimations(),
     provideRouter(routes,
       withRouterConfig({
         onSameUrlNavigation: 'reload'
@@ -29,7 +41,6 @@ export const appConfig: ApplicationConfig = {
       }),
       withEnabledBlockingInitialNavigation(),
       withViewTransitions(),
-      withHashLocation()
     ),
     importProvidersFrom(SidebarModule, DropdownModule),
     IconSetService,
