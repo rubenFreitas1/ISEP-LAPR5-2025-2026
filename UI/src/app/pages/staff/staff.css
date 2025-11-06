@@ -1,0 +1,257 @@
+/* Reuse qualification styles and tweak for staff page */
+:host-context([data-coreui-theme="dark"]) .page-title { color: #FFFFFF !important; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center; z-index:9999; overflow-y:auto; padding:20px; box-sizing:border-box; }
+.modal-content { background: white; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width:90%; max-width:500px; max-height: calc(100vh - 40px); overflow-y:auto; }
+.modal-header { display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid #e9ecef; }
+.modal-body { padding:24px; }
+.form-group { margin-bottom:20px; }
+.form-input, .form-textarea { width:100%; padding:12px; border:1px solid #ced4da; border-radius:4px; box-sizing:border-box; }
+.modal-footer { display:flex; justify-content:flex-end; gap:12px; padding-top:20px; border-top:1px solid #e9ecef; margin-top:20px; }
+.btn { padding:10px 20px; border:none; border-radius:4px; cursor:pointer; }
+.btn-primary { background-color:#0d6efd; color:white; }
+.btn-secondary { background-color:#6c757d; color:white; }
+.btn:disabled { opacity:0.6; cursor:not-allowed; }
+.alert { padding:12px 16px; margin-bottom:20px; border-radius:4px; }
+.alert-danger { background:#f8d7da; color:#721c24; }
+
+.success-message { background:#1f6d24; border:1px solid #18531c; color:#e6ffed; padding:12px 16px; margin-bottom:20px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; }
+.error-message { background:#fff3f3; border:1px solid #f5c6cb; color:#721c24; padding:12px 16px; margin-bottom:20px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; }
+.close-error { background:none; border:none; font-size:1rem; cursor:pointer; color:inherit; padding:4px 8px; }
+
+/* Animations (same as qualification) */
+@keyframes statusSlideIn { from { opacity:0; transform:translateY(-8px) scale(0.995);} to { opacity:1; transform:translateY(0) scale(1);} }
+@keyframes statusSlideOut { from { opacity:1; transform:translateY(0) scale(1);} to { opacity:0; transform:translateY(-6px) scale(0.995);} }
+.success-message, .error-message { animation: statusSlideIn 280ms ease-out both; }
+.success-message.hiding, .error-message.hiding { animation: statusSlideOut 200ms ease-in both; }
+
+/* table and selection */
+.table-container { margin-top: 12px; }
+.data-table { width:100%; border-collapse:collapse; }
+.data-table th, .data-table td { padding:8px 12px; border-bottom:1px solid #eee; text-align:left; }
+tr.selected { background:#f1f7ff; }
+.btn-select {
+	padding:6px 10px;
+	border-radius:4px;
+	background: #ffffff; /* white background */
+	border: 1px solid #0d6efd; /* blue border */
+	color: #0d6efd; /* blue text */
+	cursor: pointer;
+	transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.btn-select:hover, .btn-select:active {
+	background: #0d6efd; /* blue background on hover */
+	color: #ffffff; /* white text on hover */
+	border-color: #0d6efd;
+}
+.btn-select:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 0.12rem rgba(13,110,253,0.18);
+}
+.btn-select[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;
+	background: #f8f9fa;
+	color: #6c757d;
+	border-color: #e9ecef;
+}
+.no-results { margin-top:12px; }
+
+/* Reuse qualification modal close-button style to keep UI consistent */
+.close-button {
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #6c757d;
+	padding: 0;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+.close-button:hover { background-color: #f8f9fa; color: #333; }
+
+/* Make select and time inputs visually match text inputs and show full border */
+.form-select { width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; background: white; font-size: 14px; }
+.form-select:focus, input[type="time"]:focus, .form-input:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.12); }
+input[type="time"], input[type="time"].form-input { padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+
+/* Small helper text for operational window */
+.op-help { font-size: 12px; color: #6c757d; margin-top: 6px; }
+
+/* Ensure the op-grid lays out exactly as two rows x two columns:
+	 Row 1: Start Day | End Day
+	 Row 2: Start Time | End Time
+	 Each control is in its own cell and labels sit above controls. */
+.op-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto auto;
+	gap: 10px 16px; /* row-gap then column-gap */
+	align-items: start;
+}
+
+.op-grid .form-group { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+
+/* Place items explicitly to avoid accidental wrap order changes */
+.op-grid .form-group:nth-child(1) { grid-column: 1; grid-row: 1; }
+.op-grid .form-group:nth-child(2) { grid-column: 2; grid-row: 1; }
+.op-grid .form-group:nth-child(3) { grid-column: 1; grid-row: 2; }
+.op-grid .form-group:nth-child(4) { grid-column: 2; grid-row: 2; }
+
+/* Controls have consistent height so columns line up visually */
+.op-grid .form-select,
+.op-grid input[type="time"],
+.op-grid .form-input {
+	width: 100%;
+	height: 40px;
+	padding: 8px 10px;
+	box-sizing: border-box;
+}
+
+/* On smaller screens stack into a single column for readability */
+@media (max-width: 520px) {
+	.op-grid { grid-template-columns: 1fr; grid-template-rows: repeat(4, auto); }
+	.op-grid .form-group:nth-child(1), .op-grid .form-group:nth-child(2), .op-grid .form-group:nth-child(3), .op-grid .form-group:nth-child(4) { grid-column: 1; }
+}
+
+/* Dark mode styles for staff page - follow qualification.css patterns */
+:host-context([data-coreui-theme="dark"]) .modal-content {
+	background: #2d3748;
+	color: #e2e8f0;
+}
+
+:host-context([data-coreui-theme="dark"]) .modal-header {
+	border-bottom-color: #4a5568;
+}
+
+:host-context([data-coreui-theme="dark"]) .modal-header h2 {
+	color: #e2e8f0;
+}
+
+:host-context([data-coreui-theme="dark"]) .close-button {
+	color: #a0aec0;
+}
+
+:host-context([data-coreui-theme="dark"]) .close-button:hover {
+	background-color: #4a5568;
+	color: #e2e8f0;
+}
+
+:host-context([data-coreui-theme="dark"]) .form-group label {
+	color: #e2e8f0;
+}
+
+:host-context([data-coreui-theme="dark"]) .form-input,
+:host-context([data-coreui-theme="dark"]) .form-textarea,
+:host-context([data-coreui-theme="dark"]) .form-select,
+:host-context([data-coreui-theme="dark"]) input[type="time"] {
+	background-color: #4a5568;
+	border-color: #718096;
+	color: #e2e8f0;
+}
+
+:host-context([data-coreui-theme="dark"]) .form-input:focus,
+:host-context([data-coreui-theme="dark"]) .form-textarea:focus,
+:host-context([data-coreui-theme="dark"]) .form-select:focus,
+:host-context([data-coreui-theme="dark"]) input[type="time"]:focus {
+	border-color: #0d6efd;
+	background-color: #4a5568;
+}
+
+/* Dark mode for btn-select */
+:host-context([data-coreui-theme="dark"]) .btn-select {
+	background: #1f2937; /* dark gray */
+	border: 1px solid #3b82f6; /* blue-ish */
+	color: #93c5fd; /* lighter blue text */
+}
+:host-context([data-coreui-theme="dark"]) .btn-select:hover,
+:host-context([data-coreui-theme="dark"]) .btn-select:active {
+	background: #2563eb; /* blue */
+	color: #ffffff;
+	border-color: #2563eb;
+}
+:host-context([data-coreui-theme="dark"]) .btn-select[disabled] {
+	background: #2d3748;
+	color: #6b7280;
+	border-color: #374151;
+}
+
+/* Dark mode status/error messages */
+:host-context([data-coreui-theme="dark"]) .error-message {
+	background-color: #4a1e1e;
+	border-color: #6b2c2c;
+	color: #f8d7da;
+}
+
+:host-context([data-coreui-theme="dark"]) .success-message {
+	background: #1f6d24;
+	border: 1px solid #18531c;
+	color: #e6ffed;
+}
+
+/* Dark mode helper text */
+:host-context([data-coreui-theme="dark"]) .op-help,
+:host-context([data-coreui-theme="dark"]) .form-text {
+	color: #cbd5e1;
+}
+
+/* Fix: table separators and modal footer in dark mode should be gray, not white */
+:host-context([data-coreui-theme="dark"]) .data-table th,
+:host-context([data-coreui-theme="dark"]) .data-table td {
+	border-bottom-color: #374151; /* darker gray for separators */
+	color: #cbd5e1;
+}
+
+:host-context([data-coreui-theme="dark"]) tr.selected {
+	background: rgba(59,130,246,0.06); /* subtle blue tint for selection */
+}
+
+:host-context([data-coreui-theme="dark"]) .modal-footer {
+	border-top-color: #4a5568; /* ensure top border is dark gray */
+	background: transparent; /* avoid white footer */
+}
+
+/* If any inner footer element has explicit white background, force it to match modal */
+:host-context([data-coreui-theme="dark"]) .modal-footer * {
+	background: transparent;
+}
+
+/* Ensure modal footer buttons preserve their intended colors (cancel gray, create blue)
+	 even when higher-priority rules set backgrounds transparent. */
+.modal-footer .btn-primary {
+	background-color: #0d6efd;
+	color: #ffffff;
+	border: none;
+}
+.modal-footer .btn-primary:hover:not(:disabled) {
+	background-color: #0b5ed7;
+}
+.modal-footer .btn-secondary {
+	background-color: #6c757d;
+	color: #ffffff;
+	border: none;
+}
+.modal-footer .btn-secondary:hover:not(:disabled) {
+	background-color: #5c636a;
+}
+
+/* Dark mode: keep the same visible button styling but adjust subtle tones if needed */
+:host-context([data-coreui-theme="dark"]) .modal-footer .btn-primary {
+	background-color: #0d6efd;
+	color: #ffffff;
+}
+:host-context([data-coreui-theme="dark"]) .modal-footer .btn-primary:hover:not(:disabled) {
+	background-color: #0b5ed7;
+}
+:host-context([data-coreui-theme="dark"]) .modal-footer .btn-secondary {
+	background-color: #6c757d;
+	color: #ffffff;
+}
+:host-context([data-coreui-theme="dark"]) .modal-footer .btn-secondary:hover:not(:disabled) {
+	background-color: #5c636a;
+}

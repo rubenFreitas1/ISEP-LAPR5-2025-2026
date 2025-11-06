@@ -49,6 +49,7 @@ export class Qualification implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
+  private searchClearTimer: any = null;
 
   constructor(
     private qualificationService: QualificationService,
@@ -72,9 +73,7 @@ export class Qualification implements OnInit, OnDestroy {
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
-      .subscribe(searchTerm => {
-        this.performSearch(searchTerm);
-      });
+      .subscribe(searchTerm => { this.handleSearchTermChange(searchTerm); this.performSearch(searchTerm); });
   }
 
   loadQualifications() {
@@ -155,6 +154,21 @@ export class Qualification implements OnInit, OnDestroy {
   clearSearch() {
     this.searchTerm = '';
     this.filteredQualifications = [...this.qualifications];
+  }
+
+  // When clearing programmatically (e.g. clicking the clear button) ensure the
+  // search pipeline and error-hide behavior run as if the user emptied the input.
+  clearSearchAndNotify() { this.searchTerm = ''; this.filteredQualifications = [...this.qualifications]; this.searchSubject$.next(this.searchTerm); }
+
+  // When the user clears the search input completely, hide any error message after 3s
+  // and avoid stacking timers.
+  private handleSearchTermChange(term: string) {
+    if (this.searchClearTimer) { clearTimeout(this.searchClearTimer); this.searchClearTimer = null; }
+    if (!term || !term.trim()) {
+      if (this.statusMessage && this.statusMessageType === 'error') {
+        this.searchClearTimer = setTimeout(() => { this.clearStatusMessage(); this.searchClearTimer = null; }, 2000);
+      }
+    }
   }
 
   selectQualification(qualification: QualificationModel) {
