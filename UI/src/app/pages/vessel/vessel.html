@@ -1,0 +1,332 @@
+<div class="page-container">
+  <h1 class="page-title">Vessel Records</h1>
+
+  <div class="top-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search for vessel records..."
+        class="search-input"
+      >
+      <button
+        *ngIf="searchTerm"
+        (click)="clearSearch()"
+        class="clear-button"
+        title="Clean search"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="action-buttons">
+      <button
+        (click)="onCreateNew()"
+        class="btn btn-primary"
+        title="Create new vessel record"
+      >
+        New Vessel Record
+      </button>
+      <button
+        (click)="onUpdate()"
+        class="btn btn-secondary"
+        [disabled]="!selectedVesselRecord"
+        title="Edit selected vessel record"
+      >
+        Edit Vessel Record
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="statusMessage" [ngClass]="statusMessageType === 'success' ? 'success-message' : 'error-message'" [class.hiding]="statusHiding">
+    {{ statusMessage }}
+    <button (click)="clearStatusMessage()" class="close-error">✕</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    Loading Vessel Records...
+  </div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>IMO Number</th>
+          <th>Vessel Name</th>
+          <th>Vessel Type</th>
+          <th>Operator</th>
+          <th>Last Modified</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let vesselRecord of filteredVesselRecords"
+          [class.selected]="selectedVesselRecord?.id === vesselRecord.id"
+          (click)="selectVesselRecord(vesselRecord)"
+        >
+          <td>
+            <span class="imo-number">{{ vesselRecord.imoNumber }}</span>
+          </td>
+          <td>
+            <span class="vessel-name">{{ vesselRecord.vesselName }}</span>
+          </td>
+          <td>
+            <span class="vessel-type">{{ vesselRecord.vesselTypeName }}</span>
+          </td>
+          <td>{{ vesselRecord.operator }}</td>
+          <td>
+            <span *ngIf="vesselRecord.lastModifiedAt" class="last-modified">
+              {{ vesselRecord.lastModifiedAt | date:'short' }}
+            </span>
+          </td>
+          <td>
+            <button
+              (click)="selectVesselRecord(vesselRecord); $event.stopPropagation()"
+              class="btn-select"
+              [class.selected]="selectedVesselRecord?.id === vesselRecord.id"
+            >
+              {{ selectedVesselRecord?.id === vesselRecord.id ? 'Unselect' : 'Select' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Message when no results are found -->
+    <div *ngIf="filteredVesselRecords.length === 0 && !isLoading" class="no-results">
+      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No vessel records found.' }}</p>
+    </div>
+  </div>
+
+  <!-- Information of selected vessel record -->
+  <div *ngIf="selectedVesselRecord" class="selected-info">
+    <h3>Selected Vessel Record:</h3>
+    <div class="info-card">
+      <p><strong>IMO Number:</strong> {{ selectedVesselRecord.imoNumber }}</p>
+      <p><strong>Vessel Name:</strong> {{ selectedVesselRecord.vesselName }}</p>
+      <p><strong>Vessel Type:</strong> {{ selectedVesselRecord.vesselTypeName }}</p>
+      <p><strong>Operator:</strong> {{ selectedVesselRecord.operator }}</p>
+      <p *ngIf="selectedVesselRecord.lastModifiedAt"><strong>Last Modified:</strong>
+        {{ selectedVesselRecord.lastModifiedAt | date:'medium' }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Create Vessel Record Modal -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Vessel Record</h2>
+      <button class="close-button" (click)="closeCreateModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error message display -->
+      <div *ngIf="modalErrorMessage" class="alert alert-danger">
+        {{ modalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveNewVesselRecord()" #vesselRecordForm="ngForm">
+        <div class="form-group">
+          <label for="imoNumber">IMO Number *</label>
+          <input
+            type="text"
+            id="imoNumber"
+            name="imoNumber"
+            [(ngModel)]="newVesselRecord.imoNumber"
+            required
+            maxlength="7"
+            pattern="[0-9]{7}"
+            class="form-input"
+            [class.error]="hasFieldError('imoNumber')"
+            placeholder="Enter 7-digit IMO number (e.g., 9241061)"
+          >
+          <small class="help-text">Must be exactly 7 digits</small>
+          <div *ngIf="hasFieldError('imoNumber')" class="field-error">
+            {{ getFieldError('imoNumber') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vesselName">Vessel Name *</label>
+          <input
+            type="text"
+            id="vesselName"
+            name="vesselName"
+            [(ngModel)]="newVesselRecord.vesselName"
+            required
+            class="form-input"
+            [class.error]="hasFieldError('vesselName')"
+            placeholder="Enter vessel name"
+          >
+          <div *ngIf="hasFieldError('vesselName')" class="field-error">
+            {{ getFieldError('vesselName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vesselTypeName">Vessel Type *</label>
+          <select
+            id="vesselTypeName"
+            name="vesselTypeName"
+            [(ngModel)]="newVesselRecord.vesselTypeName"
+            required
+            class="form-input"
+            [class.error]="hasFieldError('vesselTypeName')"
+          >
+            <option value="">Select a vessel type</option>
+            <option *ngFor="let vesselType of vesselTypes" [value]="vesselType.name">
+              {{ vesselType.name }} - {{ vesselType.description }}
+            </option>
+          </select>
+          <div *ngIf="hasFieldError('vesselTypeName')" class="field-error">
+            {{ getFieldError('vesselTypeName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="operator">Operator *</label>
+          <input
+            type="text"
+            id="operator"
+            name="operator"
+            [(ngModel)]="newVesselRecord.operator"
+            required
+            class="form-input"
+            [class.error]="hasFieldError('operator')"
+            placeholder="Enter operator name"
+          >
+          <div *ngIf="hasFieldError('operator')" class="field-error">
+            {{ getFieldError('operator') }}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="btn btn-secondary"
+            [disabled]="isCreating"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isCreating || !vesselRecordForm.form.valid"
+          >
+            {{ isCreating ? 'Creating...' : 'Create Vessel Record' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Vessel Record Modal -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Vessel Record</h2>
+      <button class="close-button" (click)="closeEditModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Error message display -->
+      <div *ngIf="editModalErrorMessage" class="alert alert-danger">
+        {{ editModalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveEditVesselRecord()" #editVesselRecordForm="ngForm">
+        <div class="form-group">
+          <label for="editImoNumber">IMO Number (Read-only)</label>
+          <input
+            type="text"
+            id="editImoNumber"
+            name="editImoNumber"
+            [value]="editVesselRecord.imoNumber"
+            readonly
+            class="form-input readonly"
+            placeholder="IMO Number"
+          >
+          <small class="help-text">IMO number cannot be changed</small>
+        </div>
+
+        <div class="form-group">
+          <label for="editVesselName">Vessel Name *</label>
+          <input
+            type="text"
+            id="editVesselName"
+            name="editVesselName"
+            [(ngModel)]="editVesselRecord.vesselName"
+            required
+            class="form-input"
+            [class.error]="hasEditFieldError('vesselName')"
+            placeholder="Enter vessel name"
+          >
+          <div *ngIf="hasEditFieldError('vesselName')" class="field-error">
+            {{ getEditFieldError('vesselName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editVesselTypeName">Vessel Type *</label>
+          <select
+            id="editVesselTypeName"
+            name="editVesselTypeName"
+            [(ngModel)]="editVesselRecord.vesselTypeName"
+            required
+            class="form-input"
+            [class.error]="hasEditFieldError('vesselTypeName')"
+          >
+            <option value="">Select a vessel type</option>
+            <option *ngFor="let vesselType of vesselTypes" [value]="vesselType.name">
+              {{ vesselType.name }} - {{ vesselType.description }}
+            </option>
+          </select>
+          <div *ngIf="hasEditFieldError('vesselTypeName')" class="field-error">
+            {{ getEditFieldError('vesselTypeName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editOperator">Operator *</label>
+          <input
+            type="text"
+            id="editOperator"
+            name="editOperator"
+            [(ngModel)]="editVesselRecord.operator"
+            required
+            class="form-input"
+            [class.error]="hasEditFieldError('operator')"
+            placeholder="Enter operator name"
+          >
+          <div *ngIf="hasEditFieldError('operator')" class="field-error">
+            {{ getEditFieldError('operator') }}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="btn btn-secondary"
+            [disabled]="isEditing"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isEditing || !editVesselRecordForm.form.valid || !isEditDirty()"
+          >
+            {{ isEditing ? 'Updating...' : 'Update Vessel Record' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

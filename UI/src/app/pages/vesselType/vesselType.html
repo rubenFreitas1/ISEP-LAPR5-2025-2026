@@ -69,7 +69,7 @@
           [class.selected]="selectedVesselType?.id === vesselType.id"
           (click)="selectVesselType(vesselType)"
         >
-          <td>{{ vesselType.name }}</td>
+          <td><span class="vessel-type-name">{{ vesselType.name }}</span></td>
           <td>{{ vesselType.description }}</td>
           <td>{{ vesselType.capacity }}</td>
           <td>{{ vesselType.maxRows }}</td>
