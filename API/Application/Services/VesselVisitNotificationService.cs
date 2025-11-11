@@ -345,7 +345,6 @@ public class VesselVisitNotificationService
         string sequentialNumber = nextSeq.ToString("D6");
         string code = $"{year}-{portCode}-{sequentialNumber}";
 
-        Console.WriteLine($"Generated Vessel Visit Code: {code}");
         return code;
     }
 
