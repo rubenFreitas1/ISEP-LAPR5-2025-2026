@@ -1,0 +1,573 @@
+<div class="page-container">
+  <h1 class="page-title">Organizations</h1>
+
+  <div class="top-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search for organizations..."
+        class="search-input"
+      >
+      <button
+        *ngIf="searchTerm"
+        (click)="clearSearchAndNotify()"
+        class="clear-button"
+        title="Clean search"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="action-buttons">
+      <button
+        (click)="onCreateNew()"
+        class="btn btn-primary"
+        title="Create new organization"
+      >
+        New Organization
+      </button>
+      <button
+        (click)="onUpdate()"
+        class="btn btn-secondary"
+        [disabled]="!selectedOrganization"
+        title="Edit selected organization"
+      >
+        Edit Organization
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="statusMessage" [ngClass]="statusMessageType === 'success' ? 'success-message' : 'error-message'" [class.hiding]="statusHiding">
+    {{ statusMessage }}
+    <button (click)="clearStatusMessage()" class="close-error">✕</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    Loading Organizations...
+  </div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Legal Name</th>
+          <th>Alternative Name</th>
+          <th>Address</th>
+          <th>Tax Number</th>
+          <th>Representative</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let organization of filteredOrganizations"
+          [class.selected]="selectedOrganization?.id === organization.id"
+          (click)="selectOrganization(organization)"
+        >
+          <td>{{ organization.code }}</td>
+          <td>{{ organization.legalName }}</td>
+          <td>{{ organization.alternativeName || '-' }}</td>
+          <td>{{ organization.address }}</td>
+          <td>{{ organization.taxNumber }}</td>
+          <td>{{ organization.representativeName || '-' }}</td>
+          <td>
+            <button
+              (click)="selectOrganization(organization); $event.stopPropagation()"
+              class="btn-select"
+              [class.selected]="selectedOrganization?.id === organization.id"
+            >
+              {{ selectedOrganization?.id === organization.id ? 'Unselect' : 'Select' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredOrganizations.length === 0 && !isLoading" class="no-results">
+      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No organizations found.' }}</p>
+    </div>
+  </div>
+
+  <!-- Information of selected organization -->
+  <div *ngIf="selectedOrganization" class="selected-info">
+    <h3>Selected Organization:</h3>
+    <div class="info-card">
+      <div class="info-section">
+        <h4>Organization Details</h4>
+        <p><strong>Code:</strong> {{ selectedOrganization.code }}</p>
+        <p><strong>Legal Name:</strong> {{ selectedOrganization.legalName }}</p>
+        <p><strong>Alternative Name:</strong> {{ selectedOrganization.alternativeName || '-' }}</p>
+        <p><strong>Address:</strong> {{ selectedOrganization.address }}</p>
+        <p><strong>Tax Number:</strong> {{ selectedOrganization.taxNumber }}</p>
+        <p><strong>Last Modified:</strong> {{ selectedOrganization.lastModifiedAt | date:'short' }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="selectedOrganization.representativeName">
+        <h4>Representative Details</h4>
+        <p><strong>Name:</strong> {{ selectedOrganization.representativeName }}</p>
+        <p><strong>Citizen ID:</strong> {{ selectedOrganization.representativeCitizenId }}</p>
+        <p><strong>Nationality:</strong> {{ selectedOrganization.representativeNationality }}</p>
+        <p><strong>Email:</strong> {{ selectedOrganization.representativeEmail }}</p>
+        <p><strong>Phone:</strong> {{ selectedOrganization.representativePhoneNumber }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="!selectedOrganization.representativeName">
+        <h4>Representative</h4>
+        <p><em>No representative assigned</em></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Organization Modal -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Organization</h2>
+      <button class="close-button" (click)="closeCreateModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="modalErrorMessage" class="alert alert-danger">
+        {{ modalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveNewOrganization()" #organizationForm="ngForm">
+        <!-- Organization Details Section -->
+        <div class="form-section">
+          <h3>Organization Details</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="code">Code *</label>
+              <input
+                type="text"
+                id="code"
+                name="code"
+                [(ngModel)]="newOrganization.code"
+                required
+                class="form-input"
+                [class.error]="hasFieldError('code')"
+                placeholder="Enter organization code"
+              >
+              <div *ngIf="hasFieldError('code')" class="field-error">
+                {{ getFieldError('code') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="legalName">Legal Name *</label>
+              <input
+                type="text"
+                id="legalName"
+                name="legalName"
+                [(ngModel)]="newOrganization.legalName"
+                required
+                class="form-input"
+                [class.error]="hasFieldError('legalName')"
+                placeholder="Enter legal name"
+              >
+              <div *ngIf="hasFieldError('legalName')" class="field-error">
+                {{ getFieldError('legalName') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="alternativeName">Alternative Name</label>
+            <input
+              type="text"
+              id="alternativeName"
+              name="alternativeName"
+              [(ngModel)]="newOrganization.alternativeName"
+              class="form-input"
+              placeholder="Enter alternative name (optional)"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address *</label>
+            <textarea
+              id="address"
+              name="address"
+              [(ngModel)]="newOrganization.address"
+              required
+              class="form-textarea"
+              [class.error]="hasFieldError('address')"
+              placeholder="Enter organization address"
+              rows="3"
+            ></textarea>
+            <div *ngIf="hasFieldError('address')" class="field-error">
+              {{ getFieldError('address') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="taxNumber">Tax Number *</label>
+            <input
+              type="text"
+              id="taxNumber"
+              name="taxNumber"
+              [(ngModel)]="newOrganization.taxNumber"
+              required
+              class="form-input"
+              [class.error]="hasFieldError('taxNumber')"
+              placeholder="Enter tax number"
+            >
+            <div *ngIf="hasFieldError('taxNumber')" class="field-error">
+              {{ getFieldError('taxNumber') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Representative Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Representative</h3>
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                [(ngModel)]="includeRepresentative"
+                name="includeRepresentative"
+              >
+              <span class="checkmark"></span>
+              Add Representative
+            </label>
+          </div>
+
+          <div *ngIf="includeRepresentative" class="representative-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="repName">Name *</label>
+                <input
+                  type="text"
+                  id="repName"
+                  name="repName"
+                  [(ngModel)]="newRepresentative.name"
+                  class="form-input"
+                  [class.error]="hasFieldError('representativeName')"
+                  placeholder="Enter representative name"
+                >
+                <div *ngIf="hasFieldError('representativeName')" class="field-error">
+                  {{ getFieldError('representativeName') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="repCitizenId">Citizen ID *</label>
+                <input
+                  type="text"
+                  id="repCitizenId"
+                  name="repCitizenId"
+                  [(ngModel)]="newRepresentative.citizenId"
+                  class="form-input"
+                  [class.error]="hasFieldError('representativeCitizenId')"
+                  placeholder="Enter citizen ID"
+                >
+                <div *ngIf="hasFieldError('representativeCitizenId')" class="field-error">
+                  {{ getFieldError('representativeCitizenId') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="repNationality">Nationality *</label>
+                <input
+                  type="text"
+                  id="repNationality"
+                  name="repNationality"
+                  [(ngModel)]="newRepresentative.nationality"
+                  class="form-input"
+                  [class.error]="hasFieldError('representativeNationality')"
+                  placeholder="Enter nationality"
+                >
+                <div *ngIf="hasFieldError('representativeNationality')" class="field-error">
+                  {{ getFieldError('representativeNationality') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="repEmail">Email *</label>
+                <input
+                  type="email"
+                  id="repEmail"
+                  name="repEmail"
+                  [(ngModel)]="newRepresentative.email"
+                  class="form-input"
+                  [class.error]="hasFieldError('representativeEmail')"
+                  placeholder="Enter email address"
+                >
+                <div *ngIf="hasFieldError('representativeEmail')" class="field-error">
+                  {{ getFieldError('representativeEmail') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="repPhone">Phone Number *</label>
+              <input
+                type="tel"
+                id="repPhone"
+                name="repPhone"
+                [(ngModel)]="newRepresentative.phoneNumber"
+                class="form-input"
+                [class.error]="hasFieldError('representativePhoneNumber')"
+                placeholder="Enter phone number"
+              >
+              <div *ngIf="hasFieldError('representativePhoneNumber')" class="field-error">
+                {{ getFieldError('representativePhoneNumber') }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="btn btn-secondary"
+            [disabled]="isCreating"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isCreating"
+          >
+            {{ isCreating ? 'Creating...' : 'Create Organization' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Organization Modal -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Organization</h2>
+      <button class="close-button" (click)="closeEditModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="editModalErrorMessage" class="alert alert-danger">
+        {{ editModalErrorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSaveEditOrganization()" #editOrganizationForm="ngForm">
+        <!-- Organization Details Section -->
+        <div class="form-section">
+          <h3>Organization Details</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editCode">Code (Read-only)</label>
+              <input
+                type="text"
+                id="editCode"
+                name="editCode"
+                [value]="editOrganization.code"
+                readonly
+                class="form-input readonly"
+                placeholder="Organization code"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="editLegalName">Legal Name *</label>
+              <input
+                type="text"
+                id="editLegalName"
+                name="editLegalName"
+                [(ngModel)]="editOrganization.legalName"
+                required
+                class="form-input"
+                [class.error]="hasEditFieldError('legalName')"
+                placeholder="Enter legal name"
+              >
+              <div *ngIf="hasEditFieldError('legalName')" class="field-error">
+                {{ getEditFieldError('legalName') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editAlternativeName">Alternative Name</label>
+            <input
+              type="text"
+              id="editAlternativeName"
+              name="editAlternativeName"
+              [(ngModel)]="editOrganization.alternativeName"
+              class="form-input"
+              placeholder="Enter alternative name (optional)"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="editAddress">Address *</label>
+            <textarea
+              id="editAddress"
+              name="editAddress"
+              [(ngModel)]="editOrganization.address"
+              required
+              class="form-textarea"
+              [class.error]="hasEditFieldError('address')"
+              placeholder="Enter organization address"
+              rows="3"
+            ></textarea>
+            <div *ngIf="hasEditFieldError('address')" class="field-error">
+              {{ getEditFieldError('address') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editTaxNumber">Tax Number *</label>
+            <input
+              type="text"
+              id="editTaxNumber"
+              name="editTaxNumber"
+              [(ngModel)]="editOrganization.taxNumber"
+              required
+              class="form-input"
+              [class.error]="hasEditFieldError('taxNumber')"
+              placeholder="Enter tax number"
+            >
+            <div *ngIf="hasEditFieldError('taxNumber')" class="field-error">
+              {{ getEditFieldError('taxNumber') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Representative Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Representative</h3>
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                [(ngModel)]="editIncludeRepresentative"
+                name="editIncludeRepresentative"
+              >
+              <span class="checkmark"></span>
+              {{ hasExistingRepresentative ? 'Update Representative' : 'Add Representative' }}
+            </label>
+          </div>
+
+          <div *ngIf="editIncludeRepresentative" class="representative-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editRepName">Name *</label>
+                <input
+                  type="text"
+                  id="editRepName"
+                  name="editRepName"
+                  [(ngModel)]="editRepresentative.name"
+                  class="form-input"
+                  [class.error]="hasEditFieldError('representativeName')"
+                  placeholder="Enter representative name"
+                >
+                <div *ngIf="hasEditFieldError('representativeName')" class="field-error">
+                  {{ getEditFieldError('representativeName') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="editRepCitizenId">Citizen ID *</label>
+                <input
+                  type="text"
+                  id="editRepCitizenId"
+                  name="editRepCitizenId"
+                  [(ngModel)]="editRepresentative.citizenId"
+                  class="form-input"
+                  [class.error]="hasEditFieldError('representativeCitizenId')"
+                  placeholder="Enter citizen ID"
+                >
+                <div *ngIf="hasEditFieldError('representativeCitizenId')" class="field-error">
+                  {{ getEditFieldError('representativeCitizenId') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editRepNationality">Nationality *</label>
+                <input
+                  type="text"
+                  id="editRepNationality"
+                  name="editRepNationality"
+                  [(ngModel)]="editRepresentative.nationality"
+                  class="form-input"
+                  [class.error]="hasEditFieldError('representativeNationality')"
+                  placeholder="Enter nationality"
+                >
+                <div *ngIf="hasEditFieldError('representativeNationality')" class="field-error">
+                  {{ getEditFieldError('representativeNationality') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="editRepEmail">Email *</label>
+                <input
+                  type="email"
+                  id="editRepEmail"
+                  name="editRepEmail"
+                  [(ngModel)]="editRepresentative.email"
+                  class="form-input"
+                  [class.error]="hasEditFieldError('representativeEmail')"
+                  placeholder="Enter email address"
+                >
+                <div *ngIf="hasEditFieldError('representativeEmail')" class="field-error">
+                  {{ getEditFieldError('representativeEmail') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="editRepPhone">Phone Number *</label>
+              <input
+                type="tel"
+                id="editRepPhone"
+                name="editRepPhone"
+                [(ngModel)]="editRepresentative.phoneNumber"
+                class="form-input"
+                [class.error]="hasEditFieldError('representativePhoneNumber')"
+                placeholder="Enter phone number"
+              >
+              <div *ngIf="hasEditFieldError('representativePhoneNumber')" class="field-error">
+                {{ getEditFieldError('representativePhoneNumber') }}
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="hasExistingRepresentative && !editIncludeRepresentative" class="warning-message">
+            <p><strong>Warning:</strong> Unchecking this option will remove the existing representative from this organization.</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="btn btn-secondary"
+            [disabled]="isEditing"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isEditing || !isEditDirty()"
+          >
+            {{ isEditing ? 'Updating...' : 'Update Organization' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
