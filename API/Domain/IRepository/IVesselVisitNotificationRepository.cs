@@ -21,6 +21,8 @@ public interface IVesselVisitNotificationRepository : IGenericRepository<VesselV
 
     Task<IEnumerable<VesselVisitNotification>> GetVisitsByDateRange_OrgAsync(DateTime startDate, DateTime endDate, string orgCode);
 
+    Task<IEnumerable<VesselVisitNotification>> GetVisitsByTargetDay_StatusAsync(DateTime targetDay, VisitStatus status);
+
     Task<IEnumerable<VesselVisitNotification>> GetVisitsByRepresentativeAsync(string citizenId);
 
     Task<IEnumerable<VesselVisitNotification>> GetVisitsByStatus_OrgAsync(VisitStatus status, string orgCode);

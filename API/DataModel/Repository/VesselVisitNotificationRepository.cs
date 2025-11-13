@@ -223,6 +223,32 @@ public class VesselVisitNotificationRepository : GenericRepository<VesselVisitNo
         }
     }
 
+    public async Task<IEnumerable<VesselVisitNotification>> GetVisitsByTargetDay_StatusAsync(DateTime targetDay, VisitStatus status)
+    {
+        DateTime endDate = targetDay.Date.AddDays(1);
+        try
+        {
+            IEnumerable<VesselVisitNotificationDataModel> vesselVisitDMs = await _context.Set<VesselVisitNotificationDataModel>()
+                .Include(vvn => vvn.Vessel)!
+                    .ThenInclude(v => v.VesselType)
+                .Include(vvn => vvn.Representative)!
+                    .ThenInclude(r => r.Organization)
+                .Include(vvn => vvn.CargoManifests)!
+                    .ThenInclude(cm => cm.Entries)
+                        .ThenInclude(e => e.StorageArea)
+                .Include(vvn => vvn.CrewMembers)!
+                .Where(vvn => vvn.ETA >= targetDay && vvn.ETA <= endDate && vvn.VisitStatus == status.ToString()) 
+                .ToListAsync();
+
+            IEnumerable<VesselVisitNotification> vesselVisits = vesselVisitDMs.Select(vvn => _vesselVisitNotificationMapper.ToDomain(vvn));
+            return vesselVisits;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
     public async Task<IEnumerable<VesselVisitNotification>> GetVisitsByRepresentativeAsync(string citizenId)
     {
         try

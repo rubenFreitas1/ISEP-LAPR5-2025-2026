@@ -1,6 +1,8 @@
 using DataModel.Repository;
 using Microsoft.Extensions.DependencyInjection;
-
+using System;
+using System.Text;
+using System.Collections.Generic;
 namespace WebApi.Helpers;
 
 using DataModel.Model;
@@ -62,7 +64,7 @@ public static class Utilities
                 var vesselRecords = db.VesselRecords.ToList();
                 var representatives = db.Representatives.ToList();
                 var storageAreas = db.StorageAreas.ToList();
-                db.VesselVisitNotifications.AddRange(GetSeedingVesselVisitNotificationsDataModel(vesselRecords, representatives, storageAreas));
+                db.VesselVisitNotifications.AddRange(GetSeedingVesselVisitNotificationsDataModel(vesselRecords, representatives, storageAreas, docks));
                 db.SaveChanges();
 
                 db.Qualifications.AddRange(GetSeedingQualificationsDataModel());
@@ -135,6 +137,30 @@ public static class Utilities
                 VesselName = "Vessel Two",
                 VesselType = vesselTypes[1],
                 Operator = "MARIA Shipping",
+                LastModifiedAt = DateTime.UtcNow
+            },
+            new VesselRecordDataModel
+            {
+                IMONumber = "9074730",
+                VesselName = "Vessel Three",
+                VesselType = vesselTypes[1],
+                Operator = "PEDRO Shipping",
+                LastModifiedAt = DateTime.UtcNow
+            },
+            new VesselRecordDataModel
+            {
+                IMONumber = "9319466",
+                VesselName = "Vessel Four",
+                VesselType = vesselTypes[0],
+                Operator = "ANA Shipping",
+                LastModifiedAt = DateTime.UtcNow
+            },
+            new VesselRecordDataModel
+            {
+                IMONumber = "7601255",
+                VesselName = "Vessel Five",
+                VesselType = vesselTypes[0],
+                Operator = "LUIS Shipping",
                 LastModifiedAt = DateTime.UtcNow
             }
         };
@@ -212,7 +238,7 @@ public static class Utilities
             }
         };
     }
-    public static List<VesselVisitNotificationDataModel> GetSeedingVesselVisitNotificationsDataModel(List<VesselRecordDataModel> vesselRecords, List<RepresentativeDataModel> representatives, List<StorageAreaDataModel> storageAreas)
+    public static List<VesselVisitNotificationDataModel> GetSeedingVesselVisitNotificationsDataModel(List<VesselRecordDataModel> vesselRecords, List<RepresentativeDataModel> representatives, List<StorageAreaDataModel> storageAreas, List<DockDataModel> docks)
     {
         var now = DateTime.UtcNow;
         var notifications = new List<VesselVisitNotificationDataModel>();
@@ -345,10 +371,123 @@ public static class Utilities
             NumberOfCrewMembers = 10
         };
 
+
+
+        var n5 = new VesselVisitNotificationDataModel
+        {
+            Code = $"{now.Year}-PA-{5.ToString("D6")}",
+            Vessel = vesselRecords[1],
+            VesselId = vesselRecords[1].Id,
+            Representative = representatives[3],
+            RepresentativeId = representatives[3].Id,
+            ETA = new DateTime(2026, 1, 1, 13, 0, 0),
+            ETD = new DateTime(2026, 1, 1, 23, 0, 0),
+            CargoManifests = new List<CargoManifestDataModel>(),
+            CargoType = CargoType.Container.ToString(),
+            Volume = 300.0,
+            CrewMembers = new List<CrewMemberDataModel>
+            {
+                new CrewMemberDataModel { Name = "Captain 5", CitizenId = "CPT005", Rank = CrewRank.Captain.ToString(), Nationality = "PT" }
+            },
+            AssignedDock = docks[0],
+            VisitStatus = VisitStatus.Approved.ToString(),
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
+        };
+
+        var cm5 = new List<CargoManifestDataModel>();
+        AddContainers(cm5, storageAreas, 20, 15);
+        n5.CargoManifests = cm5;
+        
+        
+        var n6 = new VesselVisitNotificationDataModel
+        {
+            Code = $"{now.Year}-PA-{6.ToString("D6")}",
+            Vessel = vesselRecords[2],
+            VesselId = vesselRecords[2].Id,
+            Representative = representatives[3],
+            RepresentativeId = representatives[3].Id,
+            ETA = new DateTime(2026, 1, 1, 10, 0, 0),
+            ETD = new DateTime(2026, 1, 1, 17, 0, 0),
+            CargoManifests = new List<CargoManifestDataModel>(),
+            CargoType = CargoType.Container.ToString(),
+            Volume = 300.0,
+            CrewMembers = new List<CrewMemberDataModel>
+            {
+                new CrewMemberDataModel { Name = "Captain 6", CitizenId = "CPT006", Rank = CrewRank.Captain.ToString(), Nationality = "PT" }
+            },
+            AssignedDock = docks[0],
+            VisitStatus = VisitStatus.Approved.ToString(),
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
+        };
+
+        var cm6 = new List<CargoManifestDataModel>();
+        AddContainers(cm6, storageAreas, 50, 0);
+        n6.CargoManifests = cm6;
+
+
+        var n7 = new VesselVisitNotificationDataModel
+        {
+            Code = $"{now.Year}-PA-{7.ToString("D6")}",
+            Vessel = vesselRecords[3],
+            VesselId = vesselRecords[3].Id,
+            Representative = representatives[3],
+            RepresentativeId = representatives[3].Id,
+            ETA = new DateTime(2026, 1, 1, 7, 0, 0),
+            ETD = new DateTime(2026, 1, 1, 15, 0, 0),
+            CargoManifests = new List<CargoManifestDataModel>(),
+            CargoType = CargoType.Container.ToString(),
+            Volume = 400.0,
+            CrewMembers = new List<CrewMemberDataModel>
+            {
+                new CrewMemberDataModel { Name = "Captain 7", CitizenId = "CPT007", Rank = CrewRank.Captain.ToString(), Nationality = "ES" }
+            },
+            AssignedDock = docks[0],
+            VisitStatus = VisitStatus.Approved.ToString(),
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
+        };
+
+        var cm7 = new List<CargoManifestDataModel>();
+        AddContainers(cm7, storageAreas, 50, 50);
+        n7.CargoManifests = cm7;
+
+
+        var n8 = new VesselVisitNotificationDataModel
+        {
+            Code = $"{now.Year}-PA-{8.ToString("D6")}",
+            Vessel = vesselRecords[4],
+            VesselId = vesselRecords[4].Id,
+            Representative = representatives[3],
+            RepresentativeId = representatives[3].Id,
+            ETA = new DateTime(2026, 1, 1, 0, 0, 0),
+            ETD = new DateTime(2026, 1, 1, 10, 0, 0),
+            CargoManifests = new List<CargoManifestDataModel>(),
+            CargoType = CargoType.Container.ToString(),
+            Volume = 400.0,
+            CrewMembers = new List<CrewMemberDataModel>
+            {
+                new CrewMemberDataModel { Name = "Captain 8", CitizenId = "CPT008", Rank = CrewRank.Captain.ToString(), Nationality = "FR" }
+            },
+            AssignedDock = docks[0],
+            VisitStatus = VisitStatus.Approved.ToString(),
+            LastModifiedAt = now,
+            NumberOfCrewMembers = 10
+        };
+
+        var cm8 = new List<CargoManifestDataModel>();
+        AddContainers(cm8, storageAreas, 0, 50);
+        n8.CargoManifests = cm8;
+
         notifications.Add(n1);
         notifications.Add(n2);
         notifications.Add(n3);
         notifications.Add(n4);
+        notifications.Add(n5);
+        notifications.Add(n6);
+        notifications.Add(n7);
+        notifications.Add(n8);
 
         return notifications;
     }
@@ -501,5 +640,53 @@ public static class Utilities
         }
 
         return resources;
+    }
+
+
+
+        private static void AddContainers(List<CargoManifestDataModel> cargoManifest, List<StorageAreaDataModel> storageAreas, int numberOfContainersLoading, int numberOfContainersUnloading)
+        {
+        var random = new Random();
+        string GenerateContainerCode()
+        {
+            const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var sb = new StringBuilder();
+            for (int i = 0; i < 4; i++){
+                sb.Append(letters[random.Next(letters.Length)]);
+            }  
+            for (int i = 0; i < 7; i++){
+                sb.Append(random.Next(0, 9));
+            }
+            return sb.ToString();
+        }
+
+        List<CargoManifestEntryDataModel> GenerateEntries(int count)
+        {
+            var entries = new List<CargoManifestEntryDataModel>();
+            for (int i = 0; i < count; i++)
+            {
+                entries.Add(new CargoManifestEntryDataModel
+                {
+                    Container = GenerateContainerCode(),
+                    Row = random.Next(1, 6),  
+                    Bay = random.Next(1, 10), 
+                    Tier = random.Next(1, 4), 
+                    StorageArea = storageAreas[0],
+                    StorageAreaId = storageAreas[0].Id
+                });
+            }
+
+            return entries;
+        }
+        cargoManifest.Add(new CargoManifestDataModel
+        {
+            Type = CargoManifestType.Loading.ToString(),
+            Entries = GenerateEntries(numberOfContainersLoading)
+        });
+        cargoManifest.Add(new CargoManifestDataModel
+        {
+            Type = CargoManifestType.Unloading.ToString(),
+            Entries = GenerateEntries(numberOfContainersUnloading)
+        });
     }
 }
