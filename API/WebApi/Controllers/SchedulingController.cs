@@ -21,9 +21,12 @@ public class SchedulingController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SchedulingDTO>>> GetSchedullingForTargetDay(DateTime targetDay)
+    public async Task<ActionResult<SchedulingDTO>> GetSchedullingForTargetDay(DateTime targetDay)
     {
-        IEnumerable<SchedulingDTO> notifications = await _schedulingService.GetSchedulingForTargetDay(targetDay);
+        SchedulingDTO? notifications = await _schedulingService.GetSchedulingForTargetDay(targetDay, _errorMessages);
+        if(_errorMessages.Count > 0){
+            return BadRequest(_errorMessages);
+        }
         return Ok(notifications);
     }
 

@@ -3,22 +3,14 @@ namespace Application.DTO;
 
 public class SchedulingDTO
 {
-    public String VesselName { get; set; }
+    public List<SchedulingEntryDTO> Entries { get; set; }
 
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
+    public int TotalDelay { get; set; }
 
-    public List<String> AssignedCranes { get; set; }
-
-    public List<String> StaffNames { get; set; }
-
-    public SchedulingDTO(string vesselName, DateTime startTime, DateTime endTime, List<String> assignedCrane, List<String> staffNames)
+    public SchedulingDTO(List<SchedulingEntryDTO> entries, int totalDelay)
     {
-        VesselName = vesselName;
-        StartTime = startTime;
-        EndTime = endTime;
-        AssignedCranes = assignedCrane;
-        StaffNames = staffNames;
+        Entries = entries;
+        TotalDelay = totalDelay;
     }
 
 }

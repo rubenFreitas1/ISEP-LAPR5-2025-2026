@@ -589,13 +589,13 @@ public static class Utilities
                 Description = "Ship-to-Shore Crane 1",
                 Kind = PhysicalResourceKind.STSCrane,
                 SetupTimeMinutes = 30,
-                OperationalCapacity = 50,
+                OperationalCapacity = 5,
                 AssignedDockName = "Dock A",
                 QualificationRequirements = new List<QualificationDataModel> { stsOpQual },
-                StartDay = DayOfWeek.Monday,
+                StartDay = DayOfWeek.Sunday,
                 EndDay = DayOfWeek.Saturday,
-                StartTime = new TimeSpan(6, 0, 0),
-                EndTime = new TimeSpan(22, 0, 0),
+                StartTime = new TimeSpan(0, 0, 0),
+                EndTime = new TimeSpan(23, 59, 59),
                 Status = ResourceStatus.Available
             });
         }
