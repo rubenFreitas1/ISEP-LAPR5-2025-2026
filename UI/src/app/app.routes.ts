@@ -58,15 +58,13 @@ export const routes: Routes = [
       {
         path: 'vvndecision',
         loadChildren: () => import('./routing/vesselVisitNotificationDecision.routes').then((m) => m.routes)
+      },
+      {
+        path: 'schedule',
+        loadChildren: () => import('./routing/schedule.routes').then((m) => m.routes)
       }
     ],
   },
-  {
-    path: 'login',
-    loadComponent: () => import('./pages/login/login').then(m => m.Login),
-    data: { title: 'Login Page' }
-  },
-
   {
     path: 'v',
     loadComponent: () => import('./components/visualization/visualization').then(m => m.PortVisualizationComponent),

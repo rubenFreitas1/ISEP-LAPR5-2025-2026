@@ -1,0 +1,104 @@
+<div class="page-container">
+  <h1 class="page-title">Schedule</h1>
+
+  <div class="top-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search for vessel visit notifications..."
+        class="search-input"
+      />
+      <button *ngIf="searchTerm" (click)="clearSearchAndNotify()" class="clear-button" title="Clean search">✕</button>
+    </div>
+
+    <div class="schedule-controls">
+      <input id="targetDay" type="datetime-local" [(ngModel)]="targetDayLocal" class="form-input" />
+      <button class="btn btn-primary" (click)="runSchedule()">Run Schedule</button>
+    </div>
+  </div>
+
+  <div *ngIf="statusMessage" [ngClass]="statusMessageType === 'success' ? 'success-message' : 'error-message'" [class.hiding]="statusHiding">
+    {{ statusMessage }}
+    <button (click)="clearStatusMessage()" class="close-error">✕</button>
+  </div>
+
+  <div *ngIf="showScheduleModal" class="modal-overlay">
+    <div class="modal-content large-modal timeline-modal">
+      <div class="modal-header">
+        <h2>Daily Schedule</h2>
+        <div class="header-controls">
+          <strong *ngIf="scheduleModel">Total delay: {{ scheduleModel.totalDelay || 0 }} Hours</strong>
+          <button class="close-button" (click)="closeSchedule()">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="!scheduleModel || !scheduleModel.scheduleEntries || scheduleModel.scheduleEntries.length === 0">No schedule entries returned.</p>
+
+        <div *ngIf="scheduleModel && scheduleModel.scheduleEntries && scheduleModel.scheduleEntries.length > 0">
+
+
+          <div class="timeline-track">
+            <div *ngFor="let entry of scheduleModel.scheduleEntries" class="timeline-row">
+              <div class="timeline-info">
+                <div class="timeline-name">{{ entry.vesselName || '—' }}</div>
+                <div class="timeline-times">{{ formatTimeForDisplay(entry.arrivalTime) }} — {{ formatTimeForDisplay(entry.departureTime) }}</div>
+              </div>
+              <div class="timeline-bar-container">
+                <div class="timeline-bar" [ngStyle]="getEntryStyle(entry)"></div>
+              </div>
+              <div class="timeline-assigned">
+                <div *ngIf="entry.assignedCrane && entry.assignedCrane.length">Crane: {{ joinAssignedCranes(entry) }}</div>
+                <div *ngIf="entry.assignedStaff && entry.assignedStaff.length">Staff: {{ joinAssignedStaff(entry) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" (click)="closeSchedule()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading Schedule...</div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Vessel IMO</th>
+          <th>Representative</th>
+          <th>ETA</th>
+          <th>ETD</th>
+          <th>Cargo Type</th>
+          <th>Volume</th>
+          <th>Status</th>
+          <th>Crew Members</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let notification of filteredNotifications">
+          <td>{{ notification.code }}</td>
+          <td>{{ notification.vesselIMO }}</td>
+          <td>{{ notification.representativeCitizenID }}</td>
+          <td>{{ formatDateForDisplay(notification.eta) }}</td>
+          <td>{{ formatDateForDisplay(notification.etd) }}</td>
+          <td>{{ notification.cargoType }}</td>
+          <td>{{ notification.volume }}</td>
+          <td>
+            <span [class]="'status-badge status-' + notification.visitStatus?.toLowerCase()">{{ notification.visitStatus }}</span>
+          </td>
+          <td>{{ notification.numberOfCrewMembers }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredNotifications.length === 0 && !isLoading" class="no-results">
+      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No vessel visit notifications found.' }}</p>
+    </div>
+  </div>
+</div>
+

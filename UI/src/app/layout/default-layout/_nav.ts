@@ -85,5 +85,10 @@ export const navItems: INavData[] = [
         icon: 'nav-img nav-img-representative'
       }
     ]
+  },
+  {
+    name: 'Schedule',
+    url: '/schedule',
+    icon: 'nav-img nav-img-schedule'
   }
 ];
