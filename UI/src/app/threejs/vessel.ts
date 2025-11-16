@@ -1,0 +1,35 @@
+import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+
+export async function createVessel(): Promise<THREE.Group> {
+  return new Promise((resolve, reject) => {
+    const objLoader = new OBJLoader();
+
+
+    // ⚙️ (opcional) Se tiveres materiais .mtl
+    const mtlLoader = new MTLLoader();
+    mtlLoader.setPath('assets/models/');
+    mtlLoader.load('ship-cargo-a.mtl', (materials) => {
+      materials.preload();
+      objLoader.setMaterials(materials);
+      objLoader.setPath('assets/models/');
+      objLoader.load(
+        'ship-cargo-a.obj',
+        (object) => {
+          object.scale.set(10, 10, 10); // ajusta escala conforme necessário
+          object.position.set(10, 10, 110);
+          resolve(object);
+        },
+        (xhr) => {
+          console.log(`Vessel ${(xhr.loaded / xhr.total) * 100}% loaded`);
+        },
+        (error) => {
+          console.error('Erro ao carregar o modelo do vessel:', error);
+          reject(error);
+        }
+      );
+      
+    });
+  });
+}
