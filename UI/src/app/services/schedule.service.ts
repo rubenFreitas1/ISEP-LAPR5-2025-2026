@@ -10,9 +10,10 @@ import { ScheduleModel } from '../models/schedule.model';
 export class ScheduleService {
   constructor(private apiService: ApiService) {}
 
-  getScheduleByTargetDay(targetDay: string): Observable<ScheduleModel> {
+    getScheduleByTargetDay(targetDay: string, algorithm: string = 'default'): Observable<ScheduleModel> {
       const encoded = encodeURIComponent(targetDay);
-      return this.apiService.get<ScheduleModel>(`/Scheduling?targetDay=${encoded}`);
-  }
+      const alg = encodeURIComponent(algorithm || 'default');
+      return this.apiService.get<ScheduleModel>(`/Scheduling?targetDay=${encoded}&algorithm=${alg}`);
+    }
 
 }

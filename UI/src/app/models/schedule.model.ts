@@ -19,4 +19,6 @@ export interface ScheduleModel {
   id?: number;
   totalDelay?: number;
   scheduleEntries?: ScheduleEntryModel[];
+  algorithm?: string;
+  executionTime?: number;
 }

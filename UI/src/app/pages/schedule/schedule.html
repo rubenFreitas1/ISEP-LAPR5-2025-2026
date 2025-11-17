@@ -14,7 +14,19 @@
     </div>
 
     <div class="schedule-controls">
+      <div class="algorithm-select">
+        <label class="alg-label">Algorithm:</label>
+        <div class="toggle-wrap">
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="isImproved" (ngModelChange)="onToggle($event)" />
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label">{{ isImproved ? 'Improved' : 'Default' }}</span>
+        </div>
+      </div>
+
       <input id="targetDay" type="datetime-local" [(ngModel)]="targetDayLocal" class="form-input" />
+
       <button class="btn btn-primary" (click)="runSchedule()">Run Schedule</button>
     </div>
   </div>
@@ -29,7 +41,7 @@
       <div class="modal-header">
         <h2>Daily Schedule</h2>
         <div class="header-controls">
-          <strong *ngIf="scheduleModel">Total delay: {{ scheduleModel.totalDelay || 0 }} Hours</strong>
+          <strong *ngIf="scheduleModel">{{ scheduleModel.algorithm }}</strong>
           <button class="close-button" (click)="closeSchedule()">✕</button>
         </div>
       </div>
@@ -53,6 +65,10 @@
                 <div *ngIf="entry.assignedStaff && entry.assignedStaff.length">Staff: {{ joinAssignedStaff(entry) }}</div>
               </div>
             </div>
+          </div>
+          <div class="schedule-summary" *ngIf="scheduleModel">
+            <p><strong>Total delay:</strong> {{ scheduleModel.totalDelay || 0 }} Hours</p>
+            <p><strong>Execution time:</strong> {{ scheduleModel.executionTime || 0 }} Seconds</p>
           </div>
         </div>
       </div>

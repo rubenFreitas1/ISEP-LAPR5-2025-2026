@@ -24,6 +24,7 @@ import { ScheduleModel, ScheduleEntryModel } from '../../models/schedule.model';
 })
 export class Schedule implements OnInit, OnDestroy {
   isLoading: boolean = false;
+  isImproved: boolean = false;
 
   CargoType = CargoType;
   VisitStatus = VisitStatus;
@@ -42,6 +43,7 @@ export class Schedule implements OnInit, OnDestroy {
   searchTerm: string = '';
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
+  private statusTimeout: any = null;
 
   // Target day control (bound to datetime-local as string)
   targetDayLocal: string = '';
@@ -100,12 +102,27 @@ export class Schedule implements OnInit, OnDestroy {
   applyFilter(term: string) {
     if (!term) {
       this.filteredNotifications = [...this.vesselVisitNotifications];
+      if (this.statusMessage && this.statusMessageType === 'error') {
+        this.clearStatusMessage();
+      }
       return;
     }
     const t = term.toLowerCase();
     this.filteredNotifications = this.vesselVisitNotifications.filter(n =>
       (n.code || '').toLowerCase().includes(t) || (n.vesselIMO || '').toLowerCase().includes(t)
     );
+    if ((!this.filteredNotifications || this.filteredNotifications.length === 0)) {
+      this.statusMessageType = 'error';
+      this.statusMessage = `No results found for "${term}"`;
+      this.statusHiding = false;
+      if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+      this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
+    } else {
+      // Found results, clear any previous error message
+      if (this.statusMessage && this.statusMessageType === 'error') {
+        this.clearStatusMessage();
+      }
+    }
   }
 
   clearSearchAndNotify() {
@@ -120,14 +137,23 @@ export class Schedule implements OnInit, OnDestroy {
   }
 
   clearStatusMessage() {
-    this.statusMessage = '';
-    this.statusMessageType = '';
+    if (!this.statusMessage) return;
+    if (this.statusTimeout) { clearTimeout(this.statusTimeout); this.statusTimeout = null; }
+    this.statusHiding = true;
+    setTimeout(() => {
+      this.statusMessage = '';
+      this.statusMessageType = '';
+      this.statusHiding = false;
+    }, 220);
   }
 
   runSchedule() {
     if (!this.targetDayLocal) {
       this.statusMessageType = 'error';
       this.statusMessage = 'Please choose a target day before running the schedule.';
+      this.statusHiding = false;
+      if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+      this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
       return;
     }
     let targetIso: string;
@@ -136,33 +162,81 @@ export class Schedule implements OnInit, OnDestroy {
     } catch (e) {
       this.statusMessageType = 'error';
       this.statusMessage = 'Invalid target day format';
+      this.statusHiding = false;
+      if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+      this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
       return;
     }
 
     this.isLoading = true;
-    this.scheduleService.getScheduleByTargetDay(targetIso)
+    const algo = this.isImproved ? 'improved' : 'default';
+    this.scheduleService.getScheduleByTargetDay(targetIso, algo)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (schedule) => {
           const normalized: any = schedule || { entries: [], totalDelay: 0 };
-          const entries = (normalized.entries || normalized.scheduleEntries || []).map((e: any) => ({
-            vesselName: e.vesselName,
-            arrivalTime: e.startTime ? new Date(e.startTime) : null,
-            departureTime: e.endTime ? new Date(e.endTime) : null,
-            assignedCrane: e.assignedCranes || [],
-            assignedStaff: e.staffNames || []
+
+          const rawEntries = normalized.entries || normalized.scheduleEntries || normalized.schedule?.schedule || [];
+          const entries = (rawEntries || []).map((e: any) => ({
+            vesselName: e.vesselName || e.vessel || '',
+            arrivalTime: e.startTime ? new Date(e.startTime) : (e.startTimeIso ? new Date(e.startTimeIso) : null),
+            departureTime: e.endTime ? new Date(e.endTime) : (e.endTimeIso ? new Date(e.endTimeIso) : null),
+            assignedCrane: e.assignedCranes || e.assignedCrane || [],
+            assignedStaff: e.staffNames || e.assignedStaff || []
           }));
-          this.scheduleModel = { scheduleEntries: entries, totalDelay: normalized.totalDelay } as any;
+
+          const totalDelay = normalized.totalDelay ?? normalized.TotalDelay ?? normalized.schedule?.totalDelay ?? 0;
+          const executionTime = normalized.executionTime ?? normalized.ExecutionTime ?? normalized.schedule?.executionTime ?? 0;
+          const algorithmLabel = this.isImproved ? 'Improved algorithm' : 'Default algorithm';
+
+          if (!entries || entries.length === 0) {
+            // No vessels for selected day -> show auto-hiding error similar to Qualifications page
+            this.showScheduleModal = false;
+            this.isLoading = false;
+            this.statusMessageType = 'error';
+            this.statusMessage = 'No vessels found for the selected day.';
+            this.statusHiding = false;
+            if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+            this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
+            return;
+          }
+
+          this.scheduleModel = { scheduleEntries: entries, totalDelay: totalDelay, executionTime: executionTime, algorithm: algorithmLabel } as any;
           this.showScheduleModal = true;
           this.isLoading = false;
         },
         error: (err) => {
+          // Try to extract a useful message from the controller/backend
+          let msg = 'Error running schedule';
+          try {
+            if (err && err.error) {
+              const be = err.error;
+              if (typeof be === 'string') msg = be;
+              else if (be.message) msg = be.message;
+              else if (be.title) msg = be.title;
+              else msg = JSON.stringify(be);
+            } else if (err && err.message) {
+              msg = err.message;
+            }
+          } catch (e) {
+            console.error('Error extracting backend message', e);
+          }
+
           this.statusMessageType = 'error';
-          this.statusMessage = err?.message || 'Error running schedule';
+          this.statusMessage = msg;
+          this.statusHiding = false;
           console.error('Error fetching schedule:', err);
           this.isLoading = false;
+
+          // Auto-hide after 3s
+          if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+          this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
         }
       });
+  }
+
+  onToggle(value: boolean) {
+    this.isImproved = !!value;
   }
 
   closeSchedule() {
