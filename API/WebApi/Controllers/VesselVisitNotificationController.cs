@@ -131,9 +131,6 @@ public class VesselVisitNotificationController : ControllerBase
             {
                 return Conflict(_errorMessages);
             }
-            {
-                _errorMessages.Add("Unknown error occurred while creating Vessel Visit Notification.");
-            }
             return BadRequest(_errorMessages);
         }
         return CreatedAtAction(nameof(GetDecisionById), new { id = createdDecisionDTO.Id }, createdDecisionDTO);

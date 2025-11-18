@@ -73,6 +73,7 @@ export class Docks implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
+  private statusTimeout: any = null;
 
 
   constructor(
@@ -207,6 +208,7 @@ export class Docks implements OnInit, OnDestroy {
 
   clearStatusMessage() {
     if (!this.statusMessage) return;
+    if (this.statusTimeout) { clearTimeout(this.statusTimeout); this.statusTimeout = null; }
     this.statusHiding = true;
     setTimeout(() => {
       this.statusMessage = '';
@@ -332,6 +334,12 @@ export class Docks implements OnInit, OnDestroy {
         next: (createdDock) => {
           this.closeCreateModal();
           this.loadDocks();
+          // Show success banner and auto-hide after 3s (match Qualifications page)
+          this.statusHiding = false;
+          this.statusMessage = `Dock "${createdDock.name || 'created'}" created successfully!`;
+          this.statusMessageType = 'success';
+          if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+          this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
         },
         error: (error) => {
           console.error('Error creating dock:', error);
@@ -489,6 +497,12 @@ export class Docks implements OnInit, OnDestroy {
           this.closeEditModal();
           this.loadDocks();
           this.selectedDock = null;
+          // Show success banner and auto-hide after 3s
+          this.statusHiding = false;
+          this.statusMessage = `Dock "${updatedDock.name || this.editDock.name || ''}" updated successfully!`;
+          this.statusMessageType = 'success';
+          if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+          this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
         },
         error: (error) => {
           console.error('Error updating dock:', error);
