@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+
+// Função para carregar o modelo 3D da grua
 export async function createCrane(): Promise<THREE.Object3D> {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
@@ -24,8 +26,6 @@ export async function createCrane(): Promise<THREE.Object3D> {
             emissive: 0x222200,  
             emissiveIntensity: 0.2,
         });
-
-        // 🧱 Aplica o material a todos os meshes
         object.traverse((child: any) => {
           if (child.isMesh) {
             child.material = brightRed;
@@ -35,7 +35,6 @@ export async function createCrane(): Promise<THREE.Object3D> {
             child.geometry.computeVertexNormals();
           }
         });
-
         resolve(object);
       },
       undefined,

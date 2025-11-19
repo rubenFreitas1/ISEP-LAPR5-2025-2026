@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+
+// Função para criar as labels para as Storage Areas
 export function createStorageAreaLabel(text: string): THREE.Sprite {
     const canvas = document.createElement('canvas');
     canvas.width = 256;

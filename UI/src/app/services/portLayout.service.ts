@@ -13,6 +13,7 @@ export class PortLayoutService {
     private storageAreaService: StorageAreaService
   ) {}
 
+  // Função para obter o layout do porto
   async getLayout(): Promise<{
     dockPositions: any[];
     storageAreas: {
@@ -27,16 +28,16 @@ export class PortLayoutService {
 
   }> {
     try {
-      // 1️⃣ Buscar layout base
+      // Busca o layout base
       const layout = await firstValueFrom(
         this.apiService.get<any>('/PortLayout/Layout')
       );
 
-      // 2️⃣ Buscar dados reais do backend
+      // Busca os dados reais do backend
       const docks = (await firstValueFrom(this.docksService.getAllDocks()));
       const storageAreas = (await firstValueFrom(this.storageAreaService.getAllStorageAreas()));
 
-      // 3️⃣ DOCAS → mapear até ao limite dos slots
+      // Coloca as docas nos slots do layout
       const dockPositions = layout.dockSlots
         .slice(0, docks.length)
         .map((slot: any, index: number) => ({
@@ -44,7 +45,7 @@ export class PortLayoutService {
           name: docks[index]?.name || `Dock ${index + 1}`
         }));
 
-      // 4️⃣ STORAGE AREAS → mapear para slots
+      // Coloca as Storage Areas nos slots do layout
       const storageAreaPositions = storageAreas.map((area: any, index: number) => {
         const slot = layout.warehouseSlots[index];
         if (!slot) return null;
@@ -61,11 +62,11 @@ export class PortLayoutService {
         };
       }).filter(x => x !== null);
 
-      console.log("📦 Storage areas:", storageAreaPositions);
+      console.log("Storage areas:", storageAreaPositions);
 
       return { dockPositions, storageAreas: storageAreaPositions };
     } catch (error) {
-      console.error('❌ Erro a carregar layout:', error);
+      console.error('Erro a carregar layout:', error);
       return { dockPositions: [], storageAreas: [] };
     }
   }

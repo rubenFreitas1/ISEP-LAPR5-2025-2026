@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { createCrane } from './crane';
 import { TextureConfig } from '../models/texture.model';
 
+
+// Função para criar um cais com textura e grua
 export async function createDock(name: string, textureConfig: TextureConfig): Promise<THREE.Group> {
   const group = new THREE.Group();
 
@@ -13,12 +15,16 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
 
   const geometry = new THREE.BoxGeometry(width, height, depth);
 
+
+  // Carrega as texturas
   const colorMap = loader.load(textureConfig.colorMap);
   const roughnessMap = loader.load(textureConfig.roughnessMap);
   const normalMap = loader.load(textureConfig.normalMap);
 
   const tileSize = textureConfig.tileSize;
 
+
+  // Função para calcular a repetição da textura tendo em conta a scale da doca
   function textureForTiles(orig: THREE.Texture, tilesX: number, tilesY: number) {
     const t = orig.clone();
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -27,13 +33,13 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
     return t;
   }
 
-
   const tiles_for_side = { x: depth / tileSize, y: height / tileSize };
   const tiles_for_top = { x: width / tileSize, y: depth / tileSize };
   const tiles_for_front = { x: width / tileSize, y: height / tileSize };
 
+
+  // Carrega as texturas para cada face da doca (+X, -X, +Y, +Z, -Z)
   const materials: THREE.Material[] = [
-    // +X
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -41,7 +47,6 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
-    // -X
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -49,7 +54,6 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
-    // +Y (top)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_top.x, tiles_for_top.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_top.x, tiles_for_top.y),
@@ -57,7 +61,6 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
-    // +Z
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),
@@ -65,7 +68,6 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
-    // -Z
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),
@@ -81,6 +83,7 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
   dock.position.y = 5;
 
 
+  // Cria  label com o nome do cais
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 64;
@@ -100,6 +103,8 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
   group.add(dock);
   group.add(label);
 
+
+// Carrega e adiciona a grua à doca
 try {
     const crane = await createCrane();
     group.add(crane);

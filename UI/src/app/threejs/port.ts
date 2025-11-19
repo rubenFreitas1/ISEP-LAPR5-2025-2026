@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { TextureConfig } from '../models/texture.model';
 
+// Função para criar o cais
 export function createPortStructure(textureConfig: TextureConfig)
 {
     const portStructure = new THREE.Group();
 
+    // Carrega as texturas
     const loader = new THREE.TextureLoader();
     const colorMap = loader.load(textureConfig.colorMap);
     const roughnessMap = loader.load(textureConfig.roughnessMap);
@@ -16,6 +18,7 @@ export function createPortStructure(textureConfig: TextureConfig)
 
     const tileSize = textureConfig.tileSize;
 
+    // Função para calcular a repetição da textura tendo em conta a scale da doca
     function textureForTiles(orig: THREE.Texture, tilesX: number, tilesY: number) {
         const t = orig.clone();
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -28,8 +31,9 @@ export function createPortStructure(textureConfig: TextureConfig)
     const tiles_for_top   = { x: width / tileSize, y: depth / tileSize };
     const tiles_for_front = { x: width / tileSize, y: height / tileSize };
 
+
+    // Carrega as texturas para cada face do cais (+X, -X, +Y, -Y, +Z, -Z)
     const materials: THREE.Material[] = [
-        // +X
         new THREE.MeshStandardMaterial({
             map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
             roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -37,7 +41,6 @@ export function createPortStructure(textureConfig: TextureConfig)
             metalness: 0,
             roughness: 2,
         }),
-        // -X
         new THREE.MeshStandardMaterial({
             map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
             roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -45,7 +48,6 @@ export function createPortStructure(textureConfig: TextureConfig)
             metalness: 0,
             roughness: 2,
         }),
-        // +Y top
         new THREE.MeshStandardMaterial({
             map: textureForTiles(colorMap, tiles_for_top.x, tiles_for_top.y),
             roughnessMap: textureForTiles(roughnessMap, tiles_for_top.x, tiles_for_top.y),
@@ -61,7 +63,6 @@ export function createPortStructure(textureConfig: TextureConfig)
             roughness: 2,
         })
         ,
-        // +Z front
         new THREE.MeshStandardMaterial({
             map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
             roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),
@@ -69,7 +70,6 @@ export function createPortStructure(textureConfig: TextureConfig)
             metalness: 0,
             roughness: 2,
         }),
-        // -Z back
         new THREE.MeshStandardMaterial({
             map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
             roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),

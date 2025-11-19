@@ -5,23 +5,24 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 
 export function createScene() {
 
+  //inicializa objetos essencias para a scene
+
   const clock = new THREE.Clock();
-  const container = document.getElementById('render-target'); // Evita chamar de "window"
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x777777);
+  const container = document.getElementById('render-target');
+  const scene = new THREE.Scene();  
 
   const camera = new THREE.PerspectiveCamera(71, container!.offsetWidth / container!.offsetHeight, 0.1, 2000);
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(container!.offsetWidth, container!.offsetHeight);
   
-  
-
-
+ 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container?.appendChild(renderer.domElement);
 
+
+  // Função para inicializar todos os objetos, luzes e camera
   function initialize(
     portStructure: THREE.Group,
     sea: THREE.Mesh,
@@ -30,7 +31,7 @@ export function createScene() {
     objects: THREE.Object3D[]
   ) {
 
-    // Remove todos os objetos (menos as luzes)
+    // Remove todos os objetos
     for (let i = scene.children.length - 1; i >= 0; i--) {
       const child = scene.children[i];
       if (!(child instanceof THREE.Light)) {
@@ -38,7 +39,7 @@ export function createScene() {
       }
     }
 
-    // Adiciona estruturas base
+    // Adiciona estruturas passadas por parâmetro
     scene.add(portStructure);
     scene.add(sea);
     scene.add(...vessel);
@@ -79,21 +80,18 @@ export function createScene() {
     scene.add(ambientLight, directionalLight);
 
 
-
+    // Céu
     const sky = new Sky();
-    sky.scale.setScalar(10000);     // torna o céu gigante a rodear a cena
+    sky.scale.setScalar(10000);
     scene.add(sky);
-
-    const sun = new THREE.Vector3();
     const effectController = {
-      turbidity: 2,          // 10 era demasiado -> tornava tudo branco
-      rayleigh: 0.1,           // aumenta o azul
+      turbidity: 2,
+      rayleigh: 0.1,
       mieCoefficient: 0.004,
       mieDirectionalG: 0.8,
-      elevation: 2,          // << baixa o sol
+      elevation: 2,
       azimuth: 180
     };
-
 
     const uniforms = sky.material.uniforms;
     uniforms['turbidity'].value = effectController.turbidity;
@@ -104,14 +102,19 @@ export function createScene() {
     const sunDir = directionalLight.position.clone().normalize();
     sky.material.uniforms['sunPosition'].value.copy(sunDir);
 
+
     // Câmera e controlos
     camera.position.set(200, 400, 400);
     camera.lookAt(0, 0, 0);
   }
 
+
+  // Controlos da câmera
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
 
+
+  // Função de animação
   function draw() {
     const delta = clock.getDelta();
     (scene as any).traverse((obj: any) => {
@@ -123,6 +126,8 @@ export function createScene() {
     renderer.render(scene, camera);
   }
 
+
+  // Funções para iniciar e parar a animação
   function start() {
     renderer.setAnimationLoop(draw);
   }

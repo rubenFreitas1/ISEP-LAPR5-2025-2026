@@ -4,13 +4,14 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
 import { createStorageAreaLabel } from './storageAreaLabel';
 
+
+//Função para carregar o modelo 3D do yard
 export async function createYard(labelText: string): Promise<THREE.Object3D> {
   return new Promise((resolve, reject) => {
     const objLoader = new OBJLoader();
     const mtlLoader = new MTLLoader();
 
     const CDN_PATH = 'http://141.253.198.138/assets/models/yard/';
-
 
     mtlLoader.setPath(CDN_PATH);
     mtlLoader.load(
@@ -19,12 +20,10 @@ export async function createYard(labelText: string): Promise<THREE.Object3D> {
         materials.preload();
         objLoader.setMaterials(materials);
         objLoader.setPath(CDN_PATH);
-
         objLoader.load(
           'yard.obj',
           (object) => {
             object.scale.set(100, 50, 50);
-
             object.rotation.y = Math.PI;
 
             object.traverse((child: any) => {
@@ -42,7 +41,6 @@ export async function createYard(labelText: string): Promise<THREE.Object3D> {
                   if ('metalness' in mat) mat.metalness = mat.metalness ?? 0.1;
                   if ('roughness' in mat) mat.roughness = mat.roughness ?? 0.8;
                 });
-
                 child.geometry?.computeVertexNormals?.();
               }
             });
@@ -52,7 +50,6 @@ export async function createYard(labelText: string): Promise<THREE.Object3D> {
             object.add(label);
 
             resolve(object as THREE.Group);
-
           },
           (xhr) => {
             if (xhr && xhr.total) {

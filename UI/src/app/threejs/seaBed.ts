@@ -1,18 +1,23 @@
 import * as THREE from 'three';
 import { TextureConfig } from '../models/texture.model';
 
+
+// Função para criar o fundo do mar
 export function createSeaBed(width: number ,lenght: number, centerX: number, textureConfig: TextureConfig ): THREE.Mesh {
   const geometry = new THREE.BoxGeometry(width, lenght, 10);
 
+  // Carrega as texturas
   const loader = new THREE.TextureLoader();
   const colorMap = loader.load(textureConfig.colorMap);
   const normalMap = loader.load(textureConfig.normalMap);
   const roughnessMap = loader.load(textureConfig.roughnessMap);
 
+  //Carrega as texturas com repetição baseada no tileSize
   const tileSize = textureConfig.tileSize;
   const tilesX = Math.max(1, Math.round(width / tileSize));
   const tilesY = Math.max(1, Math.round(lenght / tileSize));
 
+  // Aplica a repetição às texturas
   [colorMap, normalMap, roughnessMap].forEach(t => {
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
     t.repeat.set(tilesX, tilesY);

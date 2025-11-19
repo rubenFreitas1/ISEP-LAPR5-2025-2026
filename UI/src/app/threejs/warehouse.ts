@@ -4,13 +4,14 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
 import { createStorageAreaLabel } from './storageAreaLabel';
 
+
+//Função para carregar o modelo 3D do warehouse
 export async function createWarehouse(labelText: string): Promise<THREE.Group> {
   return new Promise((resolve, reject) => {
     const objLoader = new OBJLoader();
     const mtlLoader = new MTLLoader();
 
     const CDN_PATH = 'http://141.253.198.138/assets/models/warehouse/';
-
 
     mtlLoader.setPath(CDN_PATH);
     mtlLoader.load(
@@ -24,17 +25,12 @@ export async function createWarehouse(labelText: string): Promise<THREE.Group> {
           'warehouse.obj',
           (object) => {
             object.scale.set(50, 50, 50);
-
-
             object.rotation.y = Math.PI;
-
-
 
             object.traverse((child: any) => {
               if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
-
 
                 const mats = Array.isArray(child.material) ? child.material : [child.material];
                 mats.forEach((mat: any) => {
@@ -46,15 +42,11 @@ export async function createWarehouse(labelText: string): Promise<THREE.Group> {
                   if ('metalness' in mat) mat.metalness = mat.metalness ?? 0.1;
                   if ('roughness' in mat) mat.roughness = mat.roughness ?? 0.8;
                 });
-
                 child.geometry?.computeVertexNormals?.();
               }
             });
 
-
-
             const label = createStorageAreaLabel(labelText);
-
             object.add(label);
 
             resolve(object as THREE.Group);
