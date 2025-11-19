@@ -25,12 +25,12 @@
               },
               {
                 "glob": "**/*",
-                "input": "src/app/assets",
-                "output": "/assets"
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [
-              "src/scss/styles.scss"
+              "src/styles.scss"
             ]
           },
           "configurations": {
@@ -87,8 +87,8 @@
               },
               {
                 "glob": "**/*",
-                "input": "src/app/assets",
-                "output": "/assets"
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [

@@ -1,1 +1,55 @@
-<p>DASHBOARD</p>
+<div class="dashboard-grid">
+
+  <!-- 1 — Preview 3D -->
+  <div class="card card-preview" (click)="goToVisualization()" tabindex="0">
+    <iframe src="/v" class="preview-frame" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+    <div class="preview-overlay">Abrir 3D</div>
+  </div>
+
+  <!-- 2 — Calendário -->
+  <div class="card card-calendar">
+    <div class="calendar-header">
+      <button class="nav-btn" (click)="prevMonth()">◀</button>
+      <div class="calendar-title">{{ monthName() }} {{ year }}</div>
+      <button class="nav-btn" (click)="nextMonth()">▶</button>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="weekday" *ngFor="let w of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">{{w}}</div>
+
+      <ng-container *ngFor="let week of weeks">
+        <div class="day" *ngFor="let day of week">{{ day ? day : '' }}</div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- 3 — Clima -->
+  <div class="card card-weather">
+    <h2>Clima nos Açores</h2>
+    <div class="weather-content">
+      <!-- Vai preencher com API meteorológica -->
+      <p>Carregando clima...</p>
+    </div>
+  </div>
+
+  <!-- 4 — Condições Marítimas -->
+  <div class="card card-ocean">
+    <h2>Condições Marítimas</h2>
+    <div class="ocean-content">
+      <p>Dados do Porto de Ponta Delgada...</p>
+    </div>
+  </div>
+
+  <!-- 5 — Serviço futuro -->
+  <div class="card card-service">
+    <h2>Serviço</h2>
+    <p>A implementar...</p>
+  </div>
+
+  <!-- 6 — Espaço livre / outro widget -->
+  <div class="card card-extra">
+    <h2>Outro widget</h2>
+    <p>Conteúdo adicional aqui.</p>
+  </div>
+
+</div>

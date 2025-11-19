@@ -1,0 +1,105 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding: 40px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #1b1f28;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+  color: white;
+  position: relative;
+}
+
+.card-preview {
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  height: 260px;
+}
+
+.preview-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+}
+
+.preview-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.55);
+  text-align: center;
+  font-weight: 600;
+}
+
+.card-calendar {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendar-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.nav-btn {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: white;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.weekday {
+  text-align: center;
+  color: #bbbbbb;
+}
+
+.day {
+  aspect-ratio: 1/1;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.day:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.card h2 {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+}
+
+.card p {
+  color: #cccccc;
+  margin: 0;
+}
