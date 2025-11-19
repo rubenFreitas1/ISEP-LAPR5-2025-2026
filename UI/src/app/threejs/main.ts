@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 
 
 export function createScene() {
@@ -76,6 +77,32 @@ export function createScene() {
     directionalLight.target.position.set(0, 0, 0);
     scene.add(directionalLight.target);
     scene.add(ambientLight, directionalLight);
+
+
+
+    const sky = new Sky();
+    sky.scale.setScalar(10000);     // torna o céu gigante a rodear a cena
+    scene.add(sky);
+
+    const sun = new THREE.Vector3();
+    const effectController = {
+      turbidity: 2,          // 10 era demasiado -> tornava tudo branco
+      rayleigh: 0.1,           // aumenta o azul
+      mieCoefficient: 0.004,
+      mieDirectionalG: 0.8,
+      elevation: 2,          // << baixa o sol
+      azimuth: 180
+    };
+
+
+    const uniforms = sky.material.uniforms;
+    uniforms['turbidity'].value = effectController.turbidity;
+    uniforms['rayleigh'].value = effectController.rayleigh;
+    uniforms['mieCoefficient'].value = effectController.mieCoefficient;
+    uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+
+    const sunDir = directionalLight.position.clone().normalize();
+    sky.material.uniforms['sunPosition'].value.copy(sunDir);
 
     // Câmera e controlos
     camera.position.set(200, 400, 400);
