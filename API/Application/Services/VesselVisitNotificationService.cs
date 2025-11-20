@@ -276,6 +276,7 @@ public class VesselVisitNotificationService
                 errorMessages.Add($"Dock with name '{dockName}' not found.");
                 return null;
             }
+            vesselVisitNotification.AssignDock(dockByName);
             visitStatus = VisitStatus.Approved;
         }
         else
