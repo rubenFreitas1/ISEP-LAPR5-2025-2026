@@ -19,7 +19,7 @@ services:
     command: >
       start
       --http-enabled=true
-      --hostname=https://lapr5-frontend.duckdns.org
+      --hostname=lapr5-frontend.duckdns.org
       --hostname-strict=false
       --proxy-headers=xforwarded
       --import-realm
