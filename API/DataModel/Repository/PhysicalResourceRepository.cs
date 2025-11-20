@@ -88,7 +88,11 @@ namespace DataModel.Repository
                     if (qdm != null && qdm.Id != 0)
                     {
                         var existing = await _context.Set<QualificationDataModel>().FindAsync(qdm.Id);
-                        if (existing != null) qList[i] = existing;
+                        if (existing != null)
+                        {
+                            _context.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
+                            qList[i] = existing;
+                        }
                     }
                 }
                 dm.QualificationRequirements = qList;
