@@ -130,7 +130,7 @@ public class SystemUserController : ControllerBase
             {
                 return Forbid("Access denied.");
             }
-            return Ok(new{ role = "Representative" });
+            return Ok(new { role = "Representative" });
         }
         if (!user.IsActive)
         {
