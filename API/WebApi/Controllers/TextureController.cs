@@ -8,12 +8,14 @@ using Domain.IRepository;
 using Domain.Model.Resources;
 using Domain.Model;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {
 
     [ApiController]
     [Route("api/Texture")]
+    [Authorize]
     public class TextureController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;

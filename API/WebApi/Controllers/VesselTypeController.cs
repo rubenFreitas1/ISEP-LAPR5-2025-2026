@@ -6,9 +6,11 @@ namespace WebApi.Controllers;
 using Application.DTO;
 using Application.Services;
 using Domain.Factory;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/VesselType")]
+[Authorize]
 public class VesselTypeController : ControllerBase
 {
 

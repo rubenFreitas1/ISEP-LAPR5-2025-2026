@@ -3,9 +3,11 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/Dock")]
+[Authorize]
 public class DockController : ControllerBase
 {
     private readonly DockService _dockService;

@@ -5,10 +5,11 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/ShippingAgentOrganization")]
-
+[Authorize]
 public class ShippingAgentOrganizationController : ControllerBase
 {
     private readonly ShippingAgentOrganizationService _shippingAgentOrganizationService;

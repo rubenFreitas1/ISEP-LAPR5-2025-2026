@@ -5,10 +5,11 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/VesselRecord")]
-
+[Authorize]
 public class VesselRecordController : ControllerBase
 {
 

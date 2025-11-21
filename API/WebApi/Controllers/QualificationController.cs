@@ -4,9 +4,12 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/Qualification")]
+[Authorize]
 public class QualificationController : ControllerBase
 {
     private readonly QualificationService _qualificationService;

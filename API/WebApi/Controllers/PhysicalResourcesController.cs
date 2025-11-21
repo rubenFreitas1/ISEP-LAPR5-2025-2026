@@ -5,11 +5,13 @@ using Domain.IRepository;
 using Domain.Model.Resources;
 using Domain.Model;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/PhysicalResources")]
+    [Authorize]
     public class PhysicalResourcesController : ControllerBase
     {
         private readonly PhysicalResourceService _service;

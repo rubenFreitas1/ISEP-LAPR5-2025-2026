@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/SystemUser")]
+[Authorize]
 public class SystemUserController : ControllerBase
 {
     private readonly SystemUserService _systemUserService;

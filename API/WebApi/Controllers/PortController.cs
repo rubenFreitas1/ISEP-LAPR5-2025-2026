@@ -8,12 +8,15 @@ using Domain.IRepository;
 using Domain.Model.Resources;
 using Domain.Model;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace WebApi.Controllers
 {
 
     [ApiController]
     [Route("api/PortLayout")]
+    [Authorize]
     public class PortController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;

@@ -3,9 +3,12 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/StorageArea")]
+[Authorize]
 public class StorageAreaController : ControllerBase
 {
     private readonly StorageAreaService _storageAreaService;

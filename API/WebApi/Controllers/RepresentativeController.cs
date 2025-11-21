@@ -5,10 +5,12 @@ namespace WebApi.Controllers;
 
 using Application.DTO;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/Representative")]
-
+[Authorize]
 public class RepresentativeController : ControllerBase
 {
     private readonly RepresentativeService _representativeService;

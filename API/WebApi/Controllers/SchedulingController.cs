@@ -6,9 +6,12 @@ namespace WebApi.Controllers;
 using Application.DTO;
 using Application.Services;
 using Domain.Factory;
+using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/Scheduling")]
+[Authorize]
 public class SchedulingController : ControllerBase
 {
 

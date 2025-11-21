@@ -8,10 +8,13 @@ using Domain.Model;
 using ShippingManagement.Domain.Qualifications;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 
 [ApiController]
 [Route("api/Staff")]
+[Authorize]
 public class StaffController : ControllerBase
 {
     private readonly StaffService _staffService;

@@ -4,10 +4,12 @@ namespace WebApi.Controllers;
 using Application.DTO;
 using Application.Services;
 using Domain.Model;
+using Microsoft.AspNetCore.Authorization;
 
 
 [ApiController]
 [Route("api/VesselVisitNotification")]
+[Authorize]
 public class VesselVisitNotificationController : ControllerBase
 {
     private readonly VesselVisitNotificationService _vesselVisitNotificationService;
