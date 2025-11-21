@@ -73,9 +73,7 @@ export class App implements OnInit {
       next: (data: any) => {
         this.#permissions.setRole(data.role);
         this.roleLoading = false;
-
         console.log("Role loaded:", data.role);
-        // window.location.reload();
       },
       error: () => {
         this.roleLoading = false;
