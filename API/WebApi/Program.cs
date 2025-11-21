@@ -131,7 +131,7 @@ if (app.Environment.IsProduction())
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ShippingManagementContext>();
-    
+
     // Step 1: run migrations
     db.Database.Migrate();
 
