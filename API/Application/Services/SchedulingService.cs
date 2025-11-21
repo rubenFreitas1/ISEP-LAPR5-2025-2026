@@ -52,10 +52,12 @@ public class SchedulingService
         Dock? dockAssigned = notifications.First().AssignedDock;
         string assignedDockName = dockAssigned?.Name ?? string.Empty;
 
-
         var cranesByKind = await _physicalResourceRepository.GetPhysicalResourceByKindAsync(PhysicalResourceKind.STSCrane);
+        string dockToMatch = (assignedDockName ?? string.Empty).Trim();
+
         IEnumerable<PhysicalResource> physicalResources = (cranesByKind ?? Enumerable.Empty<PhysicalResource>())
-            .Where(p => (p.PhysicalResourceAssignedDockName ?? string.Empty) == assignedDockName && p.Status == ResourceStatus.Available);
+            .Where(p => string.Equals((p.PhysicalResourceAssignedDockName ?? string.Empty).Trim(), dockToMatch, System.StringComparison.OrdinalIgnoreCase)
+                        && p.Status == ResourceStatus.Available);
         PhysicalResource? fastestCrane = (physicalResources ?? Enumerable.Empty<PhysicalResource>())
             .OrderByDescending(c => c.PhysicalResourceOperationalCapacity)
             .FirstOrDefault();

@@ -276,6 +276,8 @@ public static class Utilities
     {
         var now = DateTime.UtcNow;
         var notifications = new List<VesselVisitNotificationDataModel>();
+        DockDataModel? dockA = docks.FirstOrDefault(d => string.Equals(d.Name, "Dock A", StringComparison.OrdinalIgnoreCase));
+        DockDataModel? dockB = docks.FirstOrDefault(d => string.Equals(d.Name, "Dock B", StringComparison.OrdinalIgnoreCase));
         var eta0 = now.AddDays(1);
         var etd0 = eta0.AddDays(1);
         var n1 = new VesselVisitNotificationDataModel
@@ -423,7 +425,7 @@ public static class Utilities
             {
                 new CrewMemberDataModel { Name = "Captain 5", CitizenId = "CPT005", Rank = CrewRank.Captain.ToString(), Nationality = "PT" }
             },
-            AssignedDock = docks[0],
+            AssignedDock = dockA,
             VisitStatus = VisitStatus.Approved.ToString(),
             LastModifiedAt = now,
             NumberOfCrewMembers = 10
@@ -450,7 +452,7 @@ public static class Utilities
             {
                 new CrewMemberDataModel { Name = "Captain 6", CitizenId = "CPT006", Rank = CrewRank.Captain.ToString(), Nationality = "PT" }
             },
-            AssignedDock = docks[0],
+            AssignedDock = dockA,
             VisitStatus = VisitStatus.Approved.ToString(),
             LastModifiedAt = now,
             NumberOfCrewMembers = 10
@@ -477,7 +479,7 @@ public static class Utilities
             {
                 new CrewMemberDataModel { Name = "Captain 7", CitizenId = "CPT007", Rank = CrewRank.Captain.ToString(), Nationality = "ES" }
             },
-            AssignedDock = docks[0],
+            AssignedDock = dockA,
             VisitStatus = VisitStatus.Approved.ToString(),
             LastModifiedAt = now,
             NumberOfCrewMembers = 10
@@ -504,7 +506,7 @@ public static class Utilities
             {
                 new CrewMemberDataModel { Name = "Captain 8", CitizenId = "CPT008", Rank = CrewRank.Captain.ToString(), Nationality = "FR" }
             },
-            AssignedDock = docks[0],
+            AssignedDock = dockA,
             VisitStatus = VisitStatus.Approved.ToString(),
             LastModifiedAt = now,
             NumberOfCrewMembers = 10

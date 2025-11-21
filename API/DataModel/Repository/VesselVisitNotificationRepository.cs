@@ -237,6 +237,7 @@ public class VesselVisitNotificationRepository : GenericRepository<VesselVisitNo
                     .ThenInclude(cm => cm.Entries)
                         .ThenInclude(e => e.StorageArea)
                 .Include(vvn => vvn.CrewMembers)!
+                .Include(vvn => vvn.AssignedDock)
                 .Where(vvn => vvn.ETA >= targetDay && vvn.ETA <= endDate && vvn.VisitStatus == status.ToString())
                 .ToListAsync();
 

@@ -15,13 +15,12 @@
 
     <div class="schedule-controls">
       <div class="algorithm-select">
-        <label class="alg-label">Algorithm:</label>
+        <label class="alg-label">Heuristics Algorithm: </label>
         <div class="toggle-wrap">
           <label class="switch">
             <input type="checkbox" [(ngModel)]="isImproved" (ngModelChange)="onToggle($event)" />
             <span class="slider"></span>
           </label>
-          <span class="toggle-label">{{ isImproved ? 'Improved' : 'Default' }}</span>
         </div>
       </div>
 

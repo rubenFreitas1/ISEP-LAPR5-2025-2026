@@ -28,8 +28,8 @@
 
 /* Toggle switch styles for algorithm selector */
 .toggle-wrap { display: inline-flex; align-items: center; gap: 8px; }
-.algorithm-select { display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; }
-.alg-label { font-weight: 600; margin-right: 6px; }
+.algorithm-select { display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; white-space: nowrap; }
+.alg-label { font-weight: 600; margin-right: 6px; display: inline-block; }
 .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {

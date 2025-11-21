@@ -13,14 +13,16 @@ public class VesselVisitNotificationMapper
 {
     private readonly IVesselVisitNotificationFactory _vesselVisitNotificationFactory;
     private readonly RepresentativeMapper _representativeMapper;
+    private readonly DockMapper _dockMapper;
 
     private readonly VesselRecordMapper _vesselRecordMapper;
     private readonly StorageAreaMapper _storageAreaMapper;
 
-    public VesselVisitNotificationMapper(IVesselVisitNotificationFactory vesselVisitNotificationFactory, RepresentativeMapper representativeMapper, VesselRecordMapper vesselRecordMapper, StorageAreaMapper storageAreaMapper)
+    public VesselVisitNotificationMapper(IVesselVisitNotificationFactory vesselVisitNotificationFactory, RepresentativeMapper representativeMapper, DockMapper dockMapper, VesselRecordMapper vesselRecordMapper, StorageAreaMapper storageAreaMapper)
     {
         _vesselVisitNotificationFactory = vesselVisitNotificationFactory;
         _representativeMapper = representativeMapper;
+        _dockMapper = dockMapper;
         _vesselRecordMapper = vesselRecordMapper;
         _storageAreaMapper = storageAreaMapper;
     }
@@ -55,6 +57,12 @@ public class VesselVisitNotificationMapper
         vesselVisitDomain.Id = vesselVisitDM.Id;
         vesselVisitDomain.LastModifiedAt = vesselVisitDM.LastModifiedAt;
         vesselVisitDomain.VisitStatus = Enum.Parse<VisitStatus>(vesselVisitDM.VisitStatus!);
+
+        if (vesselVisitDM.AssignedDock != null)
+        {
+            var dockDomain = _dockMapper.ToDomain(vesselVisitDM.AssignedDock);
+            vesselVisitDomain.AssignDock(dockDomain);
+        }
 
         if (vesselVisitDM.CargoManifests != null)
         {
