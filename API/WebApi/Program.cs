@@ -12,8 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Authentication + Authorization
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,44 +31,36 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-
+// JSON enum handling
 builder.Services.AddControllers()
-    .AddJsonOptions(opts =>
-    {
-        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+    .AddJsonOptions(o =>
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ShippingManagementContext>(opt =>
-     //opt.UseInMemoryDatabase("ShippingManagementDatabase")
-     //opt.UseSqlite("Data Source=ShippingManagementDatabase.sqlite")
-     //opt.UseSqlite(Host.CreateApplicationBuilder().Configuration.GetConnectionString("ShippingManagementDatabase"))
-     opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-    );
-
+    opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        policy =>
-        {
-            policy.WithOrigins(
-                "http://localhost:4200",
-                "http://141.253.198.138"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithExposedHeaders("Authorization");
-        });
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "http://141.253.198.138"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithExposedHeaders("Authorization");
+    });
 });
 
-
+// DI (como já tinhas)
 builder.Services.AddTransient<IVesselTypeRepository, VesselTypeRepository>();
 builder.Services.AddTransient<IVesselTypeFactory, VesselTypeFactory>();
 builder.Services.AddTransient<VesselTypeMapper>();
@@ -130,36 +121,38 @@ builder.Services.AddTransient<ISystemUserFactory, SystemUserFactory>();
 builder.Services.AddTransient<SystemUserMapper>();
 builder.Services.AddTransient<SystemUserService>();
 
-
-
 builder.WebHost.UseUrls("http://0.0.0.0:5000");
-
 
 var app = builder.Build();
 
+
+// ------------------ PRODUCTION ------------------
 if (app.Environment.IsProduction())
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ShippingManagementContext>();
+    
+    // Step 1: run migrations
     db.Database.Migrate();
+
+    // Step 2: seed if empty
+    if (!db.SystemUsers.Any())
+    {
+        Utilities.InitializeDatabase(app);
+    }
 }
 
-// Only seed when running locally (Development), never during tests
+
+// ------------------ DEVELOPMENT ------------------
 if (app.Environment.IsDevelopment())
 {
     Utilities.InitializeDatabase(app);
 }
 
 
-
-
+// Pipeline
 app.UseSwagger();
 app.UseSwaggerUI();
-
-
-//app.UseHttpsRedirection();
-
-
 
 app.UseCors("AllowSpecificOrigin");
 
