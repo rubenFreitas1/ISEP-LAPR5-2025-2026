@@ -179,3 +179,53 @@
   color: #f8a5ab;
   border-color: #7a2e32;
 }
+
+/* Force selected-info / info-card to match Qualifications visual (blue left bar + gray card) */
+.selected-info {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.selected-info h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.info-card {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.info-card p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.info-card strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+:host-context([data-coreui-theme="dark"]) .selected-info {
+  background: var(--cui-body-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+:host-context([data-coreui-theme="dark"]) .selected-info h3 {
+  color: var(--cui-body-color);
+}
+
+:host-context([data-coreui-theme="dark"]) .info-card {
+  background-color: var(--cui-tertiary-bg);
+  border-left-color: var(--cui-primary);
+}
+
+:host-context([data-coreui-theme="dark"]) .info-card strong {
+  color: var(--cui-body-color);
+}

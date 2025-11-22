@@ -169,8 +169,13 @@ export class SystemUser implements OnInit, OnDestroy {
     n.email = n.email ?? n.Email ?? n.email;
     n.role = n.role ?? n.Role ?? n.role;
     n.status = n.status ?? n.Status ?? n.status;
-    // IsFirstTime can be present as boolean or PascalCase
-    if (typeof n.isFirstTime === 'undefined') n.isFirstTime = typeof n.IsFirstTime !== 'undefined' ? n.IsFirstTime : false;
+    // IsFirstTime can be present as boolean, string or PascalCase. Normalize to boolean.
+    const rawFirst = (typeof n.isFirstTime !== 'undefined') ? n.isFirstTime : (typeof n.IsFirstTime !== 'undefined' ? n.IsFirstTime : false);
+    if (typeof rawFirst === 'string') {
+      n.isFirstTime = rawFirst.toLowerCase() === 'true';
+    } else {
+      n.isFirstTime = !!rawFirst;
+    }
     // Provide legacy isActive for compatibility: true when status === 'Active' or IsActive present
     if (typeof n.isActive === 'undefined') {
       if (typeof n.IsActive !== 'undefined') n.isActive = n.IsActive;

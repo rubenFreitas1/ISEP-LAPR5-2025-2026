@@ -94,6 +94,11 @@ public class SystemUserService
 
     public async Task<SystemUserDTO?> AddSystemUser(SystemUserDTO dto, List<string> errorMessages)
     {
+        if (await SystemUserExistsByCode(dto.Code!))
+        {
+            errorMessages.Add("Code already exists.");
+            return null;
+        }
         if (await SystemUserExistsByUsername(dto.Username!))
         {
             errorMessages.Add("Username already exists.");
@@ -161,7 +166,10 @@ public class SystemUserService
         }
     }
 
-
+    public async Task<bool> SystemUserExistsByCode(string code)
+    {
+        return await _systemUserRepository.SystemUserExistsByCode(code);
+    }
     public async Task<bool> SystemUserExistsByUsername(string username)
     {
         return await _systemUserRepository.SystemUserExistsByUsername(username);

@@ -88,7 +88,7 @@ public class SystemUser
         }
     }
 
-    public void ChangeBoolenaIsFirstTime(bool isFirstTime)
+    public void ChangeBooleanIsFirstTime(bool isFirstTime)
     {
         IsFirstTime = isFirstTime;
     }

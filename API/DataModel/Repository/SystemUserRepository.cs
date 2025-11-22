@@ -196,5 +196,17 @@ public class SystemUserRepository : GenericRepository<SystemUser>, ISystemUserRe
         }
     }
 
+    public async Task<bool> SystemUserExistsByCode(string code)
+    {
+        try
+        {
+            return await _context.Set<SystemUserDataModel>()
+                .AnyAsync(su => su.Code == code);
+        }
+        catch
+        {
+            throw;
+        }
+    }
 
 }

@@ -24,6 +24,7 @@ public class SystemUserMapper
         systemUserDomain.Id = systemUserDataModel.Id;
         var parsedStatus = Enum.Parse<SystemUserStatus>(systemUserDataModel.Status!);
         systemUserDomain.ChangeUserStatus(parsedStatus);
+        systemUserDomain.ChangeBooleanIsFirstTime(systemUserDataModel.IsFirstTime);
         return systemUserDomain;
     }
 

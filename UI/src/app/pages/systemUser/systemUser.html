@@ -64,6 +64,23 @@
     </div>
   </div>
 
+  <!-- Information of selected system user -->
+  <div *ngIf="selectedUser" class="selected-info">
+    <h3>Selected User:</h3>
+    <div class="info-card">
+      <p><strong>Code:</strong> {{ selectedUser.code }}</p>
+      <p><strong>Username:</strong> {{ selectedUser.username }}</p>
+      <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+      <p><strong>Role:</strong> {{ selectedUser.role }}</p>
+      <p><strong>Status:</strong>
+        <span [ngClass]="'status-' + (selectedUser.status?.toLowerCase() || '')">
+          {{ selectedUser.status }}
+        </span>
+      </p>
+      <p><strong>First Time:</strong> {{ selectedUser.isFirstTime ? 'Yes' : 'No' }}</p>
+    </div>
+  </div>
+
   <!-- Create Modal -->
   <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">

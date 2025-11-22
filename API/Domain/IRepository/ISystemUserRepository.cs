@@ -23,4 +23,6 @@ public interface ISystemUserRepository : IGenericRepository<SystemUser>
     Task<bool> SystemUserExistsByUsername(string username);
 
     Task<bool> SystemUserExistsByEmail(string email);
+
+    Task<bool> SystemUserExistsByCode(string code);
 }
