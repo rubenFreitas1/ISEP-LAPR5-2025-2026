@@ -9,7 +9,7 @@ public class SchedulingDTO
 
     public double ExecutionTime { get; set; }
 
-        public List<string> Messages { get; set; }
+    public List<string> Messages { get; set; }
 
     public SchedulingDTO(List<SchedulingEntryDTO> entries, int totalDelay, double executionTime, List<string>? messages = null)
     {
