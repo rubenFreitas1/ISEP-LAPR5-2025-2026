@@ -15,6 +15,8 @@ import {
 } from '@coreui/angular';
 
 import {IconModule, IconSetService} from '@coreui/icons-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { Auth0ClientService } from '@auth0/auth0-angular';
 import { iconSubset } from '../../../icons/icons';
 import { DefaultHeader } from './default-header';
 
@@ -26,8 +28,8 @@ describe('DefaultHeader', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GridModule, HeaderModule, IconModule, NavModule, BadgeModule, AvatarModule, DropdownModule, BreadcrumbModule, SidebarModule, ProgressModule, ButtonGroupModule, ReactiveFormsModule, DefaultHeader],
-      providers: [IconSetService, provideRouter([])]
+      imports: [GridModule, HeaderModule, IconModule, NavModule, BadgeModule, AvatarModule, DropdownModule, BreadcrumbModule, SidebarModule, ProgressModule, ButtonGroupModule, ReactiveFormsModule, DefaultHeader, TranslateModule.forRoot()],
+      providers: [IconSetService, provideRouter([]), { provide: Auth0ClientService, useValue: {} }]
     })
     .compileComponents();
   });
