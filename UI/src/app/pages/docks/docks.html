@@ -1,5 +1,5 @@
 <div class="page-container">
-  <h1 class="page-title">Docks</h1>
+  <h1 class="page-title">{{ 'DOCKS.TITLE' | translate }}</h1>
 
   <div class="top-bar">
     <div class="search-container">
@@ -7,7 +7,7 @@
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
-        placeholder="Search for docks..."
+        placeholder="{{ 'DOCKS.SEARCH_PLACEHOLDER' | translate }}"
         class="search-input"
       >
       <button
@@ -24,17 +24,17 @@
       <button
         (click)="onCreateNew()"
         class="btn btn-primary"
-        title="Create new dock"
+        title="{{ 'DOCKS.CREATE.TITLE' | translate }}"
       >
-        New Dock
+        {{ 'DOCKS.NEW' | translate }}
       </button>
       <button
         (click)="onUpdate()"
         class="btn btn-secondary"
         [disabled]="!selectedDock"
-        title="Edit selected dock"
+        title="{{ 'DOCKS.EDIT' | translate }}"
       >
-        Edit Dock
+        {{ 'DOCKS.EDIT' | translate }}
       </button>
     </div>
   </div>
@@ -45,19 +45,19 @@
   </div>
 
   <div *ngIf="isLoading" class="loading">
-    Loading Docks...
+    {{ 'DOCKS.LOADING' | translate }}
   </div>
 
   <div *ngIf="!isLoading" class="table-container">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Location</th>
-          <th>Length (m)</th>
-          <th>Depth (m)</th>
-          <th>Max Draft (m)</th>
-          <th>Actions</th>
+          <th>{{ 'DOCKS.TABLE.NAME' | translate }}</th>
+          <th>{{ 'DOCKS.TABLE.LOCATION' | translate }}</th>
+          <th>{{ 'DOCKS.TABLE.LENGTH' | translate }}</th>
+          <th>{{ 'DOCKS.TABLE.DEPTH' | translate }}</th>
+          <th>{{ 'DOCKS.TABLE.MAX_DRAFT' | translate }}</th>
+          <th>{{ 'DOCKS.TABLE.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -77,7 +77,7 @@
               class="btn-select"
               [class.selected]="selectedDock?.id === dock.id"
             >
-              {{ selectedDock?.id === dock.id ? 'Unselect' : 'Select' }}
+              {{ selectedDock?.id === dock.id ? ('DOCKS.TABLE.UNSELECT' | translate) : ('DOCKS.TABLE.SELECT' | translate) }}
             </button>
           </td>
         </tr>
@@ -86,25 +86,26 @@
 
     <!-- Message when no results are found -->
     <div *ngIf="filteredDocks.length === 0 && !isLoading" class="no-results">
-      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No docks found.' }}</p>
+      <p *ngIf="searchTerm">{{ 'DOCKS.NO_RESULTS_FOR' | translate }} "{{ searchTerm }}"</p>
+      <p *ngIf="!searchTerm">{{ 'DOCKS.NO_DOCKS_FOUND' | translate }}</p>
     </div>
   </div>
 
   <!-- Information of selected dock -->
   <div *ngIf="selectedDock" class="selected-info">
-    <h3>Selected Dock:</h3>
+    <h3>{{ 'DOCKS.DETAILS.TITLE' | translate }}</h3>
     <div class="info-card">
-      <p><strong>Name:</strong> {{ selectedDock.name }}</p>
-      <p><strong>Location:</strong> {{ selectedDock.location }}</p>
-      <p><strong>Length:</strong> {{ selectedDock.length }} m</p>
-      <p><strong>Depth:</strong> {{ selectedDock.depth }} m</p>
-      <p><strong>Max Draft:</strong> {{ selectedDock.maxDraft }} m</p>
-      <p><strong>Vessel Types:</strong>
+      <p><strong>{{ 'DOCKS.DETAILS.NAME' | translate }}:</strong> {{ selectedDock.name }}</p>
+      <p><strong>{{ 'DOCKS.DETAILS.LOCATION' | translate }}:</strong> {{ selectedDock.location }}</p>
+      <p><strong>{{ 'DOCKS.DETAILS.LENGTH' | translate }}:</strong> {{ selectedDock.length }} m</p>
+      <p><strong>{{ 'DOCKS.DETAILS.DEPTH' | translate }}:</strong> {{ selectedDock.depth }} m</p>
+      <p><strong>{{ 'DOCKS.DETAILS.MAX_DRAFT' | translate }}:</strong> {{ selectedDock.maxDraft }} m</p>
+      <p><strong>{{ 'DOCKS.DETAILS.VESSEL_TYPES' | translate }}:</strong>
         <span *ngIf="selectedDock.vesselTypesAllowed && selectedDock.vesselTypesAllowed.length > 0">
           {{ selectedDock.vesselTypesAllowed.join(', ') }}
         </span>
         <span *ngIf="!selectedDock.vesselTypesAllowed || selectedDock.vesselTypesAllowed.length === 0">
-          None specified
+          {{ 'DOCKS.DETAILS.NONE' | translate }}
         </span>
       </p>
     </div>
@@ -115,7 +116,7 @@
 <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Create New Dock</h2>
+      <h2>{{ 'DOCKS.CREATE.TITLE' | translate }}</h2>
       <button class="close-button" (click)="closeCreateModal()">✕</button>
     </div>
 
@@ -127,7 +128,7 @@
 
       <form (ngSubmit)="onSaveNewDock()" #dockForm="ngForm">
         <div class="form-group">
-          <label for="name">Name *</label>
+          <label for="name">{{ 'DOCKS.CREATE.NAME' | translate }}</label>
           <input
             type="text"
             id="name"
@@ -136,7 +137,7 @@
             required
             class="form-input"
             [class.error]="hasFieldError('name')"
-            placeholder="Enter dock name"
+            placeholder="{{ 'DOCKS.CREATE.NAME' | translate }}"
           >
           <div *ngIf="hasFieldError('name')" class="field-error">
             {{ getFieldError('name') }}
@@ -144,7 +145,7 @@
         </div>
 
         <div class="form-group">
-          <label for="location">Location *</label>
+          <label for="location">{{ 'DOCKS.CREATE.LOCATION' | translate }}</label>
           <input
             type="text"
             id="location"
@@ -153,7 +154,7 @@
             required
             class="form-input"
             [class.error]="hasFieldError('location')"
-            placeholder="Enter dock location"
+            placeholder="{{ 'DOCKS.CREATE.LOCATION' | translate }}"
           >
           <div *ngIf="hasFieldError('location')" class="field-error">
             {{ getFieldError('location') }}
@@ -162,7 +163,7 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="length">Length (m) *</label>
+            <label for="length">{{ 'DOCKS.CREATE.LENGTH' | translate }}</label>
             <input
               type="number"
               id="length"
@@ -172,7 +173,7 @@
               min="1"
               class="form-input"
               [class.error]="hasFieldError('length')"
-              placeholder="Enter length in meters"
+              placeholder="{{ 'DOCKS.CREATE.LENGTH' | translate }}"
             >
             <div *ngIf="hasFieldError('length')" class="field-error">
               {{ getFieldError('length') }}
@@ -180,7 +181,7 @@
           </div>
 
           <div class="form-group">
-            <label for="depth">Depth (m) *</label>
+            <label for="depth">{{ 'DOCKS.CREATE.DEPTH' | translate }}</label>
             <input
               type="number"
               id="depth"
@@ -190,7 +191,7 @@
               min="1"
               class="form-input"
               [class.error]="hasFieldError('depth')"
-              placeholder="Enter depth in meters"
+              placeholder="{{ 'DOCKS.CREATE.DEPTH' | translate }}"
             >
             <div *ngIf="hasFieldError('depth')" class="field-error">
               {{ getFieldError('depth') }}
@@ -198,7 +199,7 @@
           </div>
 
           <div class="form-group">
-            <label for="maxDraft">Max Draft (m) *</label>
+            <label for="maxDraft">{{ 'DOCKS.CREATE.MAX_DRAFT' | translate }}</label>
             <input
               type="number"
               id="maxDraft"
@@ -208,7 +209,7 @@
               min="1"
               class="form-input"
               [class.error]="hasFieldError('maxDraft')"
-              placeholder="Enter max draft in meters"
+              placeholder="{{ 'DOCKS.CREATE.MAX_DRAFT' | translate }}"
             >
             <div *ngIf="hasFieldError('maxDraft')" class="field-error">
               {{ getFieldError('maxDraft') }}
@@ -217,7 +218,7 @@
         </div>
 
         <div class="form-group">
-          <label for="vesselTypes">Vessel Types</label>
+          <label for="vesselTypes">{{ 'DOCKS.CREATE.VESSEL_TYPES' | translate }}</label>
           <div class="custom-select-wrapper">
             <div class="custom-select" [class.open]="isDropdownOpen" (click)="toggleDropdown()">
               <div class="custom-select-trigger">
@@ -237,7 +238,7 @@
               </div>
             </div>
           </div>
-          <small class="form-hint">Click to toggle selection (multiple selections allowed)</small>
+          <small class="form-hint">{{ 'DOCKS.TOGGLE' | translate }}</small>
         </div>
 
         <div class="modal-footer">
@@ -266,7 +267,7 @@
 <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Edit Dock</h2>
+      <h2>{{ 'DOCKS.EDIT_DOCK.TITLE' | translate }}</h2>
       <button class="close-button" (click)="closeEditModal()">✕</button>
     </div>
 
@@ -278,7 +279,7 @@
 
       <form (ngSubmit)="onSaveEditDock()" #editDockForm="ngForm">
         <div class="form-group">
-          <label for="editName">Name *</label>
+          <label for="editName">{{ 'DOCKS.CREATE.NAME' | translate }}</label>
           <input
             type="text"
             id="editName"
@@ -287,7 +288,7 @@
             required
             class="form-input"
             [class.error]="hasEditFieldError('name')"
-            placeholder="Enter dock name"
+            placeholder="{{ 'DOCKS.CREATE.NAME' | translate }}"
           >
           <div *ngIf="hasEditFieldError('name')" class="field-error">
             {{ getEditFieldError('name') }}
@@ -295,7 +296,7 @@
         </div>
 
         <div class="form-group">
-          <label for="editLocation">Location *</label>
+          <label for="editLocation">{{ 'DOCKS.CREATE.LOCATION' | translate }}</label>
           <input
             type="text"
             id="editLocation"
@@ -304,7 +305,7 @@
             required
             class="form-input"
             [class.error]="hasEditFieldError('location')"
-            placeholder="Enter dock location"
+            placeholder="{{ 'DOCKS.CREATE.LOCATION' | translate }}"
           >
           <div *ngIf="hasEditFieldError('location')" class="field-error">
             {{ getEditFieldError('location') }}
@@ -313,7 +314,7 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="editLength">Length (m) *</label>
+            <label for="editLength">{{ 'DOCKS.CREATE.LENGTH' | translate }}</label>
             <input
               type="number"
               id="editLength"
@@ -323,7 +324,7 @@
               min="1"
               class="form-input"
               [class.error]="hasEditFieldError('length')"
-              placeholder="Enter length in meters"
+              placeholder="{{ 'DOCKS.CREATE.LENGTH' | translate }}"
             >
             <div *ngIf="hasEditFieldError('length')" class="field-error">
               {{ getEditFieldError('length') }}
@@ -331,7 +332,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editDepth">Depth (m) *</label>
+            <label for="editDepth">{{ 'DOCKS.CREATE.DEPTH' | translate }}</label>
             <input
               type="number"
               id="editDepth"
@@ -341,7 +342,7 @@
               min="1"
               class="form-input"
               [class.error]="hasEditFieldError('depth')"
-              placeholder="Enter depth in meters"
+              placeholder="{{ 'DOCKS.CREATE.DEPTH' | translate }}"
             >
             <div *ngIf="hasEditFieldError('depth')" class="field-error">
               {{ getEditFieldError('depth') }}
@@ -349,7 +350,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editMaxDraft">Max Draft (m) *</label>
+            <label for="editMaxDraft">{{ 'DOCKS.CREATE.MAX_DRAFT' | translate }}</label>
             <input
               type="number"
               id="editMaxDraft"
@@ -359,7 +360,7 @@
               min="1"
               class="form-input"
               [class.error]="hasEditFieldError('maxDraft')"
-              placeholder="Enter max draft in meters"
+              placeholder="{{ 'DOCKS.CREATE.MAX_DRAFT' | translate }}"
             >
             <div *ngIf="hasEditFieldError('maxDraft')" class="field-error">
               {{ getEditFieldError('maxDraft') }}
@@ -368,7 +369,7 @@
         </div>
 
         <div class="form-group">
-          <label for="editVesselTypes">Vessel Types</label>
+          <label for="editVesselTypes">{{ 'DOCKS.CREATE.VESSEL_TYPES' | translate }}</label>
           <div class="custom-select-wrapper">
             <div class="custom-select" [class.open]="isEditDropdownOpen" (click)="toggleEditDropdown()">
               <div class="custom-select-trigger">
@@ -388,7 +389,7 @@
               </div>
             </div>
           </div>
-          <small class="form-hint">Click to toggle selection (multiple selections allowed)</small>
+          <small class="form-hint">{{ 'DOCKS.TOGGLE' | translate }}</small>
         </div>
 
         <div class="modal-footer">
@@ -398,14 +399,14 @@
             class="btn btn-secondary"
             [disabled]="isEditing"
           >
-            Cancel
+            {{ 'DOCKS.CREATE.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn btn-primary"
             [disabled]="isEditing || !editDockForm.form.valid || !isEditDirty()"
           >
-            {{ isEditing ? 'Updating...' : 'Update Dock' }}
+            {{ isEditing ? ('DOCKS.EDIT_DOCK.UPDATING' | translate) : ('DOCKS.EDIT_DOCK.UPDATE' | translate) }}
           </button>
         </div>
       </form>

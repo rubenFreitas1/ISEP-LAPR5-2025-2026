@@ -1,0 +1,345 @@
+{
+  "NAV": {
+    "DASHBOARD": "Dashboard",
+    "FEATURES": "Features",
+
+    "VESSEL": "Vessel",
+    "VESSEL_TYPE": "Vessel Type",
+    "VESSEL_RECORD": "Vessel Record",
+
+    "DOCKS": "Dock",
+    "STORAGE_AREA": "Storage Area",
+
+    "VVN": "Visit Notification",
+    "VVN_CREATE": "Create/Edit Notification",
+    "VVN_DECISION": "Notification Decision",
+
+    "STAFF": "Staff",
+    "PHYSICAL_RESOURCES": "Physical Resource",
+    "QUALIFICATION": "Qualification",
+
+    "SHIPPING_AGENT": "Shipping Agent",
+    "ORGANIZATION": "Organization",
+    "REPRESENTATIVE": "Representative",
+
+    "SCHEDULE": "Schedule",
+    "SYSTEM_USER": "System User"
+  },
+  "SETTINGS": {
+    "SETTINGS": "Settings",
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "PROFILE": "Profile",
+    "LOGOUT": "Logout"
+  }
+
+  ,"LANG_EN": "English",
+  "LANG_PT": "Portuguese",
+  "DOCKS": {
+    "TITLE": "Docks",
+
+    "SEARCH_PLACEHOLDER": "Search for Docks...",
+    "CLEAR_SEARCH": "Clean search",
+    "NEW": "New Dock",
+    "EDIT": "Edit Dock",
+
+    "LOADING": "Loading Docks...",
+    "NO_DOCKS_FOUND": "No Docks found.",
+    "NO_RESULTS_FOR": "No results found for",
+
+    "TABLE": {
+      "NAME": "Name",
+      "LOCATION": "Location",
+      "LENGTH": "Length (m)",
+      "DEPTH": "Depth (m)",
+      "MAX_DRAFT": "Max Draft (m)",
+      "ACTIONS": "Actions",
+      "SELECT": "Select",
+      "UNSELECT": "Unselect"
+    },
+
+    "DETAILS": {
+      "TITLE": "Selected Dock:",
+      "NAME": "Name",
+      "LOCATION": "Location",
+      "LENGTH": "Length",
+      "DEPTH": "Depth",
+      "MAX_DRAFT": "Max Draft",
+      "VESSEL_TYPES": "Vessel Types",
+      "NONE": "None specified"
+    },
+
+    "CREATE": {
+      "TITLE": "Create New Dock",
+      "NAME": "Name *",
+      "LOCATION": "Location *",
+      "LENGTH": "Length (m) *",
+      "DEPTH": "Depth (m) *",
+      "MAX_DRAFT": "Max Draft (m) *",
+      "VESSEL_TYPES": "Vessel Types",
+      "CANCEL": "Cancel",
+      "SUBMIT": "Create Dock",
+      "CREATING": "Creating..."
+    },
+    "TOGGLE":"Click to toggle selection (multiple selections allowed)",
+    "EDIT_DOCK": {
+      "TITLE": "Edit Dock",
+      "UPDATE": "Update Dock",
+      "UPDATING": "Updating..."
+    }
+  },
+  "ORGANIZATION": {
+    "TITLE": "Organizations",
+
+    "SEARCH_PLACEHOLDER": "Search for Organizations...",
+    "CLEAR_SEARCH": "Clean search",
+    "NEW_BUTTON": "New Organization",
+    "EDIT_BUTTON": "Edit Organization",
+
+    "LOADING": "Loading Organizations...",
+    "NO_RESULTS": "No Organizations found.",
+    "NO_RESULTS_FOR": "No results found for",
+
+    "TABLE": {
+      "CODE": "Code",
+      "LEGAL_NAME": "Legal Name",
+      "ALT_NAME": "Alternative Name",
+      "ADDRESS": "Address",
+      "TAX_NUMBER": "Tax Number",
+      "REPRESENTATIVE": "Representative",
+      "ACTIONS": "Actions",
+      "SELECT": "Select",
+      "UNSELECT": "Unselect"
+    },
+
+    "DETAILS": {
+      "TITLE": "Selected Organization:",
+      "ORGANIZATION_DETAILS": "Organization Details",
+      "CODE": "Code",
+      "LEGAL_NAME": "Legal Name",
+      "ALT_NAME": "Alternative Name",
+      "ADDRESS": "Address",
+      "TAX_NUMBER": "Tax Number",
+      "LAST_MODIFIED": "Last Modified",
+      "REPRESENTATIVES": "Representatives",
+      "REP_DETAILS": "Representative Details",
+      "NO_REPRESENTATIVE": "No Representative assigned",
+      "REP_NAME": "Name",
+      "REP_CITIZEN_ID": "Citizen ID",
+      "REP_NATIONALITY": "Nationality",
+      "REP_EMAIL": "Email",
+      "REP_PHONE": "Phone Number"
+    },
+
+    "CREATE": {
+      "TITLE": "Create New Organization",
+      "ORG_DETAILS": "Organization Details",
+
+      "CODE": "Code *",
+      "LEGAL_NAME": "Legal Name *",
+      "ALT_NAME": "Alternative Name",
+      "ADDRESS": "Address *",
+      "TAX_NUMBER": "Tax Number *",
+
+      "REP": "Representative *",
+      "REP_NAME": "Name *",
+      "REP_CITIZEN_ID": "Citizen ID *",
+      "REP_NATIONALITY": "Nationality *",
+      "REP_EMAIL": "Email *",
+      "REP_PHONE": "Phone Number *",
+
+      "CANCEL": "Cancel",
+      "SUBMIT": "Create Organization",
+      "CREATING": "Creating..."
+    },
+
+    "EDIT": {
+      "TITLE": "Edit Organization",
+      "ORG_DETAILS": "Organization Details",
+      "CODE_READONLY": "Code (Read-only)",
+      "LEGAL_NAME": "Legal Name *",
+      "ALT_NAME": "Alternative Name",
+      "ADDRESS": "Address *",
+      "TAX_NUMBER": "Tax Number *",
+
+      "CANCEL": "Cancel",
+      "SUBMIT": "Update Organization",
+      "UPDATING": "Updating..."
+    }
+  },
+  "PHYSICAL_RESOURCE": {
+    "TITLE": "Physical Resources",
+
+    "SEARCH_PLACEHOLDER": "Search for Physical Resources...",
+    "NO_RESULTS": "No Physical Resources found.",
+    "NO_RESULTS_FOR": "No results found for ",
+
+    "BUTTON": {
+      "NEW": "New Physical Resource",
+      "EDIT": "Edit Physical Resource",
+      "UNSELECT": "Unselect",
+      "SELECT": "Select",
+      "CANCEL": "Cancel",
+      "CREATE": "Create Physical Resource",
+      "CREATING": "Creating...",
+      "UPDATE": "Update Physical Resource",
+      "UPDATING": "Updating..."
+    },
+
+    "TABLE": {
+      "CODE": "Code",
+      "NAME": "Name",
+      "KIND": "Kind",
+      "DESCRIPTION": "Description",
+      "STATUS": "Status",
+      "CAPACITY": "Capacity",
+      "ASSIGNED_AREA": "Assigned Area",
+      "QUALIFICATION": "Qualification",
+      "ACTIONS": "Actions"
+    },
+
+    "DETAILS": {
+      "TITLE": "Selected Physical Resource:",
+      "CODE": "Code",
+      "NAME": "Name",
+      "KIND": "Kind",
+      "DESCRIPTION": "Description",
+      "STATUS": "Status",
+      "CAPACITY": "Operational Capacity",
+      "SETUP_TIME": "Setup Time",
+      "ASSIGNED_AREA": "Assigned Area",
+      "QUALIFICATION": "Qualification",
+      "WINDOW": "Operational Window"
+    },
+
+    "FORM": {
+      "TITLE_CREATE": "Create New Physical Resource",
+      "TITLE_EDIT": "Edit Physical Resource",
+
+      "CODE": "Code *",
+      "NAME": "Name *",
+      "DESCRIPTION": "Description *",
+      "KIND": "Kind *",
+      "STATUS": "Status",
+      "CAPACITY": "Operational Capacity *",
+      "SETUP_TIME": "Setup Time (minutes)",
+      "ASSIGNED_AREA": "Assigned Area *",
+      "QUALIFICATION": "Qualification *",
+      "OPERATIONAL_WINDOW": "Operational Window *",
+      "START_DAY": "Start Day *",
+      "END_DAY": "End Day *",
+      "START_TIME": "Start Time *",
+      "END_TIME": "End Time *",
+      "STATUS_MESSAGE":"New resources are automatically set to 'Available'",
+      "MESSAGE_OPTIONAL":"This field is optional for this resource type",
+
+      "EDIT":{
+        "CODE_READONLY": "Code (Read-only)",
+        "NAME": "Name *",
+        "DESCRIPTION": "Description *",
+        "KIND_READONLY": "Kind (Read-only)",
+        "STATUS": "Status *",
+        "CAPACITY": "Operational Capacity *",
+        "SETUP_TIME": "Setup Time (minutes)",
+        "ASSIGNED_AREA": "Assigned Area *",
+        "ASSIGNED_DOCK": "Assigned Dock *",
+        "QUALIFICATION": "Qualification *",
+        "ASSIGNED_AREA_OPTIONAL": "Assigned Area (Optional)",
+        "KIND_MESSAGE": "Kind cannot be changed after creation"
+      },
+
+
+      "PLACEHOLDER": {
+        "CODE": "Enter resource code",
+        "NAME": "Enter resource name",
+        "DESCRIPTION": "Enter resource description",
+        "CAPACITY": "Enter capacity",
+        "SETUP_TIME": "Enter setup time",
+        "ASSIGNED_AREA": "Select an area",
+        "QUALIFICATION": "Select a qualification",
+        "KIND": "Select kind"
+      }
+    },
+
+    "KINDS": {
+      "STS_CRANE": "STS Crane",
+      "TRUCK": "Truck",
+      "MOBILE_CRANE": "Mobile Crane"
+    },
+
+    "STATUS": {
+      "AVAILABLE": "Available",
+      "UNAVAILABLE": "Unavailable",
+      "MAINTENANCE": "Maintenance"
+    },
+
+    "OPERATIONAL_WINDOW": {
+      "TITLE": "Operational Window",
+      "START_DAY": "Start Day",
+      "END_DAY": "End Day",
+      "START_TIME": "Start Time",
+      "END_TIME": "End Time"
+    },
+
+    "ACTIONS": {
+      "CLEAN_SEARCH": "Clean search"
+    },
+
+    "GENERAL": {
+      "NONE": "None",
+      "NA": "N/A"
+    }
+  },
+   "SCHEDULE": {
+    "TITLE": "Schedule",
+
+    "SEARCH_PLACEHOLDER": "Search for Vessel Visit Notifications...",
+    "NO_RESULTS": "No Vessel Visit Notifications found.",
+    "NO_RESULTS_FOR": "No results found for ",
+
+    "BUTTON": {
+      "RUN": "Run Schedule",
+      "CLOSE": "Close",
+      "CLEAN_SEARCH": "Clean search"
+    },
+
+    "ALGORITHM": {
+      "LABEL": "Heuristics Algorithm:",
+      "IMPROVED": "Improved",
+      "STANDARD": "Standard",
+      "STANDARD_D": ""
+    },
+
+    "MODAL": {
+      "TITLE": "Daily Schedule",
+      "NO_ENTRIES": "No schedule entries returned.",
+      "CRANE": "Crane",
+      "STAFF": "Staff",
+      "TOTAL_DELAY": "Total delay",
+      "EXECUTION_TIME": "Execution time",
+      "HOURS": "Hours",
+      "SECONDS": "Seconds"
+    },
+
+    "TABLE": {
+      "CODE": "Code",
+      "IMO": "Vessel IMO",
+      "REPRESENTATIVE": "Representative",
+      "ETA": "ETA",
+      "ETD": "ETD",
+      "CARGO_TYPE": "Cargo Type",
+      "VOLUME": "Volume",
+      "STATUS": "Status",
+      "CREW_MEMBERS": "Crew Members"
+    },
+
+    "STATUS": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "DENIED": "Denied",
+      "COMPLETED": "Completed"
+    },
+
+    "LOADING": "Loading Schedule..."
+  }
+}

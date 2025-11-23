@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
 import { PhysicalResourcesService } from '../../services/physicalResources.service';
@@ -22,7 +23,7 @@ import { DocksModel } from '../../models/docks.model';
 
 @Component({
   selector: 'app-physical-resources',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './physicalResources.html',
   styleUrl: './physicalResources.css',
 })

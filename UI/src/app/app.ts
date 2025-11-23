@@ -11,10 +11,11 @@ import { iconSubset } from './icons/icons';
 import { AuthService } from '@auth0/auth0-angular';
 import { ApiService } from './services/api.service';
 import { PermissionService } from './services/permission.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
-  imports:[RouterOutlet],
+  imports:[RouterOutlet, TranslateModule],
   template: '<router-outlet />',
 })
 export class App implements OnInit {

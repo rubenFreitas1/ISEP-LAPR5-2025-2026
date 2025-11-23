@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { VesselVisitNotificationService } from '../../services/vesselVisitNotification.service';
@@ -18,7 +19,7 @@ import { ScheduleModel, ScheduleEntryModel } from '../../models/schedule.model';
 
 @Component({
   selector: 'app-schedule',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css',
 })

@@ -34,6 +34,8 @@
     "@coreui/angular": "^5.5.17",
     "@coreui/icons": "^3.0.1",
     "@coreui/icons-angular": "^5.5.17",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
     "axios": "^1.13.0",
     "bootstrap": "^5.3.8",
     "keycloak-angular": "^20.0.0",

@@ -16,6 +16,7 @@ import {
 } from '@coreui/angular';
 import {DefaultFooter, DefaultHeader} from './'
 import { navItems } from './_nav';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -42,20 +43,41 @@ function isOverflown(element: HTMLElement) {
     NgScrollbar,
     RouterOutlet,
     RouterLink,
-    ShadowOnScrollDirective
+    ShadowOnScrollDirective,
+    TranslateModule
   ]
 })
 export class DefaultLayout {
   public filteredNav: any[] = [];
 
-  constructor(private permissions: PermissionService) {}
+  constructor(private permissions: PermissionService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.permissions.loadRoleFromStorage().then(() => {
-      this.filteredNav = filterNavItems(navItems, this.permissions);
+      // compute filtered nav and translate labels
+      const computeAndTranslate = () => {
+        const filtered = filterNavItems(navItems, this.permissions);
+        this.filteredNav = this.translateNav(filtered);
+      };
+
+      computeAndTranslate();
+
       this.permissions.roleChanges().subscribe(() => {
-        this.filteredNav = filterNavItems(navItems, this.permissions);
+        computeAndTranslate();
+      });
+
+      // re-translate when language changes
+      this.translate.onLangChange.subscribe(() => {
+        computeAndTranslate();
       });
     });
+  }
+
+  private translateNav(items: any[]): any[] {
+    return items.map(item => ({
+      ...item,
+      name: this.translate.instant(item.name),
+      children: item.children ? this.translateNav(item.children) : undefined
+    }));
   }
 }

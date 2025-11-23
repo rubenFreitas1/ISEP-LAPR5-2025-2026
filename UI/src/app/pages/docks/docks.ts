@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged, timeout } from 'rxjs';
 import { DocksService } from '../../services/docks.service';
@@ -10,7 +11,7 @@ import { VesselTypeModel } from '../../models/vesselType.model';
 
 @Component({
   selector: 'app-docks',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './docks.html',
   styleUrl: './docks.css',
 })

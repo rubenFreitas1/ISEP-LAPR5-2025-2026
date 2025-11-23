@@ -3,29 +3,29 @@ import { IExtendedNavData } from './extended-nav-data';
 
 export const navItems: IExtendedNavData[] = [
   {
-    name: 'Dashboard',
+    name: 'NAV.DASHBOARD',
     url: '/dashboard',
     icon: 'nav-img nav-img-dashboard',
     roles: ['Admin','LogisticOperator', 'PortAuthorityOfficer', 'Representative']
   },
   {
     title: true,
-    name: 'Features'
+    name: 'NAV.FEATURES',
   },
   {
-    name: 'Vessel',
+    name: 'NAV.VESSEL',
     url: '/vessel',
     icon: 'nav-img nav-img-vessel',
     roles: ['Admin','PortAuthorityOfficer'],
     children: [
     {
-      name: 'Vessel Type',
+      name: 'NAV.VESSEL_TYPE',
       url: '/vesselType',
       icon: 'nav-img nav-img-vessel',
       roles: ['Admin','PortAuthorityOfficer']
     },
     {
-      name: 'Vessel Records',
+      name: 'NAV.VESSEL_RECORD',
       url: '/vessel',
       icon: 'nav-img nav-img-vessel',
       roles: ['Admin','PortAuthorityOfficer']
@@ -33,31 +33,31 @@ export const navItems: IExtendedNavData[] = [
     ]
   },
   {
-    name: 'Docks',
+    name: 'NAV.DOCKS',
     url: '/docks',
     icon: 'nav-img nav-img-dock',
     roles: ['Admin','PortAuthorityOfficer']
   },
   {
-    name: 'Storage Area',
+    name: 'NAV.STORAGE_AREA',
     icon: 'nav-img nav-img-storage',
     url: '/storageArea',
     roles: ['Admin','PortAuthorityOfficer']
   },
   {
-    name: 'Visit Notification',
+    name: 'NAV.VVN',
     url: '/vvn',
     icon: 'nav-img nav-img-vvn',
     roles: ['Admin','PortAuthorityOfficer', 'Representative'],
     children: [
       {
-        name: 'Notification Create/Edit',
+        name: 'NAV.VVN_CREATE',
         url: '/vvncreate',
         icon: 'nav-img nav-img-vvn',
         roles: ['Admin', 'Representative']
       },
       {
-        name: 'Notification Decision',
+        name: 'NAV.VVN_DECISION',
         url: '/vvndecision',
         icon: 'nav-img nav-img-vvn',
         roles: ['Admin', 'PortAuthorityOfficer']
@@ -65,37 +65,37 @@ export const navItems: IExtendedNavData[] = [
     ]
   },
   {
-    name: 'Staff',
+    name: 'NAV.STAFF',
     url: '/staff',
     icon: 'nav-img nav-img-staff',
     roles: ['Admin', 'LogisticOperator']
   },
   {
-    name:'Physical Resources',
+    name:'NAV.PHYSICAL_RESOURCES',
     url: '/physicalResources',
     icon: 'nav-img nav-img-physicalResource',
     roles: ['Admin', 'LogisticOperator']
   },
   {
-    name: 'Qualification',
+    name: 'NAV.QUALIFICATION',
     url: '/qualification',
     icon: 'nav-img nav-img-qualification',
     roles: ['Admin', 'LogisticOperator']
   },
   {
-    name: 'Shipping Agent',
+    name: 'NAV.SHIPPING_AGENT',
     url: '/shippin-agent',
     icon: 'nav-img nav-img-shippingAgent',
     roles: ['Admin', 'PortAuthorityOfficer'],
     children: [
       {
-        name: 'Organization',
+        name: 'NAV.ORGANIZATION',
         url: '/organization',
         icon: 'nav-img nav-img-organization',
         roles: ['Admin', 'PortAuthorityOfficer']
       },
       {
-        name: 'Representative',
+        name: 'NAV.REPRESENTATIVE',
         url: '/representative',
         icon: 'nav-img nav-img-representative',
         roles: ['Admin', 'PortAuthorityOfficer']
@@ -103,15 +103,15 @@ export const navItems: IExtendedNavData[] = [
     ]
   },
   {
-    name: 'Schedule',
+    name: 'NAV.SCHEDULE',
     url: '/schedule',
     icon: 'nav-img nav-img-schedule',
     roles: ['Admin', 'LogisticOperator']
   },
   {
-    name: 'System Users',
+    name: 'NAV.SYSTEM_USER',
     url: '/user',
-    icon: 'nav-img nav-img-systemUser',
+    icon: 'nav-img nav-img-systemuser',
     roles: ['Admin']
   }
 ];

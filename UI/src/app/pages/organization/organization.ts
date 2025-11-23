@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged, timeout } from 'rxjs';
 import { OrganizationService } from '../../services/organization.service';
@@ -9,7 +10,7 @@ import { ShippingAgentOrganizationModel, ShippingAgentOrganizationWithRepresenta
 
 @Component({
   selector: 'app-organization',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './organization.html',
   styleUrl: './organization.css',
 })

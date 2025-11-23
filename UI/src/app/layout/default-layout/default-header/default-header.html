@@ -12,15 +12,16 @@
     </button>
 
     <c-header-nav class="ms-auto ms-md-0">
-
+      <ng-container *ngTemplateOutlet="languageDropdown" />
+      <div class="nav-item py-1">
+        <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+      </div>
       <ng-container *ngTemplateOutlet="themeDropdown" />
       <div class="nav-item py-1">
         <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
       </div>
       <ng-container *ngTemplateOutlet="userDropdown" />
     </c-header-nav>
-
-
   </c-container>
 
   <c-container [fluid]="true" class="px-4">
@@ -29,48 +30,49 @@
 </ng-container>
 
 
-  <ng-template #userDropdown>
-    <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
-      <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
-        <div class="d-flex align-items-center">
-          <img src="assets/images/user.png" alt="User avatar" width="36" height="36" class="rounded-1"
-            onerror="this.style.display='none'; const fb=this.parentElement.querySelector('.avatar-fallback'); if(fb) fb.style.display='inline-flex'" />
-          <div class="avatar-fallback rounded-1 bg-secondary text-white d-none align-items-center justify-content-center" style="width:36px;height:36px;display:none">UA</div>
-        </div>
-      </button>
-      <ul cDropdownMenu class="pt-0 w-auto">
-        <li>
-          <h6 cDropdownHeader class="bg-body-secondary text-body-secondary fw-semibold py-2">
-            Settings
-          </h6>
-        </li>
-        <li></li>
-        <li>
-          <a cDropdownItem routerLink="">
-            <svg cIcon class="me-2" name="cilUser"></svg>
-            Profile
-          </a>
-        </li>
-        <li>
-          <a cDropdownItem routerLink="">
-            <svg cIcon class="me-2" name="cilSettings"></svg>
-            Settings
-          </a>
-        </li>
-        <li>
-          <hr cDropdownDivider />
-        </li>
-        <li>
-          <a cDropdownItem (click)="logout()">
-            <svg cIcon class="me-2" name="cilAccountLogout"></svg>
-            Logout
-          </a>
-        </li>
-      </ul>
-    </c-dropdown>
-  </ng-template>
+<ng-template #userDropdown>
+  <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
+    <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
+      <div class="d-flex align-items-center">
+        <img src="assets/images/user.png" alt="User avatar" width="36" height="36" class="rounded-1"
+          onerror="this.style.display='none'; const fb=this.parentElement.querySelector('.avatar-fallback'); if(fb) fb.style.display='inline-flex'" />
+        <div class="avatar-fallback rounded-1 bg-secondary text-white d-none align-items-center justify-content-center" style="width:36px;height:36px;display:none">UA</div>
+      </div>
+    </button>
+    <ul cDropdownMenu class="pt-0 w-auto">
+      <li>
+        <h6 cDropdownHeader class="bg-body-secondary text-body-secondary fw-semibold py-2">
+          {{ 'SETTINGS.SETTINGS' | translate }}
+        </h6>
+      </li>
+      <li></li>
+      <li>
+        <a cDropdownItem routerLink="">
+          <svg cIcon class="me-2" name="cilUser"></svg>
+          {{ 'SETTINGS.PROFILE' | translate }}
+        </a>
+      </li>
+      <li>
+        <a cDropdownItem routerLink="">
+          <svg cIcon class="me-2" name="cilSettings"></svg>
+          {{ 'SETTINGS.SETTINGS' | translate }}
+        </a>
+      </li>
+      <li>
+        <hr cDropdownDivider />
+      </li>
+      <li>
+        <a cDropdownItem (click)="logout()">
+          <svg cIcon class="me-2" name="cilAccountLogout"></svg>
+          {{ 'SETTINGS.LOGOUT' | translate }}
+        </a>
+      </li>
+    </ul>
+  </c-dropdown>
+</ng-template>
 
 
+<!-- THEME DROPDOWN -->
 <ng-template #themeDropdown>
   <c-dropdown alignment="end" variant="nav-item">
     <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
@@ -80,14 +82,42 @@
       @for (mode of colorModes; track mode.name) {
         <button
           (click)="colorMode.set(mode.name)"
-          [active]="colorMode()===mode.name"
+          [active]="colorMode() === mode.name"
           cDropdownItem
           class="d-flex align-items-center"
         >
           <svg cIcon class="me-2" [name]="mode.icon" size="lg"></svg>
-          {{ mode.text }}
+          {{ mode.text | translate }}
         </button>
       }
+    </div>
+  </c-dropdown>
+</ng-template>
+
+
+<ng-template #languageDropdown>
+  <c-dropdown alignment="end" variant="nav-item">
+    <button [caret]="false" cDropdownToggle aria-label="Open language picker">
+      {{ currentLanguageLabel() }}
+    </button>
+    <div cDropdownMenu>
+      <button
+        (click)="setLanguage('en')"
+        [active]="currentLanguage() === 'en'"
+        cDropdownItem
+        class="d-flex align-items-center"
+      >
+        EN&nbsp;&nbsp;{{ 'LANG_EN' | translate }}
+      </button>
+
+      <button
+        (click)="setLanguage('pt')"
+        [active]="currentLanguage() === 'pt'"
+        cDropdownItem
+        class="d-flex align-items-center"
+      >
+        PT&nbsp;&nbsp;{{ 'LANG_PT' | translate }}
+      </button>
     </div>
   </c-dropdown>
 </ng-template>

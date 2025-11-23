@@ -19,6 +19,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { routes } from './app.routes';
 import { AuthModule } from '@auth0/auth0-angular';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+// translate service is configured via TranslationModule (JsonLoader)
+import { TranslationModule } from '../core/translation/translation.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -56,6 +58,8 @@ export const appConfig: ApplicationConfig = {
       withEnabledBlockingInitialNavigation(),
       withViewTransitions()
     ),
+
+    importProvidersFrom(TranslationModule),
 
     importProvidersFrom(SidebarModule, DropdownModule),
     IconSetService,

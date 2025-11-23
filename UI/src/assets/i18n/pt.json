@@ -1,0 +1,360 @@
+{
+  "NAV": {
+    "DASHBOARD": "Dashboard",
+    "FEATURES": "Funcionalidades",
+
+    "VESSEL": "Embarcações",
+    "VESSEL_TYPE": "Tipos de Embarcação",
+    "VESSEL_RECORD": "Embarcação",
+
+    "DOCKS": "Doca",
+    "STORAGE_AREA": "Área de Armazenamento",
+
+    "VVN": "Notificação de Visita",
+    "VVN_CREATE": "Criar/Editar Notificação",
+    "VVN_DECISION": "Decisão da Notificação",
+
+    "STAFF": "Staff",
+    "PHYSICAL_RESOURCES": "Recursos Físico",
+    "QUALIFICATION": "Qualificação",
+
+    "SHIPPING_AGENT": "Agente de Navegação",
+    "ORGANIZATION": "Organização",
+    "REPRESENTATIVE": "Representante",
+
+    "SCHEDULE": "Agenda",
+    "SYSTEM_USER": "Utilizadores do Sistema"
+  },
+  "SETTINGS": {
+    "SETTINGS": "Configurações",
+    "LIGHT": "Claro",
+    "DARK": "Escuro",
+    "PROFILE": "Perfil",
+    "LOGOUT": "Sair"
+  }
+  ,"LANG_EN": "Inglês",
+  "LANG_PT": "Português",
+  "VESSEL_TYPE": {
+    "TITLE": "Tipos de Embarcação",
+    "NAME": "Nome",
+    "DESCRIPTION": "Drescrição",
+    "CAPACITY": "Capacidade",
+    "MAX_ROWS": "Max Linhas",
+    "MAX_BAYS": "Max Baias",
+    "MAX_TIERS": "Max Níveis",
+    "ACTIONS": "Ações",
+    "BUT_NEW": "Novo Tipo de Embarcação",
+    "BUT_EDIT": "Editar Tipo de Embarcação",
+    "SELECT": "Selecionar",
+    "UNSELECT": "Desselecionar",
+    "SEARCH": "Pesquisar Tipo de Embarcação...",
+    "SELECTED": "Tipo de Embarcação Selecionado"
+  },
+  "DOCKS": {
+    "TITLE": "Docas",
+
+    "SEARCH_PLACEHOLDER": "Pesquisar Docas...",
+    "CLEAR_SEARCH": "Limpar pesquisa",
+    "NEW": "Nova Doca",
+    "EDIT": "Editar Doca",
+
+    "LOADING": "A carregar Docas...",
+    "NO_DOCKS_FOUND": "Nenhuma Doca encontrada.",
+    "NO_RESULTS_FOR": "Nenhum resultado encontrado para",
+
+    "TABLE": {
+      "NAME": "Nome",
+      "LOCATION": "Localização",
+      "LENGTH": "Comprimento (m)",
+      "DEPTH": "Profundidade (m)",
+      "MAX_DRAFT": "Calado Máximo (m)",
+      "ACTIONS": "Ações",
+      "SELECT": "Selecionar",
+      "UNSELECT": "Desselecionar"
+    },
+
+    "DETAILS": {
+      "TITLE": "Doca Selecionada:",
+      "NAME": "Nome",
+      "LOCATION": "Localização",
+      "LENGTH": "Comprimento",
+      "DEPTH": "Profundidade",
+      "MAX_DRAFT": "Calado Máximo",
+      "VESSEL_TYPES": "Tipos de Embarcação",
+      "NONE": "Nenhum especificado"
+    },
+
+    "CREATE": {
+      "TITLE": "Criar Nova Doca",
+      "NAME": "Nome *",
+      "LOCATION": "Localização *",
+      "LENGTH": "Comprimento (m) *",
+      "DEPTH": "Profundidade (m) *",
+      "MAX_DRAFT": "Calado Máximo (m) *",
+      "VESSEL_TYPES": "Tipos de Embarcação",
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Criar Doca",
+      "CREATING": "A criar..."
+    },
+    "TOGGLE":"Clique para alternar a seleção (são permitidas várias seleções)",
+    "EDIT_DOCK": {
+      "TITLE": "Editar Doca",
+      "UPDATE": "Atualizar Doca",
+      "UPDATING": "A atualizar..."
+    }
+  },
+  "ORGANIZATION": {
+    "TITLE": "Organizações",
+
+    "SEARCH_PLACEHOLDER": "Pesquisar Organizações...",
+    "CLEAR_SEARCH": "Limpar pesquisa",
+    "NEW_BUTTON": "Nova Organização",
+    "EDIT_BUTTON": "Editar Organização",
+
+    "LOADING": "A carregar Organizações...",
+    "NO_RESULTS": "Nenhuma Organização encontrada.",
+    "NO_RESULTS_FOR": "Nenhum resultado encontrado para",
+
+    "TABLE": {
+      "CODE": "Código",
+      "LEGAL_NAME": "Nome Legal",
+      "ALT_NAME": "Nome Alternativo",
+      "ADDRESS": "Endereço",
+      "TAX_NUMBER": "Número Fiscal",
+      "REPRESENTATIVE": "Representante",
+      "ACTIONS": "Ações",
+      "SELECT": "Selecionar",
+      "UNSELECT": "Desselecionar"
+    },
+
+    "DETAILS": {
+      "TITLE": "Organização Selecionada:",
+      "ORGANIZATION_DETAILS": "Detalhes da Organização",
+      "CODE": "Código",
+      "LEGAL_NAME": "Nome Legal",
+      "ALT_NAME": "Nome Alternativo",
+      "ADDRESS": "Endereço",
+      "TAX_NUMBER": "Número Fiscal",
+      "LAST_MODIFIED": "Última Modificação",
+      "REPRESENTATIVES": "Representantes",
+      "REP_DETAILS": "Detalhes do Representante",
+      "NO_REPRESENTATIVE": "Nenhum representante atribuído",
+      "REP_NAME": "Nome",
+      "REP_CITIZEN_ID": "Cartão de Cidadão",
+      "REP_NATIONALITY": "Nacionalidade",
+      "REP_EMAIL": "Email",
+      "REP_PHONE": "Telefone"
+    },
+
+    "CREATE": {
+      "TITLE": "Criar Nova Organização",
+      "ORG_DETAILS": "Detalhes da Organização",
+
+      "CODE": "Código *",
+      "LEGAL_NAME": "Nome Legal *",
+      "ALT_NAME": "Nome Alternativo",
+      "ADDRESS": "Endereço *",
+      "TAX_NUMBER": "Número Fiscal *",
+
+      "REP": "Representante *",
+      "REP_NAME": "Nome *",
+      "REP_CITIZEN_ID": "Cartão de Cidadão *",
+      "REP_NATIONALITY": "Nacionalidade *",
+      "REP_EMAIL": "Email *",
+      "REP_PHONE": "Telefone *",
+
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Criar Organização",
+      "CREATING": "A criar..."
+    },
+
+    "EDIT": {
+      "TITLE": "Editar Organização",
+      "ORG_DETAILS": "Detalhes da Organização",
+      "CODE_READONLY": "Código (Só leitura)",
+      "LEGAL_NAME": "Nome Legal *",
+      "ALT_NAME": "Nome Alternativo",
+      "ADDRESS": "Endereço *",
+      "TAX_NUMBER": "Número Fiscal *",
+
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Atualizar Organização",
+      "UPDATING": "A atualizar..."
+    }
+  },
+  "PHYSICAL_RESOURCE": {
+    "TITLE": "Recursos Físicos",
+
+    "SEARCH_PLACEHOLDER": "Pesquisar Recursos Físicos...",
+    "NO_RESULTS": "Nenhum Recurso Físico encontrado.",
+    "NO_RESULTS_FOR": "Nenhum resultado encontrado para ",
+
+    "BUTTON": {
+      "NEW": "Novo Recurso Físico",
+      "EDIT": "Editar Recurso Físico",
+      "UNSELECT": "Desselecionar",
+      "SELECT": "Selecionar",
+      "CANCEL": "Cancelar",
+      "CREATE": "Criar Recurso Físico",
+      "CREATING": "A criar...",
+      "UPDATE": "Atualizar Recurso Físico",
+      "UPDATING": "A atualizar..."
+    },
+
+    "TABLE": {
+      "CODE": "Código",
+      "NAME": "Nome",
+      "KIND": "Tipo",
+      "DESCRIPTION": "Descrição",
+      "STATUS": "Estado",
+      "CAPACITY": "Capacidade",
+      "ASSIGNED_AREA": "Área Atribuída",
+      "QUALIFICATION": "Qualificação",
+      "ACTIONS": "Ações"
+    },
+
+    "DETAILS": {
+      "TITLE": "Recurso Físico Selecionado:",
+      "CODE": "Código",
+      "NAME": "Nome",
+      "KIND": "Tipo",
+      "DESCRIPTION": "Descrição",
+      "STATUS": "Estado",
+      "CAPACITY": "Capacidade Operacional",
+      "SETUP_TIME": "Tempo de Configuração",
+      "ASSIGNED_AREA": "Área Atribuída",
+      "QUALIFICATION": "Qualificação",
+      "WINDOW": "Janela Operacional"
+    },
+
+    "FORM": {
+      "TITLE_CREATE": "Criar Novo Recurso Físico",
+      "TITLE_EDIT": "Editar Recurso Físico",
+
+      "CODE": "Código *",
+      "NAME": "Nome *",
+      "DESCRIPTION": "Descrição *",
+      "KIND": "Tipo *",
+      "STATUS": "Estado",
+      "CAPACITY": "Capacidade Operacional *",
+      "SETUP_TIME": "Tempo de Configuração (minutos)",
+      "ASSIGNED_AREA": "Área Atribuída *",
+      "QUALIFICATION": "Qualificação *",
+      "OPERATIONAL_WINDOW": "Janela Operacional *",
+      "START_DAY": "Dia de Início *",
+      "END_DAY": "Dia de Fim *",
+      "START_TIME": "Hora de Início *",
+      "END_TIME": "Hora de Fim *",
+      "STATUS_MESSAGE":"Novos recursos são automaticamente definidos como 'Disponível'",
+      "MESSAGE_OPTIONAL":"Este campo é opcional para este tipo de recurso",
+
+      "EDIT":{
+        "CODE_READONLY": "Código (Só leitura)",
+        "NAME": "Nome *",
+        "DESCRIPTION": "Descrição *",
+        "KIND_READONLY": "Tipo (Só leitura)",
+        "STATUS": "Estado *",
+        "CAPACITY": "Capacidade Operacional *",
+        "SETUP_TIME": "Tempo de Configuração (minutos)",
+        "ASSIGNED_AREA": "Área Atribuída *",
+        "ASSIGNED_DOCK": "Doca Atribuída *",
+        "QUALIFICATION": "Qualificação *",
+        "ASSIGNED_AREA_OPTIONAL": "Área Atribuída (Opcional)",
+        "KIND_MESSAGE": "Tipo não pode ser alterado após a criação"
+      },
+
+
+      "PLACEHOLDER": {
+        "CODE": "Introduza o código do recurso",
+        "NAME": "Introduza o nome do recurso",
+        "DESCRIPTION": "Introduza a descrição do recurso",
+        "CAPACITY": "Introduza a capacidade",
+        "SETUP_TIME": "Introduza o tempo de configuração",
+        "ASSIGNED_AREA": "Selecione uma área",
+        "QUALIFICATION": "Selecione uma qualificação",
+        "KIND": "Selecione o tipo"
+      }
+    },
+
+    "KINDS": {
+      "STS_CRANE": "Guindaste STS",
+      "TRUCK": "Camião",
+      "MOBILE_CRANE": "Guindaste Móvel"
+    },
+
+    "STATUS": {
+      "AVAILABLE": "Disponível",
+      "UNAVAILABLE": "Indisponível",
+      "MAINTENANCE": "Manutenção"
+    },
+
+    "OPERATIONAL_WINDOW": {
+      "TITLE": "Janela Operacional",
+      "START_DAY": "Dia de Início",
+      "END_DAY": "Dia de Fim",
+      "START_TIME": "Hora de Início",
+      "END_TIME": "Hora de Fim"
+    },
+
+    "ACTIONS": {
+      "CLEAN_SEARCH": "Limpar pesquisa"
+    },
+
+    "GENERAL": {
+      "NONE": "Nenhum",
+      "NA": "N/D"
+    }
+  },
+  "SCHEDULE": {
+    "TITLE": "Agenda",
+
+    "SEARCH_PLACEHOLDER": "Pesquisar notificações de visitas de navios...",
+    "NO_RESULTS": "Nenhuma notificação de visita de navio encontrada.",
+    "NO_RESULTS_FOR": "Nenhum resultado encontrado para \"{{term}}\"",
+
+    "BUTTON": {
+      "RUN": "Executar Escalonamento",
+      "CLOSE": "Fechar",
+      "CLEAN_SEARCH": "Limpar pesquisa"
+    },
+
+    "ALGORITHM": {
+      "LABEL": "Algoritmo Heurístico:",
+      "IMPROVED": "Melhorado",
+      "STANDARD": "Padrão"
+    },
+
+    "MODAL": {
+      "TITLE": "Agenda Diária",
+      "NO_ENTRIES": "Nenhuma entrada de agenda retornada.",
+      "CRANE": "Guindaste",
+      "STAFF": "Equipa",
+      "TOTAL_DELAY": "Atraso total",
+      "EXECUTION_TIME": "Tempo de execução",
+      "HOURS": "Horas",
+      "SECONDS": "Segundos"
+    },
+
+    "TABLE": {
+      "CODE": "Código",
+      "IMO": "IMO do Navio",
+      "REPRESENTATIVE": "Representante",
+      "ETA": "ETA",
+      "ETD": "ETD",
+      "CARGO_TYPE": "Tipo de Carga",
+      "VOLUME": "Volume",
+      "STATUS": "Estado",
+      "CREW_MEMBERS": "Tripulantes"
+    },
+
+    "STATUS": {
+      "PENDING": "Pendente",
+      "APPROVED": "Aprovada",
+      "DENIED": "Recusada",
+      "COMPLETED": "Concluída"
+    },
+
+    "LOADING": "A carregar Agenda..."
+  }
+
+}

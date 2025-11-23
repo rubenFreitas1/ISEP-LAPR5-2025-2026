@@ -1,5 +1,5 @@
 <div class="page-container">
-  <h1 class="page-title">Organizations</h1>
+  <h1 class="page-title">{{ 'ORGANIZATION.TITLE' | translate }}</h1>
 
   <div class="top-bar">
     <div class="search-container">
@@ -7,7 +7,7 @@
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
-        placeholder="Search for organizations..."
+        placeholder="{{ 'ORGANIZATION.SEARCH_PLACEHOLDER' | translate }}"
         class="search-input"
       >
       <button
@@ -24,17 +24,17 @@
       <button
         (click)="onCreateNew()"
         class="btn btn-primary"
-        title="Create new organization"
+        title="{{ 'ORGANIZATION.CREATE.TITLE' | translate }}"
       >
-        New Organization
+        {{ 'ORGANIZATION.NEW_BUTTON' | translate }}
       </button>
       <button
         (click)="onUpdate()"
         class="btn btn-secondary"
         [disabled]="!selectedOrganization"
-        title="Edit selected organization"
+        title="{{ 'ORGANIZATION.EDIT_BUTTON' | translate }}"
       >
-        Edit Organization
+        {{ 'ORGANIZATION.EDIT_BUTTON' | translate }}
       </button>
     </div>
   </div>
@@ -45,20 +45,20 @@
   </div>
 
   <div *ngIf="isLoading" class="loading">
-    Loading Organizations...
+    {{ 'ORGANIZATION.LOADING' | translate }}
   </div>
 
   <div *ngIf="!isLoading" class="table-container">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Legal Name</th>
-          <th>Alternative Name</th>
-          <th>Address</th>
-          <th>Tax Number</th>
-          <th>Representative</th>
-          <th>Actions</th>
+          <th>{{ 'ORGANIZATION.TABLE.CODE' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.LEGAL_NAME' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.ALT_NAME' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.ADDRESS' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.TAX_NUMBER' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.REPRESENTATIVE' | translate }}</th>
+          <th>{{ 'ORGANIZATION.TABLE.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -79,7 +79,7 @@
               class="btn-select"
               [class.selected]="selectedOrganization?.id === organization.id"
             >
-              {{ selectedOrganization?.id === organization.id ? 'Unselect' : 'Select' }}
+              {{ selectedOrganization?.id === organization.id ? ('ORGANIZATION.TABLE.UNSELECT' | translate) : ('ORGANIZATION.TABLE.SELECT' | translate) }}
             </button>
           </td>
         </tr>
@@ -87,34 +87,35 @@
     </table>
 
     <div *ngIf="filteredOrganizations.length === 0 && !isLoading" class="no-results">
-      <p>{{ searchTerm ? 'No results found for "' + searchTerm + '"' : 'No organizations found.' }}</p>
+      <p *ngIf="searchTerm">{{ 'ORGANIZATION.NO_RESULTS_FOR' | translate }} "{{ searchTerm }}"</p>
+      <p *ngIf="!searchTerm">{{ 'ORGANIZATION.NO_RESULTS' | translate }}</p>
     </div>
   </div>
 
   <!-- Information of selected organization -->
   <div *ngIf="selectedOrganization" class="selected-info">
-    <h3>Selected Organization:</h3>
+    <h3>{{ 'ORGANIZATION.DETAILS.TITLE' | translate }}</h3>
     <div class="info-card">
       <div class="info-section">
-        <h4>Organization Details</h4>
-        <p><strong>Code:</strong> {{ selectedOrganization.code }}</p>
-        <p><strong>Legal Name:</strong> {{ selectedOrganization.legalName }}</p>
-        <p><strong>Alternative Name:</strong> {{ selectedOrganization.alternativeName || '-' }}</p>
-        <p><strong>Address:</strong> {{ selectedOrganization.address }}</p>
-        <p><strong>Tax Number:</strong> {{ selectedOrganization.taxNumber }}</p>
-        <p><strong>Last Modified:</strong> {{ selectedOrganization.lastModifiedAt | date:'short' }}</p>
+        <h4>{{ 'ORGANIZATION.DETAILS.ORGANIZATION_DETAILS' | translate }}</h4>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.CODE' | translate }}:</strong> {{ selectedOrganization.code }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.LEGAL_NAME' | translate }}:</strong> {{ selectedOrganization.legalName }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.ALT_NAME' | translate }}:</strong> {{ selectedOrganization.alternativeName || '-' }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.ADDRESS' | translate }}:</strong> {{ selectedOrganization.address }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.TAX_NUMBER' | translate }}:</strong> {{ selectedOrganization.taxNumber }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.LAST_MODIFIED' | translate }}:</strong> {{ selectedOrganization.lastModifiedAt | date:'short' }}</p>
       </div>
 
       <!-- If API returns a list of representatives for the selected organization, show the list -->
       <div class="info-section" *ngIf="selectedOrganizationRepresentatives && selectedOrganizationRepresentatives.length > 0">
-        <h4>Representatives</h4>
+        <h4>{{ 'ORGANIZATION.DETAILS.REPRESENTATIVES' | translate }}</h4>
         <ul class="representative-list">
           <li *ngFor="let rep of selectedOrganizationRepresentatives">
-            <p><strong>Name:</strong> {{ rep.name }}</p>
-            <p><strong>Citizen ID:</strong> {{ rep.citizenId }}</p>
-            <p><strong>Nationality:</strong> {{ rep.nationality }}</p>
-            <p><strong>Email:</strong> {{ rep.email }}</p>
-            <p><strong>Phone:</strong> {{ rep.phoneNumber }}</p>
+            <p><strong>{{ 'ORGANIZATION.DETAILS.REP_NAME' | translate }}:</strong> {{ rep.name }}</p>
+            <p><strong>{{ 'ORGANIZATION.DETAILS.REP_CITIZEN_ID' | translate }}:</strong> {{ rep.citizenId }}</p>
+            <p><strong>{{ 'ORGANIZATION.DETAILS.REP_NATIONALITY' | translate }}:</strong> {{ rep.nationality }}</p>
+            <p><strong>{{ 'ORGANIZATION.DETAILS.REP_EMAIL' | translate }}:</strong> {{ rep.email }}</p>
+            <p><strong>{{ 'ORGANIZATION.DETAILS.REP_PHONE' | translate }}:</strong> {{ rep.phoneNumber }}</p>
             <hr />
           </li>
         </ul>
@@ -122,17 +123,17 @@
 
       <!-- Fallback: single representative fields (older API shape) -->
       <div class="info-section" *ngIf="(!selectedOrganizationRepresentatives || selectedOrganizationRepresentatives.length === 0) && selectedOrganization.representativeName">
-        <h4>Representative Details</h4>
-        <p><strong>Name:</strong> {{ selectedOrganization.representativeName }}</p>
-        <p><strong>Citizen ID:</strong> {{ selectedOrganization.representativeCitizenId }}</p>
-        <p><strong>Nationality:</strong> {{ selectedOrganization.representativeNationality }}</p>
-        <p><strong>Email:</strong> {{ selectedOrganization.representativeEmail }}</p>
-        <p><strong>Phone:</strong> {{ selectedOrganization.representativePhoneNumber }}</p>
+        <h4>{{ 'ORGANIZATION.DETAILS.REP_DETAILS' | translate }}</h4>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.REP_NAME' | translate }}:</strong> {{ selectedOrganization.representativeName }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.REP_CITIZEN_ID' | translate }}:</strong> {{ selectedOrganization.representativeCitizenId }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.REP_NATIONALITY' | translate }}:</strong> {{ selectedOrganization.representativeNationality }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.REP_EMAIL' | translate }}:</strong> {{ selectedOrganization.representativeEmail }}</p>
+        <p><strong>{{ 'ORGANIZATION.DETAILS.REP_PHONE' | translate }}:</strong> {{ selectedOrganization.representativePhoneNumber }}</p>
       </div>
 
       <div class="info-section" *ngIf="(!selectedOrganizationRepresentatives || selectedOrganizationRepresentatives.length === 0) && !selectedOrganization.representativeName">
-        <h4>Representative</h4>
-        <p><em>No representative assigned</em></p>
+        <h4>{{ 'ORGANIZATION.DETAILS.REPRESENTATIVES' | translate }}</h4>
+        <p><em>{{ 'ORGANIZATION.DETAILS.NO_REPRESENTATIVE' | translate }}</em></p>
       </div>
     </div>
   </div>
@@ -142,7 +143,7 @@
 <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Create New Organization</h2>
+      <h2>{{ 'ORGANIZATION.CREATE.TITLE' | translate }}</h2>
       <button class="close-button" (click)="closeCreateModal()">✕</button>
     </div>
 
@@ -152,11 +153,11 @@
       </div>
 
       <form (ngSubmit)="onSaveNewOrganization()" #organizationForm="ngForm">
-        <h3>Organization Details</h3>
+        <h3>{{ 'ORGANIZATION.CREATE.ORG_DETAILS' | translate }}</h3>
 
         <div class="form-row">
             <div class="form-group">
-              <label for="code">Code *</label>
+              <label for="code">{{ 'ORGANIZATION.CREATE.CODE' | translate }}</label>
               <input
                 type="text"
                 id="code"
@@ -165,7 +166,7 @@
                 required
                 class="form-input"
                 [class.error]="hasFieldError('code')"
-                placeholder="Enter organization code"
+                placeholder="{{ 'ORGANIZATION.CREATE.CODE' | translate }}"
               >
               <div *ngIf="hasFieldError('code')" class="field-error">
                 {{ getFieldError('code') }}
@@ -173,7 +174,7 @@
             </div>
 
             <div class="form-group">
-              <label for="legalName">Legal Name *</label>
+              <label for="legalName">{{ 'ORGANIZATION.CREATE.LEGAL_NAME' | translate }}</label>
               <input
                 type="text"
                 id="legalName"
@@ -182,7 +183,7 @@
                 required
                 class="form-input"
                 [class.error]="hasFieldError('legalName')"
-                placeholder="Enter legal name"
+                placeholder="{{ 'ORGANIZATION.CREATE.LEGAL_NAME' | translate }}"
               >
               <div *ngIf="hasFieldError('legalName')" class="field-error">
                 {{ getFieldError('legalName') }}
@@ -191,19 +192,19 @@
           </div>
 
           <div class="form-group">
-            <label for="alternativeName">Alternative Name</label>
+            <label for="alternativeName">{{ 'ORGANIZATION.CREATE.ALT_NAME' | translate }}</label>
             <input
               type="text"
               id="alternativeName"
               name="alternativeName"
               [(ngModel)]="newOrganization.alternativeName"
               class="form-input"
-              placeholder="Enter alternative name (optional)"
+              placeholder="{{ 'ORGANIZATION.CREATE.ALT_NAME' | translate }}"
             >
           </div>
 
           <div class="form-group">
-            <label for="address">Address *</label>
+            <label for="address">{{ 'ORGANIZATION.CREATE.ADDRESS' | translate }}</label>
             <textarea
               id="address"
               name="address"
@@ -211,7 +212,7 @@
               required
               class="form-textarea"
               [class.error]="hasFieldError('address')"
-              placeholder="Enter organization address"
+              placeholder="{{ 'ORGANIZATION.CREATE.ADDRESS' | translate }}"
               rows="3"
             ></textarea>
             <div *ngIf="hasFieldError('address')" class="field-error">
@@ -220,7 +221,7 @@
           </div>
 
           <div class="form-group">
-            <label for="taxNumber">Tax Number *</label>
+            <label for="taxNumber">{{ 'ORGANIZATION.CREATE.TAX_NUMBER' | translate }}</label>
             <input
               type="text"
               id="taxNumber"
@@ -229,18 +230,18 @@
               required
               class="form-input"
               [class.error]="hasFieldError('taxNumber')"
-              placeholder="Enter tax number"
+              placeholder="{{ 'ORGANIZATION.CREATE.TAX_NUMBER' | translate }}"
             >
             <div *ngIf="hasFieldError('taxNumber')" class="field-error">
               {{ getFieldError('taxNumber') }}
             </div>
           </div>
 
-        <h3>Representative *</h3>
+        <h3>{{ 'ORGANIZATION.CREATE.REP' | translate }}</h3>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="repName">Name *</label>
+              <label for="repName">{{ 'ORGANIZATION.CREATE.REP_NAME' | translate }}</label>
               <input
                 type="text"
                 id="repName"
@@ -249,7 +250,7 @@
                 required
                 class="form-input"
                 [class.error]="hasFieldError('representativeName')"
-                placeholder="Enter representative name"
+                placeholder="{{ 'ORGANIZATION.CREATE.REP_NAME' | translate }}"
               >
               <div *ngIf="hasFieldError('representativeName')" class="field-error">
                 {{ getFieldError('representativeName') }}
@@ -257,7 +258,7 @@
             </div>
 
             <div class="form-group">
-              <label for="repCitizenId">Citizen ID *</label>
+              <label for="repCitizenId">{{ 'ORGANIZATION.CREATE.REP_CITIZEN_ID' | translate }}</label>
               <input
                 type="text"
                 id="repCitizenId"
@@ -266,7 +267,7 @@
                 required
                 class="form-input"
                 [class.error]="hasFieldError('representativeCitizenId')"
-                placeholder="Enter citizen ID"
+                placeholder="{{ 'ORGANIZATION.CREATE.REP_CITIZEN_ID' | translate }}"
               >
               <div *ngIf="hasFieldError('representativeCitizenId')" class="field-error">
                 {{ getFieldError('representativeCitizenId') }}
@@ -276,7 +277,7 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="repNationality">Nationality *</label>
+                <label for="repNationality">{{ 'ORGANIZATION.CREATE.REP_NATIONALITY' | translate }}</label>
               <select
                 id="repNationality"
                 name="repNationality"
@@ -285,7 +286,7 @@
                 class="form-input"
                 [class.error]="hasFieldError('representativeNationality')"
               >
-                <option value="" disabled selected>Select nationality</option>
+                <option value="" disabled selected>{{ 'ORGANIZATION.CREATE.REP_NATIONALITY' | translate }}</option>
                 <option *ngFor="let country of countries" [value]="country.code">{{ country.code }} - {{ country.name }}</option>
               </select>
               <div *ngIf="hasFieldError('representativeNationality')" class="field-error">
@@ -294,7 +295,7 @@
             </div>
 
             <div class="form-group">
-              <label for="repEmail">Email *</label>
+              <label for="repEmail">{{ 'ORGANIZATION.CREATE.REP_EMAIL' | translate }}</label>
               <input
                 type="email"
                 id="repEmail"
@@ -303,7 +304,7 @@
                 required
                 class="form-input"
                 [class.error]="hasFieldError('representativeEmail')"
-                placeholder="Enter email address"
+                placeholder="{{ 'ORGANIZATION.CREATE.REP_EMAIL' | translate }}"
               >
               <div *ngIf="hasFieldError('representativeEmail')" class="field-error">
                 {{ getFieldError('representativeEmail') }}
@@ -312,7 +313,7 @@
           </div>
 
           <div class="form-group">
-            <label for="repPhone">Phone Number *</label>
+            <label for="repPhone">{{ 'ORGANIZATION.CREATE.REP_PHONE' | translate }}</label>
             <input
               type="tel"
               id="repPhone"
@@ -321,7 +322,7 @@
               required
               class="form-input"
               [class.error]="hasFieldError('representativePhoneNumber')"
-              placeholder="Enter phone number"
+              placeholder="{{ 'ORGANIZATION.CREATE.REP_PHONE' | translate }}"
             >
             <div *ngIf="hasFieldError('representativePhoneNumber')" class="field-error">
               {{ getFieldError('representativePhoneNumber') }}
@@ -335,14 +336,14 @@
             class="btn btn-secondary"
             [disabled]="isCreating"
           >
-            Cancel
+            {{ 'ORGANIZATION.CREATE.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn btn-primary"
             [disabled]="isCreating || !organizationForm.form.valid"
           >
-            {{ isCreating ? 'Creating...' : 'Create Organization' }}
+            {{ isCreating ? ('ORGANIZATION.CREATE.CREATING' | translate) : ('ORGANIZATION.CREATE.SUBMIT' | translate) }}
           </button>
         </div>
       </form>
@@ -354,7 +355,7 @@
 <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Edit Organization</h2>
+      <h2>{{ 'ORGANIZATION.EDIT.TITLE' | translate }}</h2>
       <button class="close-button" (click)="closeEditModal()">✕</button>
     </div>
 
@@ -364,11 +365,11 @@
       </div>
 
       <form (ngSubmit)="onSaveEditOrganization()" #editOrganizationForm="ngForm">
-        <h3>Organization Details</h3>
+        <h3>{{ 'ORGANIZATION.EDIT.ORG_DETAILS' | translate }}</h3>
 
         <div class="form-row">
             <div class="form-group">
-              <label for="editCode">Code (Read-only)</label>
+              <label for="editCode">{{ 'ORGANIZATION.EDIT.CODE_READONLY' | translate }}</label>
               <input
                 type="text"
                 id="editCode"
@@ -381,7 +382,7 @@
             </div>
 
             <div class="form-group">
-              <label for="editLegalName">Legal Name *</label>
+              <label for="editLegalName">{{ 'ORGANIZATION.EDIT.LEGAL_NAME' | translate }}</label>
               <input
                 type="text"
                 id="editLegalName"
@@ -399,7 +400,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editAlternativeName">Alternative Name</label>
+            <label for="editAlternativeName">{{ 'ORGANIZATION.EDIT.ALT_NAME' | translate }}</label>
             <input
               type="text"
               id="editAlternativeName"
@@ -411,7 +412,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editAddress">Address *</label>
+            <label for="editAddress">{{ 'ORGANIZATION.EDIT.ADDRESS' | translate }}</label>
             <textarea
               id="editAddress"
               name="editAddress"
@@ -428,7 +429,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editTaxNumber">Tax Number *</label>
+            <label for="editTaxNumber">{{ 'ORGANIZATION.EDIT.TAX_NUMBER' | translate }}</label>
             <input
               type="text"
               id="editTaxNumber"
@@ -451,14 +452,14 @@
             class="btn btn-secondary"
             [disabled]="isEditing"
           >
-            Cancel
+            {{ 'ORGANIZATION.EDIT.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn btn-primary"
             [disabled]="isEditing || !isEditDirty()"
           >
-            {{ isEditing ? 'Updating...' : 'Update Organization' }}
+            {{ isEditing ? ('ORGANIZATION.EDIT.UPDATING' | translate) : ('ORGANIZATION.EDIT.SUBMIT' | translate) }}
           </button>
         </div>
       </form>

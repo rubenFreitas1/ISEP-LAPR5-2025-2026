@@ -146,7 +146,15 @@ if (app.Environment.IsProduction())
 // ------------------ DEVELOPMENT ------------------
 if (app.Environment.IsDevelopment())
 {
-    Utilities.InitializeDatabase(app);
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ShippingManagementContext>();
+
+    db.Database.Migrate();
+
+    if (!db.SystemUsers.Any())
+    {
+        Utilities.InitializeDatabase(app);
+    }
 }
 
 
