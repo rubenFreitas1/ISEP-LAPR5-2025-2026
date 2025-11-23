@@ -1,0 +1,10 @@
+.unauthorized-container {
+  padding: 24px;
+}
+.unauthorized-container h2 {
+  margin-bottom: 8px;
+}
+.unauthorized-container button {
+  margin-top: 12px;
+  padding: 8px 12px;
+}

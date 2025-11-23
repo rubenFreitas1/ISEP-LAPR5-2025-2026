@@ -11,7 +11,7 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./layout').then(m => m.DefaultLayout),
     canActivate: [authGuard],
-    data: { title: 'Dashboard' },
+    data: { title: 'Dashboard'},
     children: [
       {
         path: 'dashboard',
@@ -24,7 +24,7 @@ export const routes: Routes = [
       },
       {
         path: 'physicalResources',
-        data: { title: 'Physical Resources', breadcrumb: 'Physical Resources' },
+        data: { title: 'Physical Resources', breadcrumb: 'Physical Resources'},
         loadChildren: () => import('./routing/physicalResources.routes').then((m) => m.routes)
       },
       {
@@ -44,22 +44,22 @@ export const routes: Routes = [
       },
       {
         path: 'vesselType',
-        data: { title: 'Vessel Type', breadcrumb: 'Vessel Type' },
+        data: { title: 'Vessel Type', breadcrumb: 'Vessel Type'},
         loadChildren: () => import('./routing/vesselType.routes').then((m) => m.routes)
       },
       {
         path: 'vessel',
-        data: { title: 'Vessel', breadcrumb: 'Vessel' },
+        data: { title: 'Vessel', breadcrumb: 'Vessel'},
         loadChildren: () => import('./routing/vessel.routes').then((m) => m.routes)
       },
       {
         path: 'organization',
-        data: { title: 'Organization', breadcrumb: 'Organization' },
+        data: { title: 'Organization', breadcrumb: 'Organization'},
         loadChildren: () => import('./routing/organization.routes').then((m) => m.routes)
       },
       {
         path: 'representative',
-        data: { title: 'Representative', breadcrumb: 'Representative' },
+        data: { title: 'Representative', breadcrumb: 'Representative'},
         loadChildren: () => import('./routing/representative.routes').then((m) => m.routes)
       },
       {
@@ -79,6 +79,7 @@ export const routes: Routes = [
       },
       {
         path: 'user',
+        data: { title: 'System User', breadcrumb: 'System User'},
         loadChildren: () => import('./routing/systemUser.routes').then((m) => m.routes)
       }
     ],
@@ -92,5 +93,11 @@ export const routes: Routes = [
     path: 'v',
     loadComponent: () => import('./components/visualization/visualization').then(m => m.PortVisualizationComponent),
     data: { title: '3D Port Visualization' }
+  }
+  ,
+  {
+    path: 'unauthorized',
+    loadComponent: () => import('./pages/unauthorized/unauthorized').then(m => m.Unauthorized),
+    data: { title: 'Unauthorized' }
   }
 ];
