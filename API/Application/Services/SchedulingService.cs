@@ -168,9 +168,21 @@ public class SchedulingService
                 DateTime endTime = targetDay.AddHours(endHours);
                 string vesselName = GetVesselNameByIMO(vesselIMO).Result;
                 var assignedCranes = new List<string>();
-                foreach (var cr in physicalResources!)
+                if (enableMultiCrane)
                 {
-                    assignedCranes.Add(cr.Name);
+                    // Multi-crane mode: assign all available cranes
+                    foreach (var cr in physicalResources!)
+                    {
+                        assignedCranes.Add(cr.Name);
+                    }
+                }
+                else
+                {
+                    // Single crane mode: assign only the fastest crane
+                    if (fastestCrane != null)
+                    {
+                        assignedCranes.Add(fastestCrane.Name);
+                    }
                 }
                 List<string> staffNames = await GetAvailableStaffNames();
 
