@@ -46,7 +46,7 @@ public class SchedulingController : ControllerBase
     [HttpGet("GeneticAlgorithm")]
     public async Task<ActionResult<SchedulingDTO>> GetSchedullingWithGeneticAlgorithm(DateTime targetDay, int populationSize, int generations, double crossoverRate, double mutationRate, int desiredTime, int stableGenerations, bool enableMultiCrane)
     {
-        SchedulingDTO? notifications = await _schedulingService.GetSchedulingWithGeneticAlgortithm(targetDay,populationSize, generations, crossoverRate, mutationRate, desiredTime, stableGenerations,enableMultiCrane, _errorMessages);
+        SchedulingDTO? notifications = await _schedulingService.GetSchedulingWithGeneticAlgortithm(targetDay, populationSize, generations, crossoverRate, mutationRate, desiredTime, stableGenerations, enableMultiCrane, _errorMessages);
         if (_errorMessages.Count > 0)
         {
             var msg = string.Join("; ", _errorMessages);

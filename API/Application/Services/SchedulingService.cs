@@ -41,7 +41,7 @@ public class SchedulingService
         _vesselRecordRepository = vesselRecordRepository;
     }
 
-    public async Task<SchedulingDTO?> GetSchedulingWithGeneticAlgortithm(DateTime targetDay, int populationSize, int numberGenerations, double crossoverRate, double mutationRate, int desiredTime, int stableGenrations,bool enableMultiCrane, List<string> errorMessages)
+    public async Task<SchedulingDTO?> GetSchedulingWithGeneticAlgortithm(DateTime targetDay, int populationSize, int numberGenerations, double crossoverRate, double mutationRate, int desiredTime, int stableGenrations, bool enableMultiCrane, List<string> errorMessages)
     {
         IEnumerable<VesselVisitNotification> notifications = await _vesselVisitNotificationRepository.GetVisitsByTargetDay_StatusAsync(targetDay, VisitStatus.Approved);
         if (!notifications.Any())
@@ -71,14 +71,14 @@ public class SchedulingService
         Console.WriteLine($"Median operational capacity of available cranes: {med}");
         int availableCranes = (physicalResources ?? Enumerable.Empty<PhysicalResource>()).Count();
         DataGeneticScheduleDTO dataGeneticScheduleDTO = new DataGeneticScheduleDTO(
-            VesselVisitNotificationDTO.ToDTO(notifications).ToList(), 
-            availableCranes, 
-            med, 
-            numberGenerations, 
-            populationSize, 
-            crossoverRate, 
+            VesselVisitNotificationDTO.ToDTO(notifications).ToList(),
+            availableCranes,
+            med,
+            numberGenerations,
+            populationSize,
+            crossoverRate,
             mutationRate,
-            desiredTime, 
+            desiredTime,
             stableGenrations,
             fastestCapacity,
             enableMultiCrane
@@ -93,17 +93,17 @@ public class SchedulingService
         {
             using var client = new HttpClient();
             client.Timeout = TimeSpan.FromMinutes(5); // Genetic algorithms may take longer
-            
+
             var json = JsonSerializer.Serialize(
                 dataGeneticScheduleDTO,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
             );
-            
+
             Console.WriteLine($"Sending genetic algorithm request payload: {json}");
-            
+
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(endpoint, content);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var errBody = await response.Content.ReadAsStringAsync();
@@ -112,11 +112,11 @@ public class SchedulingService
                 errorMessages.Add(msg);
                 return null;
             }
-            
+
             var responseJson = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Received genetic scheduling response from Prolog:");
             Console.WriteLine(responseJson);
-            
+
             var doc = JsonDocument.Parse(responseJson);
             var scheduleRoot = doc.RootElement.GetProperty("schedule");
             var scheduleArray = scheduleRoot
@@ -126,7 +126,7 @@ public class SchedulingService
             int totalDelay = scheduleRoot
                 .GetProperty("totalDelay")
                 .GetInt32();
-            
+
             double executionTime = scheduleRoot
                 .GetProperty("executionTime")
                 .GetDouble();
@@ -140,7 +140,7 @@ public class SchedulingService
                     else messages.Add(me.ToString());
                 }
             }
-            
+
             var entries = new List<SchedulingEntryDTO>();
             foreach (var item in scheduleArray)
             {
@@ -149,21 +149,21 @@ public class SchedulingService
                 // parse start (may be number, string, or array) — extract first number, supporting nested arrays
                 double startHours;
                 var startEl = item.GetProperty("start");
-                if (!TryExtractFirstNumber(startEl, out startHours)) 
-                { 
-                    errorMessages.Add("Invalid 'start' element in genetic schedule entry"); 
-                    return null; 
+                if (!TryExtractFirstNumber(startEl, out startHours))
+                {
+                    errorMessages.Add("Invalid 'start' element in genetic schedule entry");
+                    return null;
                 }
 
                 // parse end (may be number, string, or array) — extract first number, supporting nested arrays
                 double endHours;
                 var endEl = item.GetProperty("end");
-                if (!TryExtractFirstNumber(endEl, out endHours)) 
-                { 
-                    errorMessages.Add("Invalid 'end' element in genetic schedule entry"); 
-                    return null; 
+                if (!TryExtractFirstNumber(endEl, out endHours))
+                {
+                    errorMessages.Add("Invalid 'end' element in genetic schedule entry");
+                    return null;
                 }
-                
+
                 DateTime startTime = targetDay.AddHours(startHours);
                 DateTime endTime = targetDay.AddHours(endHours);
                 string vesselName = GetVesselNameByIMO(vesselIMO).Result;
@@ -177,7 +177,7 @@ public class SchedulingService
                 var schedulingEntryDTO = new SchedulingEntryDTO(vesselName, startTime, endTime, assignedCranes, staffNames);
                 entries.Add(schedulingEntryDTO);
             }
-            
+
             var schedulingDTO = new SchedulingDTO(entries, totalDelay, executionTime, messages);
             Console.WriteLine($"Genetic algorithm scheduling completed: {entries.Count} vessels, total delay: {totalDelay}, execution time: {executionTime}s");
             return schedulingDTO;
@@ -195,7 +195,7 @@ public class SchedulingService
         int count = 0;
         foreach (var r in resources)
         {
-            count+= r.PhysicalResourceOperationalCapacity;
+            count += r.PhysicalResourceOperationalCapacity;
         }
         return count;
     }
@@ -355,10 +355,10 @@ public class SchedulingService
             }
             if (el.ValueKind == JsonValueKind.String)
             {
-                if (double.TryParse(el.GetString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v)) 
-                { 
-                    value = v; 
-                    return true; 
+                if (double.TryParse(el.GetString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v))
+                {
+                    value = v;
+                    return true;
                 }
                 return false;
             }
@@ -366,22 +366,22 @@ public class SchedulingService
             {
                 foreach (var e in el.EnumerateArray())
                 {
-                    if (e.ValueKind == JsonValueKind.Number) 
-                    { 
-                        value = e.GetDouble(); 
-                        return true; 
+                    if (e.ValueKind == JsonValueKind.Number)
+                    {
+                        value = e.GetDouble();
+                        return true;
                     }
-                    if (e.ValueKind == JsonValueKind.String && double.TryParse(e.GetString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v2)) 
-                    { 
-                        value = v2; 
-                        return true; 
+                    if (e.ValueKind == JsonValueKind.String && double.TryParse(e.GetString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v2))
+                    {
+                        value = v2;
+                        return true;
                     }
                     if (e.ValueKind == JsonValueKind.Array)
                     {
-                        if (TryExtractFirstNumber(e, out var nested)) 
-                        { 
-                            value = nested; 
-                            return true; 
+                        if (TryExtractFirstNumber(e, out var nested))
+                        {
+                            value = nested;
+                            return true;
                         }
                     }
                 }

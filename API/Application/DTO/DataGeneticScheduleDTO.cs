@@ -18,7 +18,7 @@ public class DataGeneticScheduleDTO
 
     public int StableGenerations { get; set; }
 
-    public bool EnableMultiCrane {get; set; }
+    public bool EnableMultiCrane { get; set; }
 
     public DataGeneticScheduleDTO(
         List<VesselVisitNotificationDTO> vesselVisitNotifications,
