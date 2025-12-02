@@ -1,0 +1,89 @@
+
+
+namespace Domain.Model;
+
+
+public class OperationPlan
+{
+    public long Id { get; set; }
+
+    public List<OperationEntry>? OperationList { get; private set; }
+
+    public DateTime? TargetDay { get; private set; }
+
+    public string? Author { get; private set; }
+
+    public string? Algorithm { get; private set; }
+
+    public DateTime CreatedAt { get; private set; }
+    public DateTime LastModifiedAt { get; private set; } 
+
+
+    private OperationPlan() { }
+
+    public OperationPlan(List<OperationEntry> list, DateTime targetDay, string author, string algorithm,  DateTime createdAt)
+    {
+        ValidateAuthor(author);
+        ValidateAlgorithm(algorithm);
+        validateList(list);
+
+        OperationList = list;
+        TargetDay = targetDay;
+        Author = author;
+        Algorithm = algorithm;
+        CreatedAt = createdAt;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void ValidateAuthor(string author)
+    {
+        if (string.IsNullOrWhiteSpace(author))
+        {
+            throw new ArgumentException("Author cannot be null or empty.", nameof(author));
+        }
+    }
+
+    public void ValidateAlgorithm(string algorithm)
+    {
+        if (string.IsNullOrWhiteSpace(algorithm))
+        {
+            throw new ArgumentException("Algorithm cannot be null or empty.", nameof(algorithm));
+        }
+    }
+
+    public void validateList(List<OperationEntry> list)
+    {
+        if (list == null || list.Count == 0)
+        {
+            throw new ArgumentException("Operation list cannot be null or empty.", nameof(list));
+        }
+    }
+
+    public void ChangeAlgorithm(string newAlgorithm)
+    {
+        ValidateAlgorithm(newAlgorithm);
+        Algorithm = newAlgorithm;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void ChangeAuthor(string newAuthor)
+    {
+        ValidateAuthor(newAuthor);
+        Author = newAuthor;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void ChangeOperationList(List<OperationEntry> newList)
+    {
+        validateList(newList);
+        OperationList = newList;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void ChangeTargetDay(DateTime newTargetDay)
+    {
+        TargetDay = newTargetDay;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+}
