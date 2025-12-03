@@ -15,10 +15,12 @@ public class OEMContext : DbContext
     }
 
     public virtual DbSet<IncidentTypeDataModel> IncidentTypes { get; set; } = null!;
+    public virtual DbSet<OperationPlanDataModel> OperationPlans { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new IncidentTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new OperationPlanConfiguration());
     }
 
 }

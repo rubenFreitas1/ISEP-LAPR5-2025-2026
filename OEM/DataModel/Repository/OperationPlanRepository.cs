@@ -22,6 +22,7 @@ public class OperationPlanRepository : GenericRepository<OperationPlan>, IOperat
         try
         {
             IEnumerable<OperationPlanDataModel> operationDataModels = await _context.Set<OperationPlanDataModel>()
+                .Include(op => op.OperationList)
                 .ToListAsync();
             IEnumerable<OperationPlan> operationPlans = _mapper.ToDomain(operationDataModels);
             return operationPlans;
@@ -37,7 +38,8 @@ public class OperationPlanRepository : GenericRepository<OperationPlan>, IOperat
         try
         {
             OperationPlanDataModel? operationDataModel = await _context.Set<OperationPlanDataModel>()
-                .SingleOrDefaultAsync(op => op.Id == id);
+                .Include(op => op.OperationList)
+                .FirstOrDefaultAsync(op => op.Id == id);
             if (operationDataModel != null)
             {
                 OperationPlan operationPlan = _mapper.ToDomain(operationDataModel);
@@ -51,41 +53,35 @@ public class OperationPlanRepository : GenericRepository<OperationPlan>, IOperat
         }
     }
 
-    public async Task<OperationPlan?> GetOperationPlanByAuthorAsync(string author)
+    public async Task<IEnumerable<OperationPlan>> GetOperationPlanByAuthorAsync(string author)
     {
         try
         {
-            OperationPlanDataModel? operationDataModel = await _context.Set<OperationPlanDataModel>()
-                .SingleOrDefaultAsync(op => op.Author == author);
-            if (operationDataModel != null)
-            {
-                OperationPlan operationPlan = _mapper.ToDomain(operationDataModel);
-                return operationPlan;
-            }
-            return null;
+            IEnumerable<OperationPlanDataModel> operationDataModels = await _context.Set<OperationPlanDataModel>()
+                .Include(op => op.OperationList)
+                .Where(op => op.Author == author)
+                .ToListAsync();
+            return _mapper.ToDomain(operationDataModels).ToList();
         }
         catch
         {
-            return null;throw;
+            return Enumerable.Empty<OperationPlan>();throw;
         }
     }
 
-    public async Task<OperationPlan?> GetOperationPlanByAlgorithmAsync(string algorithm)
+    public async Task<IEnumerable<OperationPlan>> GetOperationPlanByAlgorithmAsync(string algorithm)
     {
         try
         {
-            OperationPlanDataModel? operationDataModel = await _context.Set<OperationPlanDataModel>()
-                .SingleOrDefaultAsync(op => op.Algorithm == algorithm);
-            if (operationDataModel != null)
-            {
-                OperationPlan operationPlan = _mapper.ToDomain(operationDataModel);
-                return operationPlan;
-            }
-            return null;
+            IEnumerable<OperationPlanDataModel> operationDataModels = await _context.Set<OperationPlanDataModel>()
+                .Include(op => op.OperationList)
+                .Where(op => op.Algorithm == algorithm)
+                .ToListAsync();
+            return _mapper.ToDomain(operationDataModels).ToList();
         }
         catch
         {
-            return null;throw;
+            return Enumerable.Empty<OperationPlan>();throw;
         }
     }
 
@@ -95,7 +91,8 @@ public class OperationPlanRepository : GenericRepository<OperationPlan>, IOperat
         try
         {
             OperationPlanDataModel? operationDataModel = await _context.Set<OperationPlanDataModel>()
-                .SingleOrDefaultAsync(op => op.TargetDay.Date == targetDay.Date);
+                .Include(op => op.OperationList)
+                .FirstOrDefaultAsync(op => op.TargetDay.Date == targetDay.Date);
             if (operationDataModel != null)
             {
                 OperationPlan operationPlan = _mapper.ToDomain(operationDataModel);
@@ -131,7 +128,8 @@ public class OperationPlanRepository : GenericRepository<OperationPlan>, IOperat
         try
         {
             OperationPlanDataModel? existingDataModel = await _context.Set<OperationPlanDataModel>()
-                .SingleOrDefaultAsync(op => op.Id == operationPlan.Id);
+                .Include(op => op.OperationList)
+                .FirstOrDefaultAsync(op => op.Id == operationPlan.Id);
             if (existingDataModel == null)
             {
                 errorMessages.Add($"Operation Plan with ID {operationPlan.Id} not found.");

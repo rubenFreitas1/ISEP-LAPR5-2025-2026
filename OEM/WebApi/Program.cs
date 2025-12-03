@@ -49,6 +49,11 @@ builder.Services.AddTransient<IIncidentTypeRepository, IncidentTypeRepository>()
 builder.Services.AddTransient<IIncidentTypeFactory, IncidentTypeFactory>();
 builder.Services.AddTransient<IncidentTypeMapper>();
 builder.Services.AddTransient<IncidentTypeService>();
+// OperationPlan related registrations
+builder.Services.AddTransient<Domain.IRepository.IOperationPlanRepository, DataModel.Repository.OperationPlanRepository>();
+builder.Services.AddTransient<Domain.Factory.IOperationPlanFactory, Domain.Factory.OperationPlanFactory>();
+builder.Services.AddTransient<DataModel.Mapper.OperationPlanMapper>();
+builder.Services.AddTransient<Application.Services.OperationPlanService>();
 
 var app = builder.Build();
 

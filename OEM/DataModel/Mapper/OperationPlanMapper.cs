@@ -19,7 +19,18 @@ public class OperationPlanMapper
 
     public OperationPlan ToDomain(OperationPlanDataModel operationDataModel)
     {
-        OperationPlan operationDomain = _operationPlanFactory.NewOperationPlan(operationDataModel.OperationList!, operationDataModel.TargetDay, operationDataModel.Author!, operationDataModel.Algorithm!, operationDataModel.CreatedAt);
+        List<OperationEntry> domainEntries = new List<OperationEntry>();
+        if (operationDataModel.OperationList != null)
+        {
+            foreach (var entryDm in operationDataModel.OperationList)
+            {
+                var domainEntry = new OperationEntry(entryDm.VesselName!, entryDm.ArrivalTime, entryDm.DepartureTime, entryDm.Cranes!, entryDm.StaffMembers!);
+                domainEntry.Id = entryDm.Id;
+                domainEntries.Add(domainEntry);
+            }
+        }
+
+        OperationPlan operationDomain = _operationPlanFactory.NewOperationPlan(domainEntries, operationDataModel.TargetDay, operationDataModel.Author!, operationDataModel.Algorithm!, operationDataModel.CreatedAt);
         operationDomain.Id = operationDataModel.Id;
         operationDomain.LastModifiedAt = operationDataModel.LastModifiedAt;
         return operationDomain;
@@ -46,7 +57,7 @@ public class OperationPlanMapper
 
     public void UpdateDataModel(OperationPlan operationPlan, OperationPlanDataModel operationDataModel, OEMContext dbContext)
     {
-        operationDataModel.OperationList = operationPlan.OperationList;
+        operationDataModel.OperationList = operationPlan.OperationList!.ConvertAll(ol => new OperationEntryDataModel(ol));
         operationDataModel.TargetDay = operationPlan.TargetDay;
         operationDataModel.Author = operationPlan.Author;
         operationDataModel.Algorithm = operationPlan.Algorithm;
