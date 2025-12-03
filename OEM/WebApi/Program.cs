@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+
+using Application.Services;
 using DataModel.Repository;
+using Domain.IRepository;
+using DataModel.Mapper;
+using Domain.Factory;
 
 
 
@@ -25,6 +30,26 @@ builder.Services.AddDbContext<OEMContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "http://141.253.198.138"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithExposedHeaders("Authorization");
+    });
+});
+
+builder.Services.AddTransient<IIncidentTypeRepository, IncidentTypeRepository>();
+builder.Services.AddTransient<IIncidentTypeFactory, IncidentTypeFactory>();
+builder.Services.AddTransient<IncidentTypeMapper>();
+builder.Services.AddTransient<IncidentTypeService>();
+
 var app = builder.Build();
 
 // ----------------------
@@ -32,6 +57,8 @@ var app = builder.Build();
 // ----------------------
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors("AllowSpecificOrigin");
 
 // ----------------------
 //     Routing
