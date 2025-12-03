@@ -8,9 +8,9 @@ public interface IOperationPlanRepository : IGenericRepository<OperationPlan>
 
     Task<OperationPlan?> GetOperationPlanByIdAsync(long id);
 
-    Task<OperationPlan?> GetOperationPlanByAuthorAsync(string author);
+    Task<IEnumerable<OperationPlan>> GetOperationPlanByAuthorAsync(string author);
 
-    Task<OperationPlan?> GetOperationPlanByAlgorithmAsync(string algorithm);
+    Task<IEnumerable<OperationPlan>> GetOperationPlanByAlgorithmAsync(string algorithm);
 
     Task<OperationPlan?> GetOperationPlanByTargetDayAsync(DateTime targetDay);
 

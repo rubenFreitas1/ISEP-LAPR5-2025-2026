@@ -37,26 +37,16 @@ public class OperationPlanService
         return null;
     }
 
-    public async  Task<OperationPlanDTO?> GetOperationPlanByAuthor(string author)
+    public async Task<IEnumerable<OperationPlanDTO>> GetOperationPlanByAuthor(string author)
     {
-        OperationPlan? operationPlan = await _operationPlanRepository.GetOperationPlanByAuthorAsync(author);
-        if (operationPlan != null)
-        {
-            OperationPlanDTO operationPlanDTO = OperationPlanDTO.ToDTO(operationPlan);
-            return operationPlanDTO;
-        }
-        return null;
+        IEnumerable<OperationPlan> operationPlans = await _operationPlanRepository.GetOperationPlanByAuthorAsync(author);
+        return OperationPlanDTO.ToDTO(operationPlans);
     }
 
-    public async Task<OperationPlanDTO?> GetOperationPlanByAlgorithm(string algorithm)
+    public async Task<IEnumerable<OperationPlanDTO>> GetOperationPlanByAlgorithm(string algorithm)
     {
-        OperationPlan? operationPlan = await _operationPlanRepository.GetOperationPlanByAlgorithmAsync(algorithm);
-        if (operationPlan != null)
-        {
-            OperationPlanDTO operationPlanDTO = OperationPlanDTO.ToDTO(operationPlan);
-            return operationPlanDTO;
-        }
-        return null;
+        IEnumerable<OperationPlan> operationPlans = await _operationPlanRepository.GetOperationPlanByAlgorithmAsync(algorithm);
+        return OperationPlanDTO.ToDTO(operationPlans);
     }
 
     public async Task<OperationPlanDTO?> GetOperationPlanByTargetDay(DateTime targetDay)

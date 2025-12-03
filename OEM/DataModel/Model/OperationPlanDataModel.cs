@@ -11,7 +11,7 @@ public class OperationPlanDataModel
     public long Id { get; set; }
 
     [Required]
-    public List<OperationEntry>? OperationList { get; set;}
+    public List<OperationEntryDataModel>? OperationList { get; set;}
 
     [Required]
     public DateTime TargetDay { get; set;}
@@ -30,7 +30,7 @@ public class OperationPlanDataModel
     public OperationPlanDataModel(OperationPlan plan)
     {
         Id = plan.Id;
-        OperationList = plan.OperationList;
+        OperationList = plan.OperationList!.ConvertAll(ol => new OperationEntryDataModel(ol));
         TargetDay = plan.TargetDay;
         Author = plan.Author;
         Algorithm = plan.Algorithm;
