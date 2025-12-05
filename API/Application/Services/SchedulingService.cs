@@ -70,7 +70,7 @@ public class SchedulingService
             errorMessages.Add("No vessel visit notifications found between target day and end day.");
             return null;
         }
-        
+
         var notificationDTOs = VesselVisitNotificationDTO.ToDTO(filteredNotifications).ToList();
 
         var docksFromDb = await _dockRepository.GetDocksAsync();
