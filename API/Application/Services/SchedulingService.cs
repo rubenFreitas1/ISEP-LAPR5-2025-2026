@@ -85,6 +85,8 @@ public class SchedulingService
                             && p.Status == ResourceStatus.Available)
                 .ToList();
 
+            if (resourcesForDock == null || resourcesForDock.Count == 0) continue;
+
             double avgCap = GetAverageOperationalCapacity(resourcesForDock);
             int avgCapInt = avgCap > 0 ? (int)Math.Round(avgCap) : 0;
             docksDto.Add(new DockRebalancingDTO(dockName, avgCapInt));
