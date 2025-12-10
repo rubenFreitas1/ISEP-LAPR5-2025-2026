@@ -4,6 +4,7 @@ import cors from 'cors';
 import routes from '../api';
 import config from '../../config';
 import { Request, Response, NextFunction } from 'express';
+import { errors } from 'celebrate';
 
 export default ({ app }: { app: express.Application }) => {
   /**
@@ -53,6 +54,10 @@ export default ({ app }: { app: express.Application }) => {
   });
 
   /// error handlers
+  
+  // Celebrate validation error handler - must come before general error handlers
+  app.use(errors());
+  
   app.use((err : any, req: Request, res: Response, next: NextFunction) => {
     /**
      * Handle 401 thrown by express-jwt library
@@ -66,11 +71,14 @@ export default ({ app }: { app: express.Application }) => {
     return next(err);
   });
   app.use((err : any, req: Request, res: Response, next: NextFunction) => {
+    // Log the error for debugging
+    console.error('Error details:', err);
+    
     res.status(err.status || 500);
     res.json({
-      errors: {
-        message: err.message,
-      },
+      error: err.status === 500 ? 'Internal Server Error' : err.message,
+      message: err.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
   });
 };

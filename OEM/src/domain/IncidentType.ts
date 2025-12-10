@@ -3,6 +3,7 @@ import { IncidentClassification } from "./IncidentQualification";
 export class IncidentType {
 
   constructor(
+    public id: string,
     public code: string,
     public name: string,
     public description: string,

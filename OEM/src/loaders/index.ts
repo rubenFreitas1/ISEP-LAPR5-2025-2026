@@ -4,10 +4,31 @@ import dependencyInjectorLoader from './dependencyInjector';
 import mongooseLoader from './mongoose';
 import Logger from './logger';
 import config from '../../config';
+import swaggerLoader from './swagger';
 
 export default async ({ expressApp }: { expressApp: express.Application }) => {
   const mongoConnection = await mongooseLoader();
   Logger.info('✌️ DB loaded and connected!');
+
+  const incidentTypeSchema = {
+    name: 'incidentTypeSchema',
+    schema: '../persistence/schemas/incidentTypeSchema',
+  }
+
+  const incidentTypeController = {
+    name: config.controllers.incidentType.name,
+    path: config.controllers.incidentType.path
+  }
+
+  const incidentTypeRepo = {
+    name: config.repos.incidentType.name,
+    path: config.repos.incidentType.path
+  }
+
+  const incidentTypeService = {
+    name: config.services.incidentType.name,
+    path: config.services.incidentType.path
+  }
 
   //const userSchema = {
     // compare with the approach followed in repos and services
@@ -44,21 +65,22 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
   await dependencyInjectorLoader({
     mongoConnection,
     schemas: [
-      //userSchema,
-      //roleSchema
+      incidentTypeSchema
     ],
     controllers: [
-      //roleController
+      incidentTypeController
     ],
     repos: [
-      //roleRepo,
-      //userRepo
+      incidentTypeRepo
     ],
     services: [
-      //roleService
+      incidentTypeService
     ]
   });
   Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');
+
+  swaggerLoader(expressApp);
+  Logger.info('✌️ Swagger loaded');
 
   await expressLoader({ app: expressApp });
   Logger.info('✌️ Express loaded');

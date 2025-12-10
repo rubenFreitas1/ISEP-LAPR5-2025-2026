@@ -5,11 +5,15 @@ import config from '../config';
 import express from 'express';
 
 import Logger from './loaders/logger';
+import swaggerLoader from './loaders/swagger';
 
 async function startServer() {
   const app = express();
 
+
   await require('./loaders').default({ expressApp: app });
+
+  swaggerLoader(app);
 
   app.listen(config.port, () => {
 

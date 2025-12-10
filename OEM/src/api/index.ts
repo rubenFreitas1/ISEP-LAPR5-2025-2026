@@ -1,9 +1,8 @@
 import { Router } from 'express';
-
-//import auth from './routes/userRoute';
+import incidentTypeRoute from './routes/IncidentTypeRoute';
 
 export default () => {
     const app = Router();
-    //auth(app);
+    incidentTypeRoute(app);
     return app;
 }
