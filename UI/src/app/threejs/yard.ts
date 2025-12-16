@@ -23,6 +23,10 @@ export async function createYard(labelText: string): Promise<THREE.Object3D> {
         objLoader.load(
           'yard.obj',
           (object) => {
+            object.name = `StorageArea_Yard_${labelText}`;
+            object.userData['type'] = 'storage-area';
+            object.userData['pickable'] = true;
+            object.userData['storageAreaName'] = labelText;
             object.scale.set(100, 50, 50);
             object.rotation.y = Math.PI;
 

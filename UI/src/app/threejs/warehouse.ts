@@ -24,6 +24,10 @@ export async function createWarehouse(labelText: string): Promise<THREE.Group> {
         objLoader.load(
           'warehouse.obj',
           (object) => {
+            object.name = `StorageArea_Warehouse_${labelText}`;
+            object.userData['type'] = 'storage-area';
+            object.userData['pickable'] = true;
+            object.userData['storageAreaName'] = labelText;
             object.scale.set(50, 50, 50);
             object.rotation.y = Math.PI;
 

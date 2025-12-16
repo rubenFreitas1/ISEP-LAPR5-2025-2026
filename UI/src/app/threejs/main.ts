@@ -1,25 +1,48 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
+import { CameraAnimatorService } from './camera-animator';
+import { ObjectPickerService, PickableObject } from './object-picker';
 
 
-export function createScene() {
+export function createScene(
+  objectPicker: ObjectPickerService,
+  cameraAnimator: CameraAnimatorService
+) {
 
   //inicializa objetos essencias para a scene
 
   const clock = new THREE.Clock();
   const container = document.getElementById('render-target');
-  const scene = new THREE.Scene();  
-
+  const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(71, container!.offsetWidth / container!.offsetHeight, 0.1, 2000);
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(container!.offsetWidth, container!.offsetHeight);
-  
- 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container?.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  function onMouseClick(event: MouseEvent) {
+    if (cameraAnimator.isAnimating()) return;
+
+    const pickedObject = objectPicker.pick(event, camera, container!);
+
+    if (pickedObject) {
+      objectPicker.highlightObject(pickedObject);
+      cameraAnimator.animateCameraToTarget(
+        camera,
+        controls,
+        pickedObject.centerPoint,
+        1000
+      );
+    }
+  }
+
+  container?.addEventListener('click', onMouseClick);
 
 
   // Função para inicializar todos os objetos, luzes e camera
@@ -106,13 +129,79 @@ export function createScene() {
     // Câmera e controlos
     camera.position.set(200, 400, 400);
     camera.lookAt(0, 0, 0);
+
+    // Limpar objetos pickable anteriores
+    objectPicker.clearPickableObjects();
+
+    // Registar docks, cranes e storage areas como pickable
+    objects.forEach((obj) => {
+      // Verificar se o próprio objeto é um dock group ou storage area
+      if (obj.userData['type'] === 'dock') {
+        obj.updateMatrixWorld(true);
+        const boundingBox = new THREE.Box3().setFromObject(obj);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+
+        objectPicker.registerPickableObject({
+          mesh: obj,
+          type: 'dock',
+          name: obj.name || 'Dock',
+          centerPoint: center
+        });
+      } else if (obj.userData['type'] === 'storage-area') {
+        obj.updateMatrixWorld(true);
+        const boundingBox = new THREE.Box3().setFromObject(obj);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+
+        objectPicker.registerPickableObject({
+          mesh: obj,
+          type: 'storage-area',
+          name: obj.name || 'Storage Area',
+          centerPoint: center
+        });
+      }
+
+      // Procurar docks e cranes dentro dos grupos
+      obj.traverse((child) => {
+        if (child.userData['type'] === 'dock' && child !== obj) {
+          child.updateMatrixWorld(true);
+          const boundingBox = new THREE.Box3().setFromObject(child);
+          const center = boundingBox.getCenter(new THREE.Vector3());
+
+          objectPicker.registerPickableObject({
+            mesh: child,
+            type: 'dock',
+            name: child.name || 'Dock',
+            centerPoint: center
+          });
+        } else if (child.userData['type'] === 'crane') {
+          child.updateMatrixWorld(true);
+          const boundingBox = new THREE.Box3().setFromObject(child);
+          const center = boundingBox.getCenter(new THREE.Vector3());
+
+          objectPicker.registerPickableObject({
+            mesh: child,
+            type: 'crane',
+            name: child.name || 'Crane',
+            centerPoint: center
+          });
+        }
+      });
+    });
+
+    // Registar vessels como pickable
+    vessel.forEach((vesselObj, index) => {
+      vesselObj.updateMatrixWorld(true);
+      const boundingBox = new THREE.Box3().setFromObject(vesselObj);
+      const center = boundingBox.getCenter(new THREE.Vector3());
+
+      objectPicker.registerPickableObject({
+        mesh: vesselObj,
+        type: 'vessel',
+        name: vesselObj.name || `Vessel ${index + 1}`,
+        centerPoint: center
+      });
+    });
   }
-
-
-  // Controlos da câmera
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-
 
   // Função de animação
   function draw() {
@@ -136,13 +225,16 @@ export function createScene() {
     renderer.setAnimationLoop(null);
   }
 
-  
+
   return {
     initialize,
     start,
     stop,
     scene,
     camera,
-    renderer
+    renderer,
+    dispose: () => {
+      container?.removeEventListener('click', onMouseClick);
+    }
   };
 }

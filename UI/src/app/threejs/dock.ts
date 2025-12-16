@@ -6,6 +6,10 @@ import { TextureConfig } from '../models/texture.model';
 // Função para criar um cais com textura e grua
 export async function createDock(name: string, textureConfig: TextureConfig): Promise<THREE.Group> {
   const group = new THREE.Group();
+  group.name = `Dock_${name}`;
+  group.userData['type'] = 'dock';
+  group.userData['pickable'] = true;
+  group.userData['dockName'] = name;
 
   const loader = new THREE.TextureLoader();
 
@@ -38,8 +42,9 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
   const tiles_for_front = { x: width / tileSize, y: height / tileSize };
 
 
-  // Carrega as texturas para cada face da doca (+X, -X, +Y, +Z, -Z)
+  // Carrega as texturas para cada face da doca (6 faces: +X, -X, +Y, -Y, +Z, -Z)
   const materials: THREE.Material[] = [
+    // Face +X (direita)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -47,6 +52,7 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
+    // Face -X (esquerda)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_side.x, tiles_for_side.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_side.x, tiles_for_side.y),
@@ -54,6 +60,7 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
+    // Face +Y (topo)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_top.x, tiles_for_top.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_top.x, tiles_for_top.y),
@@ -61,6 +68,15 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
+    // Face -Y (fundo)
+    new THREE.MeshStandardMaterial({
+      map: textureForTiles(colorMap, tiles_for_top.x, tiles_for_top.y),
+      roughnessMap: textureForTiles(roughnessMap, tiles_for_top.x, tiles_for_top.y),
+      normalMap: textureForTiles(normalMap, tiles_for_top.x, tiles_for_top.y),
+      metalness: 0,
+      roughness: 1,
+    }),
+    // Face +Z (frente)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),
@@ -68,6 +84,7 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
       metalness: 0,
       roughness: 1,
     }),
+    // Face -Z (trás)
     new THREE.MeshStandardMaterial({
       map: textureForTiles(colorMap, tiles_for_front.x, tiles_for_front.y),
       roughnessMap: textureForTiles(roughnessMap, tiles_for_front.x, tiles_for_front.y),
@@ -78,6 +95,10 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
   ];
 
   const dock = new THREE.Mesh(geometry, materials);
+  dock.name = `Dock_${name}_Mesh`;
+  dock.userData['type'] = 'dock';
+  dock.userData['pickable'] = true;
+  dock.userData['dockName'] = name;
   dock.castShadow = true;
   dock.receiveShadow = true;
   dock.position.y = 5;

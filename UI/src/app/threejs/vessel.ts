@@ -19,6 +19,9 @@ export async function createVessel(): Promise<THREE.Group> {
       objLoader.load(
         'ship-cargo-a.obj',
         (object) => {
+          object.name = 'Vessel';
+          object.userData['type'] = 'vessel';
+          object.userData['pickable'] = true;
           object.scale.set(11, 11, 11);
           object.position.set(11, 15, 110);
           object.traverse((child) => {

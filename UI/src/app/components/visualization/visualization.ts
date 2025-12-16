@@ -11,6 +11,8 @@ import { createYard } from '../../threejs/yard';
 import { PortLayoutService } from '../../services/portLayout.service';
 import { TextureService } from '../../services/texture.service';
 import { TextureModel } from '../../models/texture.model';
+import { ObjectPickerService } from '../../threejs/object-picker';
+import { CameraAnimatorService } from '../../threejs/camera-animator';
 
 @Component({
   selector: 'app-visualization',
@@ -22,12 +24,17 @@ import { TextureModel } from '../../models/texture.model';
 export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
 
   private scene: any;
-  constructor(private portLayoutService: PortLayoutService, private textureService: TextureService) {}
+  constructor(
+    private portLayoutService: PortLayoutService,
+    private textureService: TextureService,
+    private objectPicker: ObjectPickerService,
+    private cameraAnimator: CameraAnimatorService
+  ) {}
 
   async ngAfterViewInit(): Promise<void> {
 
     // Cria a cena
-    const scene = createScene();
+    const scene = createScene(this.objectPicker, this.cameraAnimator);
 
     // Busca o layout do porto
     const { dockPositions, storageAreas  } =
@@ -105,6 +112,9 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
 
     if (this.scene) {
       this.scene.stop();
+      if (this.scene.dispose) {
+        this.scene.dispose();
+      }
     }
   }
 }

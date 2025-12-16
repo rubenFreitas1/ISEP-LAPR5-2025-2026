@@ -14,6 +14,9 @@ export async function createCrane(): Promise<THREE.Object3D> {
         CDN_PATH + 'shipToShoreCrane.glb',
       (gltf) => {
         const object = gltf.scene;
+        object.name = 'Crane';
+        object.userData['type'] = 'crane';
+        object.userData['pickable'] = true;
 
         object.scale.set(4, 4, 4);
         object.position.set(18, 57, 0);
