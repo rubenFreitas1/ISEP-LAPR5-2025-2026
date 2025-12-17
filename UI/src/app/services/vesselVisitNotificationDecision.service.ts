@@ -8,7 +8,7 @@ import { VesselVisitNotificationDecisionModel } from '../models/vesselVisitNotif
   providedIn: 'root'
 })
 export class VesselVisitNotificationDecisionService {
-  private apiUrl = 'https://lapr5-frontend.duckdns.org/api/VesselVisitNotification';
+  private apiUrl = 'http://localhost:5000/api/VesselVisitNotification';
 
   constructor(private http: HttpClient) { }
 

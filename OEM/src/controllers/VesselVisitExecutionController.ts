@@ -1,0 +1,135 @@
+import { Request, Response, NextFunction } from "express";
+import { Inject, Service } from 'typedi';
+import IVesselVisitExecutionController from './IControllers/IVesselVisitExecutionController';
+import { VesselVisitExecutionDTO } from '../dto/VesselVisitExecutionDTO';
+import { Result } from '../core/logic/Result';
+import SystemUserClient from '../services/clients/SystemUserClient';
+import config from '../../config';
+
+@Service()
+export default class VesselVisitExecutionController implements IVesselVisitExecutionController {
+
+    constructor(
+        @Inject('vesselVisitExecutionService') private vesselVisitExecutionService,
+        @Inject('logger') private logger : any
+    ){}
+
+    public async getAllVesselVisitExecutions(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Getting all vessel visit executions');
+            const result = await this.vesselVisitExecutionService.getAllVesselVisitExecutions();
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                res.status(500).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async getVesselVisitExecutionById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Getting vessel visit execution by ID');
+            const result = await this.vesselVisitExecutionService.getVesselVisitExecutionById(req.params.id);
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                res.status(404).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async getVesselVisitExecutionByCode(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Getting vessel visit execution by code');
+            const result = await this.vesselVisitExecutionService.getVesselVisitExecutionByCode(req.params.code);
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                res.status(404).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async getVesselVisitExecutionsByStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Getting vessel visit executions by status');
+            const result = await this.vesselVisitExecutionService.getVesselVisitExecutionsByStatus(req.params.status);
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                res.status(404).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async getVesselVisitExecutionsByVesselIMO(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Getting vessel visit executions by vessel IMO'); 
+            const result = await this.vesselVisitExecutionService.getVesselVisitExecutionsByVesselIMO(req.params.vesselIMO);
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                res.status(404).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async createVesselVisitExecution(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Creating vessel visit execution');
+
+            const vesselVisitExecutionDTO: VesselVisitExecutionDTO = req.body;
+            
+            // Get API base URL from environment
+            const apiBaseUrl = config.env === 'production' 
+                ? (process.env.API_URL || '/api')
+                : (process.env.API_URL || 'http://localhost:5000/api');
+            
+            // Extract Auth header from request
+            const authHeader = req.headers.authorization;
+            
+            const result = await this.vesselVisitExecutionService.createVesselVisitExecution(vesselVisitExecutionDTO, apiBaseUrl, authHeader);
+            if (result.isSuccess) {
+                res.status(201).json(result.getValue());
+            } else {
+                res.status(400).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error('Error creating vessel visit execution:', e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    public async updateVesselVisitExecution(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.silly('Updating vessel visit execution');
+            const code: string = req.params.code;
+            const vesselVisitExecutionDTO: VesselVisitExecutionDTO = req.body;
+            const result = await this.vesselVisitExecutionService.updateVesselVisitExecution(code, vesselVisitExecutionDTO);
+            if (result.isSuccess) {
+                res.status(200).json(result.getValue());
+            } else {
+                const statusCode = result.error && typeof result.error === 'string' && result.error.includes('not found') ? 404 : 400;
+                res.status(statusCode).json({ error: result.error });
+            }
+        } catch (e) {
+            this.logger.error(e);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+}

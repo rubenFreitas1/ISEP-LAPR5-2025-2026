@@ -14,6 +14,11 @@ if (!envFound) {
 
 export default {
   /**
+   * Environment: development, production, or test
+   */
+  env: process.env.NODE_ENV || 'development',
+
+  /**
    * Your favorite port : optional change to 4000 by JRT
    */
   port: parseInt(process.env.PORT, 10) || 3001, 
@@ -22,6 +27,21 @@ export default {
    * That long string from mlab
    */
   databaseURL: process.env.MONGODB_URI,
+
+  /**
+   * Auth0 configuration
+   */
+  auth0: {
+    domain: process.env.AUTH0_DOMAIN || '',
+    audience: process.env.AUTH0_AUDIENCE || '',
+  },
+
+  /**
+   * CORS configuration
+   */
+  cors: {
+    origins: (process.env.CORS_ORIGINS || 'http://localhost:4200,http://141.253.198.138').split(','),
+  },
 
   /**
    * Your secret sauce
@@ -47,12 +67,20 @@ export default {
       name: "IncidentTypeController",
       path: "../controllers/IncidentTypeController"
     },
+    vesselVisitExecution: {
+      name: "VesselVisitExecutionController",
+      path: "../controllers/VesselVisitExecutionController"
+    }
   },
 
   repos: {
     incidentType: {
       name: "incidentTypeRepo",
       path: "../repos/IncidentTypeRepo"
+    },
+    vesselVisitExecution: {
+      name: "vesselVisitExecutionRepo",
+      path: "../repos/VesselVisitExecutionRepo"
     }
   },
 
@@ -60,6 +88,10 @@ export default {
     incidentType: {
       name: "incidentTypeService",
       path: "../services/IncidentTypeService"
+    },
+    vesselVisitExecution: {
+      name: "vesselVisitExecutionService",
+      path: "../services/VesselVisitExecutionService"
     }
   }
 }

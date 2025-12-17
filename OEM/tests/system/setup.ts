@@ -7,6 +7,7 @@ const TEST_DB_URI = process.env.MONGODB_URI_TEST ||
   "mongodb+srv://oem_teste:Compincha_123@clusterlapr5.waiyfrz.mongodb.net/oem_test";
 
 process.env.MONGODB_URI = TEST_DB_URI;
+process.env.NODE_ENV = 'test';
 
 import loaders from "../../src/loaders";
 

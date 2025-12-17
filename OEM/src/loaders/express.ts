@@ -5,6 +5,7 @@ import routes from '../api';
 import config from '../../config';
 import { Request, Response, NextFunction } from 'express';
 import { errors } from 'celebrate';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 export default ({ app }: { app: express.Application }) => {
   /**
@@ -22,10 +23,18 @@ export default ({ app }: { app: express.Application }) => {
   // It shows the real origin IP in the heroku or Cloudwatch logs
   app.enable('trust proxy');
 
-  // The magic package that prevents frontend developers going nuts
-  // Alternate description:
-  // Enable Cross Origin Resource Sharing to all origins by default
-  app.use(cors());
+  // CORS aligned with API Program.cs
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (config.cors.origins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+    allowedHeaders: ['Authorization','Content-Type','Origin','Accept'],
+    exposedHeaders: ['Authorization']
+  }));
 
   // Some sauce that always add since 2014
   // "Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it."
@@ -37,8 +46,18 @@ export default ({ app }: { app: express.Application }) => {
   
 
 
-  // Load API routes
-  app.use(config.api.prefix, routes());
+  // JWT Auth0 middleware configured like .NET API
+  // Skip JWT in test mode to allow system tests to run
+  if (config.env === 'test') {
+    app.use(config.api.prefix, routes());
+  } else {
+    const checkJwt = auth({
+      audience: config.auth0.audience,
+      issuerBaseURL: config.auth0.domain ? `https://${config.auth0.domain}/` : undefined,
+      tokenSigningAlg: 'RS256'
+    });
+    app.use(config.api.prefix, checkJwt, routes());
+  }
 
 
   

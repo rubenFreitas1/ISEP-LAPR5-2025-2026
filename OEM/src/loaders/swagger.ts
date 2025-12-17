@@ -22,7 +22,8 @@ export default function swaggerLoader(app: Application) {
     apis: [
       path.join(__dirname, "../api/routes/*.ts"),
       path.join(__dirname, "../controllers/*.ts"),
-      path.join(__dirname, "../dto/*.ts")
+      path.join(__dirname, "../dto/*.ts"),
+      path.join(__dirname, "../api/swagger/*.ts")
     ],
   };
 

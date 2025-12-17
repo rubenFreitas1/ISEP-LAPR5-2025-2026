@@ -5,6 +5,7 @@ import mongooseLoader from './mongoose';
 import Logger from './logger';
 import config from '../../config';
 import swaggerLoader from './swagger';
+import path from 'path';
 
 export default async ({ expressApp }: { expressApp: express.Application }) => {
   const mongoConnection = await mongooseLoader();
@@ -28,6 +29,26 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
   const incidentTypeService = {
     name: config.services.incidentType.name,
     path: config.services.incidentType.path
+  }
+
+  const vesselVisitExecutionSchema = {
+    name: 'vesselVisitExecutionSchema',
+    schema: '../persistence/schemas/vesselVisitExecutionSchema',
+  }
+
+  const vesselVisitExecutionController = {
+    name: config.controllers.vesselVisitExecution.name,
+    path: config.controllers.vesselVisitExecution.path
+  }
+
+  const vesselVisitExecutionRepo = {
+    name: config.repos.vesselVisitExecution.name,
+    path: config.repos.vesselVisitExecution.path
+  }
+
+  const vesselVisitExecutionService = {
+    name: config.services.vesselVisitExecution.name,
+    path: config.services.vesselVisitExecution.path
   }
 
   //const userSchema = {
@@ -65,16 +86,20 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
   await dependencyInjectorLoader({
     mongoConnection,
     schemas: [
-      incidentTypeSchema
+      incidentTypeSchema,
+      vesselVisitExecutionSchema
     ],
     controllers: [
-      incidentTypeController
+      incidentTypeController,
+      vesselVisitExecutionController
     ],
     repos: [
-      incidentTypeRepo
+      incidentTypeRepo,
+      vesselVisitExecutionRepo
     ],
     services: [
-      incidentTypeService
+      incidentTypeService,
+      vesselVisitExecutionService
     ]
   });
   Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');

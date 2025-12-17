@@ -5,6 +5,7 @@
       "es2017",
       "esnext.asynciterable"
     ],
+    "types": ["jest", "node"],
     "typeRoots": [
       "./node_modules/@types",
       "./src/types"
@@ -24,10 +25,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "./src/**/*", "index.js"
+    "./src/**/*",
+    "./tests/**/*",
+    "index.js"
   ],
   "exclude": [
-    "node_modules",
-    "tests"
+    "node_modules"
   ]
 }
