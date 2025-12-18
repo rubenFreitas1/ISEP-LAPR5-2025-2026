@@ -26,6 +26,12 @@ public class RepresentativeDataModel
     [Required]
     public string? PhoneNumber { get; set; }
 
+    public string? Role { get; set; }
+
+    public string? Status { get; set; }
+
+    public bool IsFirstTime { get; set; }
+
     public DateTime LastModifiedAt { get; set; }
 
     public RepresentativeDataModel() { }
@@ -40,6 +46,9 @@ public class RepresentativeDataModel
         Email = representative.Email;
         PhoneNumber = representative.PhoneNumber;
         LastModifiedAt = representative.LastModifiedAt;
+        Role = representative.Role.ToString();
+        Status = representative.Status.ToString();
+        IsFirstTime = representative.IsFirstTime;
     }
 
 }

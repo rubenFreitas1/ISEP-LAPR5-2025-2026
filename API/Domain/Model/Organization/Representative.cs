@@ -21,6 +21,12 @@ public class Representative
 
     public ShippingAgentOrganization? Organization { get; private set; }
 
+    public SystemRole Role => SystemRole.Representative;
+
+    public SystemUserStatus Status { get; private set; }
+
+    public bool IsFirstTime { get; private set; }
+
     public DateTime LastModifiedAt { get; set; }
 
     private Representative() { }
@@ -60,6 +66,8 @@ public class Representative
         Email = email;
         PhoneNumber = phoneNumber;
         LastModifiedAt = DateTime.UtcNow;
+        Status = SystemUserStatus.Deactivated;
+        IsFirstTime = true;
     }
 
     public void CheckOrganization(ShippingAgentOrganization organization)
@@ -176,5 +184,15 @@ public class Representative
         LastModifiedAt = DateTime.UtcNow;
     }
 
+    public void ChangeUserStatus(SystemUserStatus newStatus)
+    {
+        Status = newStatus;
+        LastModifiedAt = DateTime.UtcNow;
+    }
 
+    public void ChangeIsFirstTime(bool isFirstTime)
+    {
+        IsFirstTime = isFirstTime;
+        LastModifiedAt = DateTime.UtcNow;
+    }
 }

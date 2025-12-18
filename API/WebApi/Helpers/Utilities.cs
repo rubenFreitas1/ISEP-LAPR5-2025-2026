@@ -560,7 +560,10 @@ public static class Utilities
             Email = "rep1org1@email.com",
             PhoneNumber = "911111111",
             Organization = org1,
-            LastModifiedAt = DateTime.UtcNow
+            LastModifiedAt = DateTime.UtcNow,
+            Role = SystemRole.Representative.ToString(),
+            Status = SystemUserStatus.Active.ToString(),
+            IsFirstTime = false
         };
         var rep2_org1 = new RepresentativeDataModel
         {
@@ -570,7 +573,10 @@ public static class Utilities
             Email = "rep2org1@email.com",
             PhoneNumber = "922222222",
             Organization = org1,
-            LastModifiedAt = DateTime.UtcNow
+            LastModifiedAt = DateTime.UtcNow,
+            Role = SystemRole.Representative.ToString(),
+            Status = SystemUserStatus.Active.ToString(),
+            IsFirstTime = false
         };
 
         var rep1_org2 = new RepresentativeDataModel
@@ -581,7 +587,10 @@ public static class Utilities
             Email = "rep1org2@email.com",
             PhoneNumber = "933333333",
             Organization = org2,
-            LastModifiedAt = DateTime.UtcNow
+            LastModifiedAt = DateTime.UtcNow,
+            Role = SystemRole.Representative.ToString(),
+            Status = SystemUserStatus.Active.ToString(),
+            IsFirstTime = false
         };
         var rep2_org2 = new RepresentativeDataModel
         {
@@ -591,7 +600,10 @@ public static class Utilities
             Email = "rep2org2@email.com",
             PhoneNumber = "944444444",
             Organization = org2,
-            LastModifiedAt = DateTime.UtcNow
+            LastModifiedAt = DateTime.UtcNow,
+            Role = SystemRole.Representative.ToString(),
+            Status = SystemUserStatus.Active.ToString(),
+            IsFirstTime = false
         };
 
         return new List<(ShippingAgentOrganizationDataModel, List<RepresentativeDataModel>)>

@@ -185,6 +185,20 @@ public class SystemUserService
         return true;
     }
 
+    public async Task<bool> SendActivationEmail(RepresentativeDTO representative)
+    {
+        var token = Guid.NewGuid().ToString();
+        // Use representative Id as code for activation linkage
+        string activationLink = GenerateActivationLink(token, representative.Id.ToString());
+
+        Console.WriteLine($"[SystemUserService] Activation link for representative {representative.Email}: {activationLink}");
+
+        await _emailService.SendEmailAsync(representative.Email!, "Ative sua conta",
+            $"Clique aqui para ativar sua conta: <a href='{activationLink}'>Ativar</a>");
+
+        return true;
+    }
+
     private string GenerateActivationLink(string token, string userCode)
     {
         return $"{_configuration["AppSettings:ActivationBaseUrl"]}?token={token}&code={userCode}";

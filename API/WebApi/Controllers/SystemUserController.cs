@@ -133,14 +133,21 @@ public class SystemUserController : ControllerBase
             return Unauthorized("No email claim found in Auth0 token.");
         }
 
+        RepresentativeDTO? representative = await _systemUserService.GetRepresentativeByEmail(email);
         SystemUserDTO? user = await _systemUserService.GetSystemUserByEmail(email);
-        if (user == null)
+        if (user != null)
         {
-            return NotFound("User not found.");
+            Console.WriteLine($"MyIsFirstTime -> user.Code={user.Code}, IsFirstTime={user.IsFirstTime}");
+            return Ok(new { userId, name, isFirstTime = user.IsFirstTime, email = user.Email, code = user.Code, role = user.Role.ToString() });
         }
 
-        Console.WriteLine($"MyIsFirstTime -> user.Code={user.Code}, IsFirstTime={user.IsFirstTime}");
-        return Ok(new { userId, name, isFirstTime = user.IsFirstTime, email = user.Email, code = user.Code });
+        if (representative != null)
+        {
+            Console.WriteLine($"MyIsFirstTime -> representative.Id={representative.Id}, IsFirstTime={representative.IsFirstTime}");
+            return Ok(new { userId = representative.Id, name = representative.Name, isFirstTime = representative.IsFirstTime, email = representative.Email, role = "Representative" });
+        }
+
+        return NotFound("User not found.");
     }
 
     [HttpGet("MyRole")]
@@ -161,6 +168,10 @@ public class SystemUserController : ControllerBase
             if (representative == null)
             {
                 return Forbid();
+            }
+            if (representative.Status.Equals(SystemUserStatus.Deactivated))
+            {
+                return Forbid("Access denied.");
             }
             return Ok(new { role = "Representative" });
         }
@@ -183,23 +194,39 @@ public class SystemUserController : ControllerBase
             return Unauthorized("No email claim found in Auth0 token.");
         }
         SystemUserDTO? user = await _systemUserService.GetSystemUserByEmail(email);
-        if (user == null)
+        RepresentativeDTO? representative = await _systemUserService.GetRepresentativeByEmail(email);
+        if (user == null && representative == null)
         {
             return NotFound("User not found.");
         }
 
         try
         {
-            Console.WriteLine($"SendActivationEmail called for user {user.Email} (code={user.Code})");
-            bool emailSent = await _systemUserService.SendActivationEmail(user);
-            if (!emailSent)
+            if (user != null)
             {
-                Console.WriteLine("SendActivationEmail failed: emailService returned false");
+                Console.WriteLine($"SendActivationEmail called for user {user.Email} (code={user.Code})");
+                bool emailSent = await _systemUserService.SendActivationEmail(user);
+                if (!emailSent)
+                {
+                    Console.WriteLine("SendActivationEmail failed: emailService returned false");
+                    return StatusCode(500, "Failed to send activation email.");
+                }
+
+                Console.WriteLine("SendActivationEmail succeeded");
+                return Ok($"Activation email sent to {user.Email}.");
+            }
+
+            // Representative fallback
+            Console.WriteLine($"SendActivationEmail called for representative {representative!.Email} (id={representative.Id})");
+            bool emailSentRep = await _systemUserService.SendActivationEmail(representative!);
+            if (!emailSentRep)
+            {
+                Console.WriteLine("SendActivationEmail failed: emailService returned false (representative)");
                 return StatusCode(500, "Failed to send activation email.");
             }
 
-            Console.WriteLine("SendActivationEmail succeeded");
-            return Ok($"Activation email sent to {user.Email}.");
+            Console.WriteLine("SendActivationEmail succeeded (representative)");
+            return Ok($"Activation email sent to {representative!.Email}.");
         }
         catch (Exception ex)
         {

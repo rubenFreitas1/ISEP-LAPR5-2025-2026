@@ -7,7 +7,8 @@ public enum SystemRole
 {
     Admin,
     LogisticOperator,
-    PortAuthorityOfficer
+    PortAuthorityOfficer,
+    Representative
 }
 
 
