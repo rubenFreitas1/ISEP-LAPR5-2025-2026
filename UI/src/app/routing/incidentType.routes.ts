@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('../pages/incident-type/incident-type').then(m => m.IncidentType),
-    data: { $localize: 'Incident Types', roles: ['Admin', 'PortAuthorityOfficer'] },
+    data: { $localize: 'Incident Types', roles: ['Admin', 'PortAuthorityOfficer', 'LogisticOperator'] },
     canActivate: [roleGuard]
   }
 ];

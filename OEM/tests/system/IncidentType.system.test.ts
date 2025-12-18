@@ -3,6 +3,17 @@ import request from "supertest";
 import { Express } from "express";
 import { createSystemApp, clearDatabase, closeDatabase } from "./setup";
 
+// Mock do middleware requireRole para testes de sistema
+jest.mock("../../src/api/middlewares/RequiredRole", () => ({
+  requireRole: () => {
+    return (req: any, res: any, next: any) => {
+      // Simular que o utilizador tem a role necessária
+      req.userRole = 'Admin';
+      next();
+    };
+  }
+}));
+
 /**
  * TESTES DE SISTEMA (System Tests)
  * 
@@ -12,7 +23,7 @@ import { createSystemApp, clearDatabase, closeDatabase } from "./setup";
  * Estes testes:
  * - Usam uma base de dados REAL (MongoDB Atlas)
  * - Testam o fluxo completo end-to-end
- * - NÃO usam mocks
+ * - NÃO usam mocks (exceto o middleware de autorização)
  * - Validam integração real entre todas as camadas
  */
 

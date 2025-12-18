@@ -9,6 +9,17 @@ import incidentTypeRoutes from "../../src/api/routes/IncidentTypeRoute";
 import IncidentTypeController from "../../src/controllers/IncidentTypeController";
 import config from "../../config";
 
+// Mock do middleware requireRole
+jest.mock("../../src/api/middlewares/RequiredRole", () => ({
+  requireRole: () => {
+    return (req: any, res: any, next: any) => {
+      // Simular que o utilizador tem a role necessária
+      req.userRole = 'Admin';
+      next();
+    };
+  }
+}));
+
 jest.mock("../../config", () => ({
   controllers: {
     incidentType: {

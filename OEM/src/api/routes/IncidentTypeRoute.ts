@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 import { Container } from 'typedi';
 import IIncidentTypeController from '../../controllers/IControllers/IIncidentTypeController';
-
+import { requireRole } from '../middlewares/RequiredRole';
 import config from "../../../config";
 
 const route = Router();
@@ -32,6 +32,7 @@ export default (app: Router) => {
    */
   route.post(
     '',
+    requireRole(['Admin', 'PortAuthorityOfficer']),
     celebrate({
       body: Joi.object({
         code: Joi.string().required(),
@@ -73,6 +74,7 @@ export default (app: Router) => {
    */
   route.put(
     '/update/:code',
+    requireRole(['Admin', 'PortAuthorityOfficer']),
     celebrate({
       body: Joi.object({
         code: Joi.string().required(),

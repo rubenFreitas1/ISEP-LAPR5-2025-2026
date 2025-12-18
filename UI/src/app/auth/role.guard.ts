@@ -3,11 +3,17 @@ import { CanActivateFn, Router } from '@angular/router';
 import { PermissionService } from '../services/permission.service';
 
 
-export const roleGuard: CanActivateFn = (route, state) => {
+export const roleGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
   const permissions = inject(PermissionService);
 
-  const userRole = permissions.getRole();
+  // Ensure role is loaded from localStorage before checking permissions
+  let userRole = permissions.getRole();
+  if (!userRole) {
+    await permissions.loadRoleFromStorage();
+    userRole = permissions.getRole();
+  }
+
   const allowedRoles: string[] | undefined = route.data['roles'];
 
   console.log('RoleGuard:', route.pathFromRoot, route.data, permissions.getRole());
