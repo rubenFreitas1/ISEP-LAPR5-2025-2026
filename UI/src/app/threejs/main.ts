@@ -145,7 +145,10 @@ export function createScene(
           mesh: obj,
           type: 'dock',
           name: obj.name || 'Dock',
-          centerPoint: center
+          centerPoint: center,
+          userData: {
+            dockName: obj.userData['dockName']
+          }
         });
       } else if (obj.userData['type'] === 'storage-area') {
         obj.updateMatrixWorld(true);
@@ -156,12 +159,18 @@ export function createScene(
           mesh: obj,
           type: 'storage-area',
           name: obj.name || 'Storage Area',
-          centerPoint: center
+          centerPoint: center,
+          userData: {
+            storageAreaCode: obj.userData['storageAreaCode'],
+            storageAreaLocation: obj.userData['storageAreaLocation']
+          }
         });
       }
 
       // Procurar docks e cranes dentro dos grupos
       obj.traverse((child) => {
+        console.log('[Traverse Debug]', { childName: child.name, childType: child.userData['type'], userData: child.userData });
+        
         if (child.userData['type'] === 'dock' && child !== obj) {
           child.updateMatrixWorld(true);
           const boundingBox = new THREE.Box3().setFromObject(child);
@@ -171,9 +180,13 @@ export function createScene(
             mesh: child,
             type: 'dock',
             name: child.name || 'Dock',
-            centerPoint: center
+            centerPoint: center,
+            userData: {
+              dockName: child.userData['dockName']
+            }
           });
         } else if (child.userData['type'] === 'crane') {
+          console.log('[Crane Found Debug]', { name: child.name, craneCode: child.userData['craneCode'], dockName: child.userData['dockName'] });
           child.updateMatrixWorld(true);
           const boundingBox = new THREE.Box3().setFromObject(child);
           const center = boundingBox.getCenter(new THREE.Vector3());
@@ -182,8 +195,13 @@ export function createScene(
             mesh: child,
             type: 'crane',
             name: child.name || 'Crane',
-            centerPoint: center
+            centerPoint: center,
+            userData: {
+              craneCode: child.userData['craneCode'] || undefined,
+              dockName: child.userData['dockName'] || undefined
+            }
           });
+          console.log('[Crane Registered]', { name: child.name, dockName: child.userData['dockName'], registered: true });
         }
       });
     });

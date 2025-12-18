@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { PermissionService } from '../../app/services/permission.service';
+import { ElementInfoService } from '../../app/services/element-info.service';
 import { Injectable } from '@angular/core';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
@@ -9,6 +10,7 @@ export interface PickableObject {
   type: 'dock' | 'storage-area' | 'vessel' | 'crane';
   name: string;
   centerPoint: THREE.Vector3;
+  userData?: any;
 }
 
 @Injectable({
@@ -21,7 +23,10 @@ export class ObjectPickerService {
   private selectedObject: PickableObject | null = null;
   private originalMaterials = new Map<THREE.Object3D, THREE.Material | THREE.Material[]>();
 
-  constructor(private permissionService: PermissionService) {}
+  constructor(
+    private permissionService: PermissionService,
+    private elementInfoService: ElementInfoService
+  ) {}
 
   registerPickableObject(obj: PickableObject) {
     obj.mesh.updateMatrixWorld(true);
@@ -119,8 +124,11 @@ export class ObjectPickerService {
     if (obj) {
       this.applyHighlight(obj.mesh);
       this.selectedObject = obj;
+      // Update element info service
+      this.elementInfoService.setCurrentElement(obj);
     } else {
       this.selectedObject = null;
+      this.elementInfoService.setCurrentElement(null);
     }
   }
 

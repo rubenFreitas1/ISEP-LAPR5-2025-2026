@@ -4,12 +4,15 @@ import { TextureConfig } from '../models/texture.model';
 
 
 // Função para criar um cais com textura e grua
-export async function createDock(name: string, textureConfig: TextureConfig): Promise<THREE.Group> {
+export async function createDock(name: string, textureConfig: TextureConfig, craneCode?: string): Promise<THREE.Group> {
   const group = new THREE.Group();
   group.name = `Dock_${name}`;
   group.userData['type'] = 'dock';
   group.userData['pickable'] = true;
   group.userData['dockName'] = name;
+  if (craneCode) {
+    group.userData['craneCode'] = craneCode;
+  }
 
   const loader = new THREE.TextureLoader();
 
@@ -128,6 +131,12 @@ export async function createDock(name: string, textureConfig: TextureConfig): Pr
 // Carrega e adiciona a grua à doca
 try {
     const crane = await createCrane();
+    // Attach craneCode and dockName to the crane
+    if (craneCode) {
+      crane.userData['craneCode'] = craneCode;
+    }
+    // Store dock name in crane userData so we can identify which dock it belongs to
+    crane.userData['dockName'] = name;
     group.add(crane);
   } catch (err) {
     console.error('Erro ao carregar grua:', err);

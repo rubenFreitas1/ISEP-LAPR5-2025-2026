@@ -55,7 +55,9 @@ export class PortLayoutService {
           y: slot.y,
           z: slot.z,
           type: area.storageAreaType,
-          name: area.location ,
+          name: area.location,
+          code: area.code,
+          location: area.location,
           currentCapacity: area.currentCapacity ?? 0,
           maxCapacity: area.maxCapacity ?? area.capacity ?? 0,
           data: area

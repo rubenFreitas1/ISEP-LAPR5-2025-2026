@@ -13,11 +13,14 @@ import { TextureService } from '../../services/texture.service';
 import { TextureModel } from '../../models/texture.model';
 import { ObjectPickerService } from '../../threejs/object-picker';
 import { CameraAnimatorService } from '../../threejs/camera-animator';
+import { ElementInfoOverlayComponent } from '../element-info-overlay/element-info-overlay.component';
 
 @Component({
   selector: 'app-visualization',
   templateUrl: './visualization.html',
-  styleUrls: ['./visualization.css']
+  styleUrls: ['./visualization.css'],
+  standalone: true,
+  imports: [ElementInfoOverlayComponent]
 })
 
 // Componente principal de visualização do porto em three js
@@ -51,7 +54,9 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
     // Cria as docas e as Storage Areas
     const docks = await Promise.all(
       dockPositions.map(async (pos) => {
-        const dockMesh = await createDock(pos.name, cfg.dock);
+        // Generate a unique crane code for this dock (e.g., "STS-Dock_A" for "Dock A")
+        const craneCode = `STS-${pos.name.replace(/\s+/g, '_')}`;
+        const dockMesh = await createDock(pos.name, cfg.dock, craneCode);
         dockMesh.position.set(pos.x, pos.y, pos.z);
         return dockMesh;
       })
@@ -69,6 +74,13 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
           area.y += 0.5;
         }
         mesh.position.set(area.x, area.y, area.z);
+        // Ensure element-info can match selected storage area using unique identifiers
+        try {
+          (mesh as any).userData = (mesh as any).userData || {};
+          (mesh as any).userData['storageAreaCode'] = (area as any).code;
+          (mesh as any).userData['storageAreaLocation'] = (area as any).location ?? (area as any).name;
+          (mesh as any).userData['type'] = 'storage-area';
+        } catch {}
         return mesh;
       })
     );
