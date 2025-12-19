@@ -32,9 +32,11 @@ export class Incident implements OnInit, OnDestroy {
   showEditModal = false;
   isEditing = false;
   editItem: any = {};
+  originalEditItem: any = {};
   editModalErrorMessage = '';
   editFieldErrors: { [key: string]: string } = {};
   selectedEditVVEIds: number[] = [];
+  originalEditVVEIds: number[] = [];
 
   incidentTypes: IncidentTypeModel[] = [];
   vesselVisitExecutions: VesselVisitExecutionModel[] = [];
@@ -46,6 +48,8 @@ export class Incident implements OnInit, OnDestroy {
   statusMessage = '';
   statusMessageType: 'success' | 'error' | '' = '';
   statusHiding = false;
+  modalErrorHiding = false;
+  editModalErrorHiding = false;
 
   // Create modal
   showCreateModal = false;
@@ -56,6 +60,10 @@ export class Incident implements OnInit, OnDestroy {
 
   // Date picker popover
   showDatePicker = false;
+
+  // Error message timeouts
+  private modalErrorTimeout: any = null;
+  private editModalErrorTimeout: any = null;
 
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
@@ -142,6 +150,17 @@ export class Incident implements OnInit, OnDestroy {
 
       return matchSeverity && matchStatus && matchDate;
     });
+
+    // Show error message if filters produce no results
+    const hasFilters = this.filterFrom || this.filterTo || this.filterStatus;
+    if (hasFilters && this.filteredItems.length === 0 && this.items.length > 0) {
+      this.statusHiding = false;
+      this.statusMessage = 'No incidents found matching the selected filters.';
+      this.statusMessageType = 'error';
+      setTimeout(() => this.clearStatusMessage(), 5000);
+    } else if (this.statusMessage && this.statusMessageType === 'error') {
+      this.clearStatusMessage();
+    }
   }
 
   clearFilters() {
@@ -355,6 +374,10 @@ export class Incident implements OnInit, OnDestroy {
         status: this.selected.status,
         incidentTypeCode: this.selected.incidentTypeCode,
       };
+      
+      // Store original values for comparison
+      this.originalEditItem = { ...this.editItem };
+      this.originalEditVVEIds = [...this.selectedEditVVEIds];
     } else {
       alert('Please select an incident to update.');
     }
@@ -362,18 +385,46 @@ export class Incident implements OnInit, OnDestroy {
 
   resetEditItem() {
     this.editItem = {};
+    this.originalEditItem = {};
     this.editModalErrorMessage = '';
     this.editFieldErrors = {};
     // NÃO limpar selectedEditVVEIds aqui para manter as seleções do incidente
+  }
+
+  hasEditChanges(): boolean {
+    // Helper to normalize empty values (null, undefined, empty string) to null for comparison
+    const normalizeValue = (val: any) => {
+      if (val === null || val === undefined || val === '') return null;
+      return val;
+    };
+
+    // Check if any field has changed
+    const descriptionChanged = normalizeValue(this.editItem.description) !== normalizeValue(this.originalEditItem.description);
+    const endDateChanged = normalizeValue(this.editItem.endDate) !== normalizeValue(this.originalEditItem.endDate);
+    
+    const fieldsChanged = descriptionChanged || endDateChanged;
+    
+    // Check if VVE selection has changed
+    const vvesChanged = 
+      this.selectedEditVVEIds.length !== this.originalEditVVEIds.length ||
+      !this.selectedEditVVEIds.every(id => this.originalEditVVEIds.includes(id));
+    
+    return fieldsChanged || vvesChanged;
   }
 
   closeEditModal() {
     this.showEditModal = false;
     this.isEditing = false;
     this.editItem = {};
+    this.originalEditItem = {};
     this.editModalErrorMessage = '';
     this.editFieldErrors = {};
     this.selectedEditVVEIds = [];
+    this.originalEditVVEIds = [];
+    if (this.editModalErrorTimeout) {
+      clearTimeout(this.editModalErrorTimeout);
+      this.editModalErrorTimeout = null;
+    }
   }
 
   onSaveEdit() {
@@ -444,6 +495,10 @@ export class Incident implements OnInit, OnDestroy {
     this.showCreateModal = false;
     this.resetNewItem();
     this.isCreating = false;
+    if (this.modalErrorTimeout) {
+      clearTimeout(this.modalErrorTimeout);
+      this.modalErrorTimeout = null;
+    }
   }
 
   onSaveNew() {
@@ -503,6 +558,34 @@ export class Incident implements OnInit, OnDestroy {
     return this.fieldErrors[fieldName.toLowerCase()] || '';
   }
 
+  clearModalErrorAfterTimeout() {
+    if (this.modalErrorTimeout) {
+      clearTimeout(this.modalErrorTimeout);
+    }
+    this.modalErrorTimeout = setTimeout(() => {
+      this.modalErrorHiding = true;
+      setTimeout(() => {
+        this.modalErrorMessage = '';
+        this.fieldErrors = {};
+        this.modalErrorHiding = false;
+      }, 220);
+    }, 5000);
+  }
+
+  clearEditModalErrorAfterTimeout() {
+    if (this.editModalErrorTimeout) {
+      clearTimeout(this.editModalErrorTimeout);
+    }
+    this.editModalErrorTimeout = setTimeout(() => {
+      this.editModalErrorHiding = true;
+      setTimeout(() => {
+        this.editModalErrorMessage = '';
+        this.fieldErrors = {};
+        this.editModalErrorHiding = false;
+      }, 220);
+    }, 5000);
+  }
+
   private handleCreateError(error: any) {
     this.fieldErrors = {};
     let errorMessage = '';
@@ -528,6 +611,7 @@ export class Incident implements OnInit, OnDestroy {
 
     if (!errorMessage) errorMessage = 'Error creating incident.';
     this.modalErrorMessage = errorMessage;
+    this.clearModalErrorAfterTimeout();
   }
 
   private handleEditError(error: any) {
@@ -546,6 +630,7 @@ export class Incident implements OnInit, OnDestroy {
     if (!errorMessage && error?.message) errorMessage = error.message;
     if (!errorMessage) errorMessage = 'Error updating incident. Please try again.';
     this.editModalErrorMessage = errorMessage;
+    this.clearEditModalErrorAfterTimeout();
   }
 
   clearStatusMessage() {

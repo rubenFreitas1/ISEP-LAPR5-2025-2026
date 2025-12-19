@@ -290,7 +290,8 @@ export default class IncidentService implements IIncidentService {
             return Result.ok(dto);
         } catch (error) {
             this.logger.error(error);
-            return Result.fail("Error updating incident.");
+            const message = error instanceof Error ? error.message : (typeof error === 'string' ? error : 'Error updating incident.');
+            return Result.fail(message);
         }
     }
 }

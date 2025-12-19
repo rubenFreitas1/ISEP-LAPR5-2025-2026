@@ -47,7 +47,8 @@ export default class IncidentRepo implements IIncidentRepo {
     }
 
     async findByIDs(ids: string[]): Promise<Incident[]> {
-        const records = await this.incidentSchema.find({ _id: { $in: ids } });
+        const records = await this.incidentSchema.find({ _id: { $in: ids } })
+            .populate('vesselVisitExecutionsCodes');
         return records.map(record => IncidentMap.toDomain(record));
     }
 

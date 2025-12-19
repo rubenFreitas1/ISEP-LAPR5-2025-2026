@@ -236,9 +236,19 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 
                 for (const incident of incidents) {
                     const currentVVEs = incident.vesselVisitExecutions || [];
-                    const updatedVVEs = [...currentVVEs, saved];
-                    incident.updateVesselVisitExecutions(updatedVVEs);
-                    await this.incidentRepo.update(incident);
+                    
+                    const currentCodes = currentVVEs.map((vve: any) => 
+                        typeof vve === 'string' ? vve : vve.code
+                    );
+                    
+                    if (!currentCodes.includes(saved.code)) {
+                        const updatedCodes = [...currentCodes, saved.code];
+                        
+                        const updatedVVEs = updatedCodes.map(code => ({ code } as any));
+                        
+                        incident.updateVesselVisitExecutions(updatedVVEs);
+                        await this.incidentRepo.update(incident);
+                    }
                 }
             }
 
