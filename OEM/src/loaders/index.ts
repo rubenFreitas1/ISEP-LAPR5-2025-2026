@@ -51,6 +51,26 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
     path: config.services.vesselVisitExecution.path
   }
 
+  const incidentSchema = {
+    name: 'incidentSchema',
+    schema: '../persistence/schemas/incidentSchema',
+  }
+
+  const incidentController = {
+    name: config.controllers.incident.name,
+    path: config.controllers.incident.path
+  }
+
+  const incidentRepo = {
+    name: config.repos.incident.name,
+    path: config.repos.incident.path
+  }
+
+  const incidentService = {
+    name: config.services.incident.name,
+    path: config.services.incident.path
+  }
+
   //const userSchema = {
     // compare with the approach followed in repos and services
     //name: 'userSchema',
@@ -87,19 +107,23 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
     mongoConnection,
     schemas: [
       incidentTypeSchema,
-      vesselVisitExecutionSchema
+      vesselVisitExecutionSchema,
+      incidentSchema
     ],
     controllers: [
       incidentTypeController,
-      vesselVisitExecutionController
+      vesselVisitExecutionController,
+      incidentController
     ],
     repos: [
       incidentTypeRepo,
-      vesselVisitExecutionRepo
+      vesselVisitExecutionRepo,
+      incidentRepo
     ],
     services: [
       incidentTypeService,
-      vesselVisitExecutionService
+      vesselVisitExecutionService,
+      incidentService
     ]
   });
   Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');

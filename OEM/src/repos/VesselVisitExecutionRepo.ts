@@ -44,16 +44,26 @@ export default class VesselVisitExecutionRepo implements IVesselVisitExecutionRe
         const record = await this.vesselVisitExecutionSchema.findOne({ code });
         return record ? VesselVisitExecutionMap.toDomain(record) : null;
     }
-    
+
+    async findByCodes(codes: string[]): Promise<VesselVisitExecution[]> {
+        const records = await this.vesselVisitExecutionSchema.find({ code: { $in: codes } });
+        return records.map(record => VesselVisitExecutionMap.toDomain(record));
+    }
+
     async findByStatus(status: VesselVisitExecutionStatus): Promise<VesselVisitExecution[]> {
         const records = await this.vesselVisitExecutionSchema.find({ status });
         return records.map(record => VesselVisitExecutionMap.toDomain(record));
     }
 
-    async findByVesselIMO(vesselIMO: string): Promise<VesselVisitExecution[]> {
+    async findByVesselIMO(vesselIMO: string): Promise<VesselVisitExecution | null> {
+        const record = await this.vesselVisitExecutionSchema.findOne({ vesselIMO });
+        return record ? VesselVisitExecutionMap.toDomain(record) : null;
+    }
+
+    async findByVesselIMOs(vesselIMO: string): Promise<VesselVisitExecution[]> {
         const records = await this.vesselVisitExecutionSchema.find({ vesselIMO });
         return records.map(record => VesselVisitExecutionMap.toDomain(record));
-        
+
     }
     
     async findByFilters(filters: { from?: Date; to?: Date; vesselIMO?: string; status?: VesselVisitExecutionStatus }): Promise<VesselVisitExecution[]> {

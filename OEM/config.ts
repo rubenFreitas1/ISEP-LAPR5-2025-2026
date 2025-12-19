@@ -70,6 +70,10 @@ export default {
     vesselVisitExecution: {
       name: "VesselVisitExecutionController",
       path: "../controllers/VesselVisitExecutionController"
+    },
+    incident: {
+      name: "IncidentController",
+      path: "../controllers/IncidentController"
     }
   },
 
@@ -81,6 +85,10 @@ export default {
     vesselVisitExecution: {
       name: "vesselVisitExecutionRepo",
       path: "../repos/VesselVisitExecutionRepo"
+    },
+    incident: {
+      name: "incidentRepo",
+      path: "../repos/IncidentRepo"
     }
   },
 
@@ -92,6 +100,10 @@ export default {
     vesselVisitExecution: {
       name: "vesselVisitExecutionService",
       path: "../services/VesselVisitExecutionService"
+    },
+    incident: {
+      name: "incidentService",
+      path: "../services/IncidentService"
     }
   }
 }

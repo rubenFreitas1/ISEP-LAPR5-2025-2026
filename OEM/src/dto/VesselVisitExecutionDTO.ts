@@ -49,6 +49,13 @@ import { VesselVisitExecutionStatus } from "../domain/VesselVisitExecutionStatus
  *           type: string
  *           description: Identifier of the system user who created this VVE
  *           example: "1"
+ *         incidentIDs:
+ *           type: array
+ *           description: List of incident IDs associated with this vessel visit execution
+ *           items:
+ *             type: string
+ *           nullable: true
+ *           example: ["INC-001", "INC-002"]
  */
 
 export interface VesselVisitExecutionDTO {
@@ -61,4 +68,5 @@ export interface VesselVisitExecutionDTO {
     lastUpdated: Date; 
     departureDate?: Date;
     systemUserID: string;
+    incidentIDs?: string[] | null;
 }

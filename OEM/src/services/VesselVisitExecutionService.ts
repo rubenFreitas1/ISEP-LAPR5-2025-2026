@@ -1,5 +1,6 @@
 import { Service, Inject } from "typedi";
 import IVesselVisitExecutionRepo from "../services/IRepos/IVesselVisitExecutionRepo";
+import IIncidentRepo from "./IRepos/IIncidentRepo";
 import { VesselVisitExecutionStatus } from "../domain/VesselVisitExecutionStatus";
 import { VesselVisitExecution } from "../domain/VesselVisitExecution";
 import { VesselVisitExecutionDTO } from "../dto/VesselVisitExecutionDTO";
@@ -16,6 +17,7 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
 
     constructor(
         @Inject("vesselVisitExecutionRepo") private vesselVisitExecutionRepo: IVesselVisitExecutionRepo,
+        @Inject("incidentRepo") private incidentRepo: IIncidentRepo,
         @Inject("logger") private logger: any
     ) {}
 
@@ -78,7 +80,7 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
 
     public async getVesselVisitExecutionsByVesselIMO(vesselIMO: string): Promise<Result<VesselVisitExecutionDTO[]>> {
         try {
-            const vesselVisitExecutions = await this.vesselVisitExecutionRepo.findByVesselIMO(vesselIMO);
+            const vesselVisitExecutions = await this.vesselVisitExecutionRepo.findByVesselIMOs(vesselIMO);
             if (!vesselVisitExecutions || vesselVisitExecutions.length === 0) {
                 return Result.fail(`No Vessel Visit Executions found for the vessel IMO ${vesselIMO}.`);
             }
@@ -182,9 +184,39 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 return Result.fail("Vessel IMO is missing in the Vessel Visit Notification.");
             }
             const vveByVesselIMO = await this.vesselVisitExecutionRepo.findByVesselIMO(vesselIMO);
-            if (vveByVesselIMO && vveByVesselIMO.length > 0) {
+            if (vveByVesselIMO) {
                 return Result.fail(`A Vessel Visit Execution already exists for vessel IMO ${vesselIMO}.`);
             }
+
+            const incidentIDs = dto.incidentIDs;
+            if (incidentIDs !== null && incidentIDs !== undefined && incidentIDs.length > 0) {
+                const incidents = await this.incidentRepo.findByIDs(incidentIDs);
+                
+                if (!incidents || incidents.length !== incidentIDs.length) {
+                    return Result.fail("One or more Incident IDs not found.");
+                }
+
+                const vveArrivalTime = new Date(dto.arrivalDate).getTime();
+                const vveDepartureTime = dto.departureDate ? new Date(dto.departureDate).getTime() : new Date().getTime();
+
+                const affectedIncidents = incidents.filter(incident => {
+                    const incidentStartTime = incident.startDate.getTime();
+                    const incidentEndTime = incident.endDate ? incident.endDate.getTime() : new Date().getTime();
+
+                    return (
+                        vveArrivalTime <= incidentEndTime &&
+                        vveDepartureTime >= incidentStartTime
+                    );
+                });
+
+                if (affectedIncidents.length !== incidents.length) {
+                    const affectedIds = new Set(affectedIncidents.map(inc => inc.id));
+                    const unaffectedIncidents = incidents.filter(inc => !affectedIds.has(inc.id));
+                    const unaffectedIds = unaffectedIncidents.map(inc => inc.id).join(', ');
+                    return Result.fail(`The following Incidents do not overlap with the VesselVisitExecution time range: ${unaffectedIds}`);
+                }
+            }
+
             const vesselVisitExecutionCode = await this.generateVesselVisitExecutionCode();
             const domain = VesselVisitExecutionMap.toDomain({
                 code: vesselVisitExecutionCode,
@@ -198,6 +230,18 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
             if (!saved) {
                 return Result.fail("Failed to create Vessel Visit Execution.");
             }
+
+            if (incidentIDs !== null && incidentIDs !== undefined && incidentIDs.length > 0) {
+                const incidents = await this.incidentRepo.findByIDs(incidentIDs);
+                
+                for (const incident of incidents) {
+                    const currentVVEs = incident.vesselVisitExecutions || [];
+                    const updatedVVEs = [...currentVVEs, saved];
+                    incident.updateVesselVisitExecutions(updatedVVEs);
+                    await this.incidentRepo.update(incident);
+                }
+            }
+
             const dtoResult = VesselVisitExecutionMap.toDTO(saved);
             return Result.ok(dtoResult);
         } catch (error: any) {
