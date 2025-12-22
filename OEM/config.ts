@@ -74,6 +74,10 @@ export default {
     incident: {
       name: "IncidentController",
       path: "../controllers/IncidentController"
+    },
+    complementaryTaskCategory: {
+      name: "ComplementaryTaskCategoryController",
+      path: "../controllers/ComplementaryTaskCategoryController"
     }
   },
 
@@ -89,6 +93,10 @@ export default {
     incident: {
       name: "incidentRepo",
       path: "../repos/IncidentRepo"
+    },
+    complementaryTaskCategory: {
+      name: "complementaryTaskCategoryRepo",
+      path: "../repos/ComplementaryTaskCategoryRepo"
     }
   },
 
@@ -104,6 +112,10 @@ export default {
     incident: {
       name: "incidentService",
       path: "../services/IncidentService"
+    },
+    complementaryTaskCategory: {
+      name: "complementaryTaskCategoryService",
+      path: "../services/ComplementaryTaskCategoryService"
     }
   }
 }

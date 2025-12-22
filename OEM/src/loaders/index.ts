@@ -71,6 +71,26 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
     path: config.services.incident.path
   }
 
+  const complementaryTaskCategorySchema = {
+    name: 'complementaryTaskCategorySchema',
+    schema: '../persistence/schemas/complementaryTaskCategorySchema',
+  }
+
+  const complementaryTaskCategoryController = {
+    name: config.controllers.complementaryTaskCategory.name,
+    path: config.controllers.complementaryTaskCategory.path
+  }
+
+  const complementaryTaskCategoryRepo = {
+    name: config.repos.complementaryTaskCategory.name,
+    path: config.repos.complementaryTaskCategory.path
+  }
+
+  const complementaryTaskCategoryService = {
+    name: config.services.complementaryTaskCategory.name,
+    path: config.services.complementaryTaskCategory.path
+  }
+
   //const userSchema = {
     // compare with the approach followed in repos and services
     //name: 'userSchema',
@@ -108,22 +128,26 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
     schemas: [
       incidentTypeSchema,
       vesselVisitExecutionSchema,
-      incidentSchema
+      incidentSchema,
+      complementaryTaskCategorySchema
     ],
     controllers: [
       incidentTypeController,
       vesselVisitExecutionController,
-      incidentController
+      incidentController,
+      complementaryTaskCategoryController
     ],
     repos: [
       incidentTypeRepo,
       vesselVisitExecutionRepo,
-      incidentRepo
+      incidentRepo,
+      complementaryTaskCategoryRepo
     ],
     services: [
       incidentTypeService,
       vesselVisitExecutionService,
-      incidentService
+      incidentService,
+      complementaryTaskCategoryService
     ]
   });
   Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');
