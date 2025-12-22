@@ -29,7 +29,8 @@
     "PRIVACY_POLICY": "Política de Privacidade",
     "INCIDENT_TYPE": "Tipo de Incidente",
     "INCIDENT": "Incidente",
-    "VESSEL_VISIT_EXECUTION": "Execução de Visita"
+    "VESSEL_VISIT_EXECUTION": "Execução de Visita",
+    "COMPLEMENTARY_TASK_CATEGORY": "Categoria de Tarefa Complementar"
   },
   "DASHBOARD": {
     "OPEN_3D": "Abrir 3D",
@@ -157,6 +158,63 @@
         "CODE": "Inserir código",
         "NAME": "Inserir nome",
         "DESCRIPTION": "Inserir descrição",
+        "PARENT_CODE": "Selecionar pai (opcional)"
+      }
+    }
+  },
+  "COMPLEMENTARY_TASK_CATEGORY": {
+    "TITLE": "Categorias de Tarefas Complementares",
+    "SEARCH_PLACEHOLDER": "Pesquisar por código, nome ou descrição",
+    "NO_RESULTS": "Não existem categorias de tarefas complementares disponíveis.",
+    "NO_RESULTS_FOR": "Não foram encontradas categorias de tarefas complementares.",
+    "BUTTON": {
+      "NEW": "Nova Categoria",
+      "EDIT": "Editar",
+      "UNSELECT": "Desselecionar",
+      "SELECT": "Selecionar",
+      "CANCEL": "Cancelar",
+      "CREATE": "Criar",
+      "CREATING": "A criar...",
+      "SAVE": "Guardar",
+      "SAVING": "A guardar..."
+    },
+    "TABLE": {
+      "CODE": "Código",
+      "NAME": "Nome",
+      "DESCRIPTION": "Descrição",
+      "DURATION": "Duração",
+      "PARENT_CODE": "Código Pai",
+      "ACTIONS": "Ações"
+    },
+    "DETAILS": {
+      "TITLE": "Detalhes da Categoria",
+      "CODE": "Código",
+      "NAME": "Nome",
+      "DESCRIPTION": "Descrição",
+      "DURATION": "Duração",
+      "PARENT": "Categoria Pai",
+      "NONE": "Nenhum"
+    },
+    "FILTER": {
+      "ALL_TYPES": "Todos os Tipos",
+      "HAS_PARENT": "Com Categoria Pai",
+      "NO_PARENT": "Sem Categoria Pai"
+    },
+    "FORM": {
+      "TITLE_CREATE": "Criar Nova Categoria de Tarefa Complementar",
+      "TITLE_EDIT": "Editar Categoria de Tarefa Complementar",
+      "CODE": "Código",
+      "CODE_HELP": "Máximo 10 caracteres",
+      "NAME": "Nome",
+      "DESCRIPTION": "Descrição",
+      "DURATION": "Duração (opcional)",
+      "DURATION_HELP": "Duração estimada para esta categoria",
+      "PARENT_CODE": "Código da Categoria Pai (opcional)",
+      "PLACEHOLDER": {
+        "CODE": "Inserir código",
+        "NAME": "Inserir nome",
+        "DESCRIPTION": "Inserir descrição",
+        "DURATION": "Inserir duração",
         "PARENT_CODE": "Selecionar pai (opcional)"
       }
     }

@@ -29,7 +29,8 @@
     "PRIVACY_POLICY": "Privacy Policy",
     "INCIDENT_TYPE": "Incident Type",
     "INCIDENT": "Incident",
-    "VESSEL_VISIT_EXECUTION": "Vessel Visit Execution"
+    "VESSEL_VISIT_EXECUTION": "Vessel Visit Execution",
+    "COMPLEMENTARY_TASK_CATEGORY": "Complementary Task Category"
   },
   "DASHBOARD": {
     "OPEN_3D": "Open 3D",
@@ -158,6 +159,63 @@
         "CODE": "Enter code",
         "NAME": "Enter name",
         "DESCRIPTION": "Enter description",
+        "PARENT_CODE": "Select parent (optional)"
+      }
+    }
+  },
+  "COMPLEMENTARY_TASK_CATEGORY": {
+    "TITLE": "Complementary Task Categories",
+    "SEARCH_PLACEHOLDER": "Search by code, name, or description",
+    "NO_RESULTS": "No complementary task categories available.",
+    "NO_RESULTS_FOR": "No complementary task categories found matching your filters.",
+    "BUTTON": {
+      "NEW": "New Complementary Task Category",
+      "EDIT": "Edit",
+      "UNSELECT": "Unselect",
+      "SELECT": "Select",
+      "CANCEL": "Cancel",
+      "CREATE": "Create",
+      "CREATING": "Creating...",
+      "SAVE": "Save",
+      "SAVING": "Saving..."
+    },
+    "TABLE": {
+      "CODE": "Code",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "DURATION": "Duration",
+      "PARENT_CODE": "Parent Code",
+      "ACTIONS": "Actions"
+    },
+    "DETAILS": {
+      "TITLE": "Complementary Task Category Details",
+      "CODE": "Code",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "DURATION": "Duration",
+      "PARENT": "Parent Category",
+      "NONE": "None"
+    },
+    "FILTER": {
+      "ALL_TYPES": "All Types",
+      "HAS_PARENT": "Has Parent",
+      "NO_PARENT": "No Parent"
+    },
+    "FORM": {
+      "TITLE_CREATE": "Create New Complementary Task Category",
+      "TITLE_EDIT": "Edit Complementary Task Category",
+      "CODE": "Code",
+      "CODE_HELP": "Maximum 10 characters",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "DURATION": "Duration (optional)",
+      "DURATION_HELP": "Estimated duration for this task category",
+      "PARENT_CODE": "Parent Category Code (optional)",
+      "PLACEHOLDER": {
+        "CODE": "Enter code",
+        "NAME": "Enter name",
+        "DESCRIPTION": "Enter description",
+        "DURATION": "Enter duration",
         "PARENT_CODE": "Select parent (optional)"
       }
     }

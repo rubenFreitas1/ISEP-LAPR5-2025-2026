@@ -106,6 +106,11 @@ export const routes: Routes = [
         path: 'vessel-visit-execution',
         data: { title: 'Vessel Visit Executions', breadcrumb: 'Vessel Visit Executions' },
         loadChildren: () => import('./routing/vesselVisitExecution.routes').then((m) => m.routes)
+      },
+      {
+        path: 'complementary-task-category',
+        data: { title: 'Complementary Task Categories', breadcrumb: 'Complementary Task Categories' },
+        loadChildren: () => import('./routing/complementaryTaskCategory.routes').then((m) => m.routes)
       }
     ],
   },

@@ -139,6 +139,11 @@ export const navItems: IExtendedNavData[] = [
     roles: ['Admin', 'LogisticOperator']
   },
   {
+    name: 'NAV.COMPLEMENTARY_TASK_CATEGORY',
+    url: '/complementary-task-category',
+    roles: ['Admin', 'PortAuthorityOfficer']
+  },
+  {
     name: 'NAV.VESSEL_VISIT_EXECUTION',
     url: '/vessel-visit-execution',
     roles: ['Admin', 'LogisticOperator']

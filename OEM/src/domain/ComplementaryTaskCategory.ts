@@ -51,7 +51,7 @@ export class ComplementaryTaskCategory {
         this.lastUpdated = new Date();
     }
 
-    updateDuration(duration: string) {
+    updateDuration(duration: string | null) {
         this.duration = duration;
         this.lastUpdated = new Date();
     }

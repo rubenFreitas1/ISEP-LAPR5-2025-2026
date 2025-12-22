@@ -1,0 +1,166 @@
+<div class="page-container">
+  <h1 class="page-title">{{ 'COMPLEMENTARY_TASK_CATEGORY.TITLE' | translate }}</h1>
+  <div class="top-bar">
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchTerm" (input)="onSearchInput()" [placeholder]="'COMPLEMENTARY_TASK_CATEGORY.SEARCH_PLACEHOLDER' | translate" class="search-input" />
+      <button *ngIf="searchTerm" (click)="searchTerm=''; applyFilter('')" class="clear-button">✕</button>
+    </div>
+
+    <div class="filter-container">
+      <select [(ngModel)]="filterHasParent" (change)="onFilterChange()" class="filter-select">
+        <option value="">{{ 'COMPLEMENTARY_TASK_CATEGORY.FILTER.ALL_TYPES' | translate }}</option>
+        <option value="true">{{ 'COMPLEMENTARY_TASK_CATEGORY.FILTER.HAS_PARENT' | translate }}</option>
+        <option value="false">{{ 'COMPLEMENTARY_TASK_CATEGORY.FILTER.NO_PARENT' | translate }}</option>
+      </select>
+    </div>
+
+    <div class="action-buttons">
+      <button (click)="onCreateNew()" class="btn btn-primary">{{ 'COMPLEMENTARY_TASK_CATEGORY.BUTTON.NEW' | translate }}</button>
+      <button (click)="onUpdate()" class="btn btn-secondary" [disabled]="!selectedComplementaryTaskCategory">{{ 'COMPLEMENTARY_TASK_CATEGORY.BUTTON.EDIT' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="search-error-container">
+    <div *ngIf="searchError" class="error-message search-error" [class.hiding]="searchErrorHiding">
+      <span>{{ searchError }}</span>
+      <button class="close-error" (click)="hideSearchErrorImmediate()">✕</button>
+    </div>
+  </div>
+
+  <!-- Page-level status message shown between search bar and table -->
+  <div *ngIf="statusMessage" class="status-container" [class.hiding]="statusHiding">
+    <div [ngClass]="statusMessageType === 'success' ? 'success-message' : 'error-message'">
+      {{ statusMessage }}
+      <button (click)="clearStatusMessage()" class="close-error">✕</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.CODE' | translate }}</th>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.NAME' | translate }}</th>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.DESCRIPTION' | translate }}</th>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.DURATION' | translate }}</th>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.PARENT_CODE' | translate }}</th>
+          <th>{{ 'COMPLEMENTARY_TASK_CATEGORY.TABLE.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ctc of filteredComplementaryTaskCategories" [class.selected]="selectedComplementaryTaskCategory?.code === ctc.code" (click)="selectComplementaryTaskCategory(ctc)">
+          <td><span class="styled-field">{{ ctc.code }}</span></td>
+          <td>{{ ctc.name }}</td>
+          <td class="description-cell">{{ ctc.description }}</td>
+          <td>{{ ctc.duration || '-' }}</td>
+          <td>{{ ctc.parentComplementaryTaskCategoryCode || '-' }}</td>
+          <td>
+            <button (click)="selectComplementaryTaskCategory(ctc); $event.stopPropagation()" class="btn-select" [class.selected]="selectedComplementaryTaskCategory?.code === ctc.code">
+              {{ selectedComplementaryTaskCategory?.code === ctc.code ? ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.UNSELECT' | translate) : ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.SELECT' | translate) }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredComplementaryTaskCategories.length === 0 && !isLoading" class="no-results">
+      <ng-container *ngIf="searchTerm || filterHasParent; else noneFound">
+        <p>{{ 'COMPLEMENTARY_TASK_CATEGORY.NO_RESULTS_FOR' | translate }}</p>
+      </ng-container>
+      <ng-template #noneFound>
+        <p>{{ 'COMPLEMENTARY_TASK_CATEGORY.NO_RESULTS' | translate }}</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Information of selected complementary task category -->
+  <div *ngIf="selectedComplementaryTaskCategory" class="selected-info">
+    <h3>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.TITLE' | translate }}</h3>
+    <div class="info-card">
+      <p><strong>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.CODE' | translate }}:</strong> {{ selectedComplementaryTaskCategory.code }}</p>
+      <p><strong>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.NAME' | translate }}:</strong> {{ selectedComplementaryTaskCategory.name }}</p>
+      <p><strong>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.DESCRIPTION' | translate }}:</strong> {{ selectedComplementaryTaskCategory.description }}</p>
+      <p><strong>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.DURATION' | translate }}:</strong> {{ selectedComplementaryTaskCategory.duration || ('COMPLEMENTARY_TASK_CATEGORY.DETAILS.NONE' | translate) }}</p>
+      <p><strong>{{ 'COMPLEMENTARY_TASK_CATEGORY.DETAILS.PARENT' | translate }}:</strong> {{ selectedComplementaryTaskCategory.parentComplementaryTaskCategoryCode || ('COMPLEMENTARY_TASK_CATEGORY.DETAILS.NONE' | translate) }}</p>
+    </div>
+  </div>
+
+  <!-- Create Modal -->
+  <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header"><h2>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.TITLE_CREATE' | translate }}</h2><button class="close-button" (click)="closeCreateModal()">✕</button></div>
+      <div class="modal-body">
+        <div *ngIf="modalErrorMessage" class="alert alert-danger">{{ modalErrorMessage }}</div>
+        <div *ngIf="modalSuccessMessage" class="alert alert-success">{{ modalSuccessMessage }}</div>
+        <form (ngSubmit)="onSaveNewComplementaryTaskCategory()" #complementaryTaskCategoryForm="ngForm">
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.CODE' | translate }}</label><input name="code" [(ngModel)]="newComplementaryTaskCategory.code" required class="form-input" maxlength="10" />
+            <small class="form-help">{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.CODE_HELP' | translate }}</small>
+            <div *ngIf="hasFieldError('code')" class="field-error">{{ getFieldError('code') }}</div>
+          </div>
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.NAME' | translate }}</label><input name="name" [(ngModel)]="newComplementaryTaskCategory.name" required class="form-input" />
+            <div *ngIf="hasFieldError('name')" class="field-error">{{ getFieldError('name') }}</div>
+          </div>
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DESCRIPTION' | translate }}</label><textarea name="description" [(ngModel)]="newComplementaryTaskCategory.description" required class="form-input" rows="3"></textarea>
+            <div *ngIf="hasFieldError('description')" class="field-error">{{ getFieldError('description') }}</div>
+          </div>
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DURATION' | translate }}</label>
+            <input name="duration" [(ngModel)]="newComplementaryTaskCategory.duration" class="form-input" />
+            <small class="form-help">{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DURATION_HELP' | translate }}</small>
+            <div *ngIf="hasFieldError('duration')" class="field-error">{{ getFieldError('duration') }}</div>
+          </div>
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.PARENT_CODE' | translate }}</label>
+            <input name="parentComplementaryTaskCategoryCode" [(ngModel)]="newComplementaryTaskCategory.parentComplementaryTaskCategoryCode" class="form-input" />
+            <div *ngIf="hasFieldError('parentComplementaryTaskCategoryCode')" class="field-error">{{ getFieldError('parentComplementaryTaskCategoryCode') }}</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" (click)="closeCreateModal()" class="btn btn-secondary">{{ 'COMPLEMENTARY_TASK_CATEGORY.BUTTON.CANCEL' | translate }}</button>
+            <button type="submit" class="btn btn-primary">{{ isCreating ? ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.CREATING' | translate) : ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.CREATE' | translate) }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header"><h2>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.TITLE_EDIT' | translate }}</h2><button class="close-button" (click)="closeEditModal()">✕</button></div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSaveEditComplementaryTaskCategory()" #editForm="ngForm">
+          <div *ngIf="editModalErrorMessage" class="alert alert-danger">{{ editModalErrorMessage }}</div>
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.CODE' | translate }}</label>
+            <input name="code" [(ngModel)]="editComplementaryTaskCategory.code" class="form-input readonly-input" readonly tabindex="-1" aria-readonly="true" />
+            <div *ngIf="hasEditFieldError('code')" class="field-error">{{ getEditFieldError('code') }}</div>
+          </div>
+
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.NAME' | translate }}</label>
+            <input name="name" [(ngModel)]="editComplementaryTaskCategory.name" class="form-input" required />
+            <div *ngIf="hasEditFieldError('name')" class="field-error">{{ getEditFieldError('name') }}</div>
+          </div>
+
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DESCRIPTION' | translate }}</label>
+            <textarea name="description" [(ngModel)]="editComplementaryTaskCategory.description" class="form-input" rows="3" required></textarea>
+            <div *ngIf="hasEditFieldError('description')" class="field-error">{{ getEditFieldError('description') }}</div>
+          </div>
+
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DURATION' | translate }}</label>
+            <input name="duration" [(ngModel)]="editComplementaryTaskCategory.duration" class="form-input" />
+            <small class="form-help">{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.DURATION_HELP' | translate }}</small>
+            <div *ngIf="hasEditFieldError('duration')" class="field-error">{{ getEditFieldError('duration') }}</div>
+          </div>
+
+          <div class="form-group"><label>{{ 'COMPLEMENTARY_TASK_CATEGORY.FORM.PARENT_CODE' | translate }}</label>
+            <input name="parentComplementaryTaskCategoryCode" [(ngModel)]="editComplementaryTaskCategory.parentComplementaryTaskCategoryCode" class="form-input" />
+            <div *ngIf="hasEditFieldError('parentComplementaryTaskCategoryCode')" class="field-error">{{ getEditFieldError('parentComplementaryTaskCategoryCode') }}</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" (click)="closeEditModal()" class="btn btn-secondary" [disabled]="isEditing">{{ 'COMPLEMENTARY_TASK_CATEGORY.BUTTON.CANCEL' | translate }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="isEditing || !editForm.form.valid || !isEditDirty()">
+              {{ isEditing ? ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.SAVING' | translate) : ('COMPLEMENTARY_TASK_CATEGORY.BUTTON.SAVE' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
