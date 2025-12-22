@@ -112,13 +112,6 @@ export class Incident implements OnInit, OnDestroy {
           this.applyFilters();
           this.isLoading = false;
 
-          if (!this.items || this.items.length === 0) {
-            this.statusHiding = false;
-            this.statusMessage = 'No incidents found.';
-            this.statusMessageType = 'error';
-          } else if (this.statusMessage && this.statusMessageType === 'error') {
-            this.clearStatusMessage();
-          }
         },
         error: (error) => {
           this.statusHiding = false;
@@ -372,6 +365,7 @@ export class Incident implements OnInit, OnDestroy {
         endDate: this.selected.endDate,
         severity: this.selected.severity,
         status: this.selected.status,
+        classification: this.selected.classification,
         incidentTypeCode: this.selected.incidentTypeCode,
       };
       
@@ -401,8 +395,9 @@ export class Incident implements OnInit, OnDestroy {
     // Check if any field has changed
     const descriptionChanged = normalizeValue(this.editItem.description) !== normalizeValue(this.originalEditItem.description);
     const endDateChanged = normalizeValue(this.editItem.endDate) !== normalizeValue(this.originalEditItem.endDate);
+    const classificationChanged = normalizeValue(this.editItem.classification) !== normalizeValue(this.originalEditItem.classification);
     
-    const fieldsChanged = descriptionChanged || endDateChanged;
+    const fieldsChanged = descriptionChanged || endDateChanged || classificationChanged;
     
     // Check if VVE selection has changed
     const vvesChanged = 
@@ -451,6 +446,7 @@ export class Incident implements OnInit, OnDestroy {
       status: this.editItem.status,
       description: this.editItem.description,
       endDate: this.editItem.endDate || null,
+      classification: this.editItem.classification,
       vesselVisitExecutionsCodes: vveCodes.length > 0 ? vveCodes : [],
     };
 
@@ -485,7 +481,7 @@ export class Incident implements OnInit, OnDestroy {
   }
 
   resetNewItem() {
-    this.newItem = { status: 'Active' };
+    this.newItem = { status: 'Active', classification: '' };
     this.modalErrorMessage = '';
     this.fieldErrors = {};
     this.selectedVVEIds = [];
@@ -546,7 +542,8 @@ export class Incident implements OnInit, OnDestroy {
     return !!(
       this.newItem.description?.trim() &&
       this.newItem.startDate &&
-      this.newItem.incidentTypeCode?.trim()
+      this.newItem.incidentTypeCode?.trim() &&
+      this.newItem.classification?.trim()
     );
   }
 

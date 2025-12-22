@@ -463,6 +463,7 @@ describe("Incident Routes (Application Tests)", () => {
         endDate: "2025-12-21",
         status: "Active",
         description: "Test incident",
+        classification: "Critical",
         vesselVisitExecutionsCodes: ["2025-PA-000001"]
       });
 
@@ -491,7 +492,8 @@ describe("Incident Routes (Application Tests)", () => {
         incidentTypeByCode: "TYPE1",
         startDate: "2025-12-20",
         status: "InvalidStatus", // deve ser Active ou Resolved
-        description: "Test"
+        description: "Test",
+        classification: "Critical"
       });
 
     expect(res.status).toBe(400);
@@ -512,7 +514,8 @@ describe("Incident Routes (Application Tests)", () => {
         startDate: "2025-12-20",
         endDate: null,
         status: "Active",
-        description: "Ongoing incident"
+        description: "Ongoing incident",
+        classification: "Critical"
       });
 
     expect(res.status).toBe(201);
@@ -533,6 +536,7 @@ describe("Incident Routes (Application Tests)", () => {
         startDate: "2025-12-20",
         status: "Active",
         description: "Incident without vessels",
+        classification: "Critical",
         vesselVisitExecutionsCodes: null
       });
 
@@ -555,7 +559,8 @@ describe("Incident Routes (Application Tests)", () => {
         incidentTypeByCode: "NONEXISTENT",
         startDate: "2025-12-20",
         status: "Active",
-        description: "Test"
+        description: "Test",
+        classification: "Critical"
       });
 
     expect(res.status).toBe(400);
@@ -574,7 +579,8 @@ describe("Incident Routes (Application Tests)", () => {
       incidentTypeByCode: "TYPE1",
       startDate: "2025-12-20",
       status: "Active",
-      description: "Test incident"
+      description: "Test incident",
+      classification: "Critical"
     };
 
     await request(app)
@@ -610,6 +616,7 @@ describe("Incident Routes (Application Tests)", () => {
         endDate: "2025-12-22",
         status: "Resolved",
         description: "Updated description",
+        classification: "Major",
         vesselVisitExecutionsCodes: []
       });
 
@@ -631,11 +638,12 @@ describe("Incident Routes (Application Tests)", () => {
       .put("/incidents/update/NONEXISTENT")
       .send({
         status: "Resolved",
-        description: "Test"
+        description: "Test",
+        classification: "Critical"
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("not found");
+    expect(res.body.error).toContain("Incident not found");
   });
 
   it("PUT /incidents/update/:id → 400 when validation fails", async () => {
@@ -675,6 +683,7 @@ describe("Incident Routes (Application Tests)", () => {
       endDate: "2025-12-22",
       status: "Resolved",
       description: "Updated",
+      classification: "Major",
       vesselVisitExecutionsCodes: ["2025-PA-000002"]
     };
 
@@ -688,6 +697,7 @@ describe("Incident Routes (Application Tests)", () => {
         endDate: expect.any(Date),
         status: "Resolved",
         description: "Updated",
+        classification: "Major",
         vesselVisitExecutionsCodes: ["2025-PA-000002"]
       })
     );
@@ -709,6 +719,7 @@ describe("Incident Routes (Application Tests)", () => {
       .send({
         status: "Active",
         description: "With vessels",
+        classification: "Major",
         vesselVisitExecutionsCodes: ["2025-PA-000001", "2025-PA-000002"]
       });
 

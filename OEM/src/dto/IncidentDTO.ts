@@ -1,6 +1,7 @@
 import { IncidentStatus } from "../domain/IncidentStatus";
 import { IncidentTypeDTO } from "./IncidentTypeDTO";
 import { VesselVisitExecutionDTO } from "./VesselVisitExecutionDTO";
+import { IncidentClassification } from "../domain/IncidentQualification";
 
 /**
  * @swagger
@@ -50,6 +51,11 @@ import { VesselVisitExecutionDTO } from "./VesselVisitExecutionDTO";
  *           type: string
  *           format: date-time
  *           description: Timestamp of the last update to the incident
+ *         classification:
+ *           type: string
+ *           enum: [Minor, Major, Critical]
+ *           description: Classification level
+ *           example: "Critical"
  *         duration:
  *           type: number
  *           nullable: true
@@ -68,6 +74,7 @@ export interface IncidentDTO {
   description: string;
   systemUserID: string;
   lastUpdated: Date;
+  classification: IncidentClassification;
   duration: number | null;
   vesselVisitExecutionsCodes: string[] | null;
 }

@@ -33,6 +33,11 @@ const IncidentSchema = new mongoose.Schema(
       required: false,
       unique: false
     },
+    classification: {
+      type: String,
+      enum: ["Minor", "Major", "Critical"],
+      required: true,
+    },
     duration: {
       type: Number,
       required: false,

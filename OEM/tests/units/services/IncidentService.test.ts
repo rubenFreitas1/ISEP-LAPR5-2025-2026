@@ -85,6 +85,7 @@ describe("IncidentService (unit tests)", () => {
       "Test incident description",
       "user123",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -136,6 +137,7 @@ describe("IncidentService (unit tests)", () => {
       "Another incident",
       "user456",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -186,6 +188,7 @@ describe("IncidentService (unit tests)", () => {
       "Vessel incident",
       "user789",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -236,6 +239,7 @@ describe("IncidentService (unit tests)", () => {
       "Date range incident",
       "user111",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -263,6 +267,7 @@ describe("IncidentService (unit tests)", () => {
       "Open incident",
       "user222",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -313,6 +318,7 @@ describe("IncidentService (unit tests)", () => {
       "Critical severity incident",
       "user333",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -363,6 +369,7 @@ describe("IncidentService (unit tests)", () => {
       "Resolved incident",
       "user444",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -431,6 +438,7 @@ describe("IncidentService (unit tests)", () => {
       "New incident description",
       "user123",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -578,6 +586,7 @@ describe("IncidentService (unit tests)", () => {
       "Old description",
       "user123",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -593,7 +602,8 @@ describe("IncidentService (unit tests)", () => {
     const dto = {
       id: "9",
       description: "Updated description",
-      status: IncidentStatus.Resolved
+      status: IncidentStatus.Resolved,
+      classification: IncidentClassification.Critical
     };
 
     const result = await service.updateIncident("9", dto as any);
@@ -625,6 +635,7 @@ describe("IncidentService (unit tests)", () => {
       "Test incident",
       "user123",
       new Date(),
+      IncidentClassification.Critical,
       null,
       null
     );
@@ -652,6 +663,7 @@ describe("IncidentService (unit tests)", () => {
       "Test incident",
       "user123",
       new Date(),
+      IncidentClassification.Critical,
       24,
       null
     );
@@ -684,3 +696,5 @@ describe("IncidentService (unit tests)", () => {
   });
 
 });
+
+

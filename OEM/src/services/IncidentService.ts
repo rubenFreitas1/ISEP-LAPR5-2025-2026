@@ -181,6 +181,7 @@ export default class IncidentService implements IIncidentService {
                 description: incidentDTO.description,
                 systemUserID: incidentDTO.systemUserID,
                 lastUpdated: new Date(),
+                classification: incidentDTO.classification,
                 duration: durationHours,
                 vesselVisitExecutions: associatedVVEs
             });
@@ -280,7 +281,7 @@ export default class IncidentService implements IIncidentService {
 
                 incident.updateVesselVisitExecutions(newVves || []);
             }
-
+            incident.updateClassification(incidentDTO.classification);
             const updated = await this.incidentRepo.update(incident);
 
             if (!updated) {

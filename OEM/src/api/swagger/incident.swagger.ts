@@ -31,6 +31,9 @@
  *         lastUpdated:
  *           type: string
  *           format: date-time
+ *         classification:
+ *           type: string
+ *           enum: [Minor, Major, Critical]
  *         duration:
  *           type: number
  *           nullable: true

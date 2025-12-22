@@ -71,6 +71,7 @@ export class IncidentService {
       endDate: end,
       status: incident.status,
       description: incident.description,
+      classification: incident.classification,
       // Send empty array when no VVEs to avoid null-related validation edge cases
       vesselVisitExecutionsCodes: incident.vesselVisitExecutionsCodes ?? []
     };

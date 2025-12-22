@@ -3,6 +3,7 @@ import { VesselVisitExecution } from "../../src/domain/VesselVisitExecution";
 import { VesselVisitExecutionStatus } from "../../src/domain/VesselVisitExecutionStatus";
 import { Incident } from "../../src/domain/Incident";
 import { IncidentStatus } from "../../src/domain/IncidentStatus";
+import { IncidentClassification } from "../../src/domain/IncidentQualification";
 import { Result } from "../../src/core/logic/Result";
 
 // -----------------------------------------
@@ -408,6 +409,7 @@ describe("VesselVisitExecutionService – Aggregate Tests", () => {
       "Description test", 
       "user1",   // systemUserID
       new Date(),  // lastUpdated
+      IncidentClassification.Critical,
       null,  // duration
       null   // vesselVisitExecutions
     );
@@ -440,6 +442,7 @@ describe("VesselVisitExecutionService – Aggregate Tests", () => {
       "Description test", 
       "user1",   // systemUserID
       new Date(),  // lastUpdated
+      IncidentClassification.Critical,
       null,  // duration
       null   // vesselVisitExecutions
     );

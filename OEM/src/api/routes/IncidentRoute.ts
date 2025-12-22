@@ -40,7 +40,8 @@ export default (app: Router) => {
         endDate: Joi.date().optional().allow(null),
         status: Joi.string().valid('Active', 'Resolved').required(),
         description: Joi.string().required(),
-        vesselVisitExecutionsCodes: Joi.array().items(Joi.string()).optional().allow(null)
+        vesselVisitExecutionsCodes: Joi.array().items(Joi.string()).optional().allow(null),
+        classification: Joi.string().valid("Minor", "Major", "Critical").required(),
       })
     }),
     (req, res, next) => ctrl.createIncident(req, res, next)
@@ -81,7 +82,8 @@ export default (app: Router) => {
         endDate: Joi.date().optional().allow(null),
         status: Joi.string().valid('Active', 'Resolved').required(),
         description: Joi.string().required(),
-        vesselVisitExecutionsCodes: Joi.array().items(Joi.string()).optional().allow(null)
+        vesselVisitExecutionsCodes: Joi.array().items(Joi.string()).optional().allow(null),
+        classification: Joi.string().valid("Minor", "Major", "Critical").required(),
       })
     }),
     (req, res, next) => ctrl.updateIncident(req, res, next)

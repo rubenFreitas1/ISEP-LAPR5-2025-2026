@@ -6,6 +6,7 @@ export interface IncidentModel {
   duration?: number | null;
   severity?: string;
   status?: string;
+  classification?: string;
   vesselVisitExecutionsCodes?: string[] | null;
   incidentTypeCode?: string;
   systemUserID?: string;

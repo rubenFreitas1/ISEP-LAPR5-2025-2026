@@ -26,6 +26,7 @@ describe("Incident (unit tests)", () => {
     description: "Valid incident description",
     systemUserID: "user123",
     lastUpdated: new Date(),
+    classification: IncidentClassification.Minor,
     duration: null,
     vesselVisitExecutions: null
   };
@@ -44,6 +45,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -67,6 +69,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -84,6 +87,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       120,
       validData.vesselVisitExecutions
     );
@@ -102,6 +106,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -121,6 +126,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -138,6 +144,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -158,6 +165,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -175,6 +183,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -192,6 +201,7 @@ describe("Incident (unit tests)", () => {
         "",
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -209,6 +219,7 @@ describe("Incident (unit tests)", () => {
         "OneWord",
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         validData.duration,
         validData.vesselVisitExecutions
       )
@@ -226,6 +237,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         -10,
         validData.vesselVisitExecutions
       )
@@ -243,6 +255,7 @@ describe("Incident (unit tests)", () => {
         validData.description,
         validData.systemUserID,
         validData.lastUpdated,
+        validData.classification,
         NaN,
         validData.vesselVisitExecutions
       )
@@ -263,6 +276,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       new Date("2025-01-01"),
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -282,6 +296,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -301,6 +316,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -324,6 +340,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       new Date("2025-01-01"),
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -343,6 +360,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -366,6 +384,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       new Date("2025-01-01"),
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -385,6 +404,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -404,6 +424,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -427,6 +448,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       new Date("2025-01-01"),
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -446,6 +468,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       120,
       validData.vesselVisitExecutions
     );
@@ -464,6 +487,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       validData.lastUpdated,
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -487,6 +511,7 @@ describe("Incident (unit tests)", () => {
       validData.description,
       validData.systemUserID,
       new Date("2025-01-01"),
+      validData.classification,
       validData.duration,
       validData.vesselVisitExecutions
     );
@@ -498,3 +523,5 @@ describe("Incident (unit tests)", () => {
   });
 
 });
+
+

@@ -86,7 +86,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "INC001",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Test incident in system test"
+        description: "Test incident in system test",
+        classification: "Critical"
       };
 
       const createRes = await request(app)
@@ -111,7 +112,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "NONEXISTENT",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "This should fail"
+        description: "This should fail",
+        classification: "Critical"
       };
 
       const res = await request(app)
@@ -130,7 +132,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(1),
         endDate: getRecentDate(0),
         status: "Resolved",
-        description: "Incident with end date"
+        description: "Incident with end date",
+        classification: "Critical"
       };
 
       const res = await request(app)
@@ -149,7 +152,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "INC003",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Incident without vessel visits"
+        description: "Incident without vessel visits",
+        classification: "Critical"
       };
 
       const res = await request(app)
@@ -167,7 +171,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "INC004",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Active incident"
+        description: "Active incident",
+        classification: "Critical"
       };
 
       const res = await request(app)
@@ -186,7 +191,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(1),
         endDate: getRecentDate(0),
         status: "Resolved",
-        description: "Resolved incident"
+        description: "Resolved incident",
+        classification: "Critical"
       };
 
       const res = await request(app)
@@ -220,7 +226,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "TYPE1",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "First incident"
+        description: "First incident",
+        classification: "Critical"
       });
       expect(inc1.status).toBe(201);
 
@@ -228,7 +235,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "TYPE2",
         startDate: getRecentDate(0),
         status: "Active",
-        description: "Second incident"
+        description: "Second incident",
+        classification: "Critical"
       });
       expect(inc2.status).toBe(201);
 
@@ -237,7 +245,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(0),
         status: "Resolved",
         endDate: getRecentDate(0),
-        description: "Third incident"
+        description: "Third incident",
+        classification: "Critical"
       });
       expect(inc3.status).toBe(201);
 
@@ -261,7 +270,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "FIND_TYPE",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Findable incident"
+        description: "Findable incident",
+        classification: "Critical"
       });
 
       const id = createRes.body.id;
@@ -289,7 +299,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(1),
         status: "Active",
         description: "Incident for vessel 1",
-        vesselVisitExecutionsCodes: ["2025-PA-000001"]
+        vesselVisitExecutionsCodes: ["2025-PA-000001"],
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
@@ -297,7 +308,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(0),
         status: "Active",
         description: "Incident for vessel 2",
-        vesselVisitExecutionsCodes: ["2025-PA-000002"]
+        vesselVisitExecutionsCodes: ["2025-PA-000002"],
+        classification: "Critical"
       });
 
       // Note: This test assumes the service can filter by vessel IMO
@@ -317,21 +329,24 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "DATE_TYPE",
         startDate: getRecentDate(5),
         status: "Active",
-        description: "Incident in Dec 15"
+        description: "Incident in Dec 15",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "DATE_TYPE",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Incident in Dec 20"
+        description: "Incident in Dec 20",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "DATE_TYPE",
         startDate: getRecentDate(0),
         status: "Active",
-        description: "Incident in Dec 25"
+        description: "Incident in Dec 25",
+        classification: "Critical"
       });
 
       const res = await request(app)
@@ -360,28 +375,32 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "MINOR_T",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Minor incident 1"
+        description: "Minor incident 1",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "MINOR_T",
         startDate: getRecentDate(0),
         status: "Active",
-        description: "Minor incident 2"
+        description: "Minor incident 2",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "MAJOR_T",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Major incident"
+        description: "Major incident",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "CRITICAL",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Critical incident"
+        description: "Critical incident",
+        classification: "Critical"
       });
     });
 
@@ -422,7 +441,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "STATUS_T",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Active incident 1"
+        description: "Active incident 1",
+        classification: "Critical"
       });
       expect(active1.status).toBe(201);
 
@@ -430,7 +450,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "STATUS_T",
         startDate: getRecentDate(0),
         status: "Active",
-        description: "Active incident 2"
+        description: "Active incident 2",
+        classification: "Critical"
       });
       expect(active2.status).toBe(201);
 
@@ -439,7 +460,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(2),
         endDate: getRecentDate(1),
         status: "Resolved",
-        description: "Resolved incident"
+        description: "Resolved incident",
+        classification: "Critical"
       });
       expect(resolved.status).toBe(201);
     });
@@ -477,7 +499,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "UPD_TYPE",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Original description"
+        description: "Original description",
+        classification: "Critical"
       });
 
       const id = createRes.body.id;
@@ -488,7 +511,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         .send({
           status: "Resolved",
           endDate: getRecentDate(0),
-          description: "Updated description"
+          description: "Updated description",
+          classification: "Major"
         });
 
       expect(updateRes.status).toBe(200);
@@ -519,7 +543,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "RESOLVE_T",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Active incident"
+        description: "Active incident",
+        classification: "Critical"
       });
 
       expect(createRes.status).toBe(201);
@@ -530,7 +555,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         .send({
           status: "Resolved",
           endDate: getRecentDate(0),
-          description: "Now resolved"
+          description: "Now resolved",
+          classification: "Major"
         });
 
       expect(updateRes.status).toBe(200);
@@ -544,7 +570,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "VESSEL_U",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Original description"
+        description: "Original description",
+        classification: "Critical"
       });
 
       const id = createRes.body.id;
@@ -553,7 +580,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         .put(`/api/incidents/update/${id}`)
         .send({
           status: "Active",
-          description: "Updated description"
+          description: "Updated description",
+          classification: "Major"
         });
 
       expect(updateRes.status).toBe(200);
@@ -574,7 +602,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "CRUD_INC",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "CRUD workflow test"
+        description: "CRUD workflow test",
+        classification: "Critical"
       });
       expect(createRes.status).toBe(201);
       const id = createRes.body.id;
@@ -590,7 +619,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         .send({
           status: "Resolved",
           endDate: getRecentDate(0),
-          description: "Updated CRUD workflow"
+          description: "Updated CRUD workflow",
+          classification: "Major"
         });
       expect(updateRes.status).toBe(200);
 
@@ -608,14 +638,16 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "PERSIST",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Persistent incident 1"
+        description: "Persistent incident 1",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "PERSIST",
         startDate: getRecentDate(0),
         status: "Active",
-        description: "Persistent incident 2"
+        description: "Persistent incident 2",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
@@ -623,7 +655,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         startDate: getRecentDate(0),
         status: "Resolved",
         endDate: getRecentDate(0),
-        description: "Persistent incident 3"
+        description: "Persistent incident 3",
+        classification: "Critical"
       });
 
       // Verificar que todos foram persistidos
@@ -640,7 +673,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "REF_TYPE",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Testing referential integrity"
+        description: "Testing referential integrity",
+        classification: "Critical"
       });
 
       expect(createRes.status).toBe(201);
@@ -661,21 +695,24 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "MINOR_CL",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Minor classification incident"
+        description: "Minor classification incident",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "MAJOR_CL",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Major classification incident"
+        description: "Major classification incident",
+        classification: "Critical"
       });
 
       await request(app).post("/api/incidents").send({
         incidentTypeByCode: "CRIT_CL",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Critical classification incident"
+        description: "Critical classification incident",
+        classification: "Critical"
       });
 
       // Verificar que todos foram criados
@@ -691,7 +728,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         incidentTypeByCode: "LIFECYCLE",
         startDate: getRecentDate(1),
         status: "Active",
-        description: "Lifecycle test"
+        description: "Lifecycle test",
+        classification: "Critical"
       });
 
       expect(createRes.body.status).toBe("Active");
@@ -705,7 +743,8 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
         .send({
           status: "Resolved",
           endDate: getRecentDate(0),
-          description: "Resolved now"
+          description: "Resolved now",
+          classification: "Critical"
         });
 
       expect(resolveRes.status).toBe(200);

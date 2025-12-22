@@ -1,6 +1,7 @@
 import { IncidentStatus } from "./IncidentStatus";
 import { IncidentType } from "./IncidentType";
 import { VesselVisitExecution } from "./VesselVisitExecution";
+import { IncidentClassification } from "./IncidentQualification";
 
 export class Incident {
 
@@ -13,6 +14,7 @@ export class Incident {
         public description: string,
         public systemUserID: string,
         public lastUpdated: Date,
+        public classification: IncidentClassification,
         public duration: number | null,
         public vesselVisitExecutions: VesselVisitExecution[] | null,
     ) {
@@ -21,6 +23,7 @@ export class Incident {
         this.validateStatus(status);
         this.validateDescription(description);
         this.validateDuration(duration);
+        this.validateClassification(classification);
     }
 
     private validateStartDate(startDate: Date) {
@@ -68,6 +71,12 @@ export class Incident {
         }
     }
 
+    private validateClassification(classification: IncidentClassification) {
+        if (!Object.values(IncidentClassification).includes(classification)) {
+            throw new Error("Invalid incident classification.");
+        }
+    }
+
     updateEndDate(endDate: Date) {
         this.validateEndDate(endDate);
         this.endDate = endDate;
@@ -94,6 +103,12 @@ export class Incident {
 
     updateVesselVisitExecutions(vve: VesselVisitExecution[]) {
         this.vesselVisitExecutions = vve;
+        this.lastUpdated = new Date();
+    }
+
+    updateClassification(classification: IncidentClassification) {
+        this.validateClassification(classification);
+        this.classification = classification;
         this.lastUpdated = new Date();
     }
 }

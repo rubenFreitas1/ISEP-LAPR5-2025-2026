@@ -83,6 +83,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -108,6 +109,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -142,6 +144,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         [vve]
       );
@@ -166,6 +169,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -193,6 +197,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -217,6 +222,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -246,6 +252,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -269,6 +276,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -291,6 +299,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -311,6 +320,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -331,6 +341,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -357,6 +368,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: ["2025-PA-000001"]
       };
@@ -379,6 +391,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: ["NONEXISTENT"]
       };
@@ -405,6 +418,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: ["2025-PA-000001"]
       };
@@ -431,6 +445,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -459,6 +474,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         null,
         null
       );
@@ -473,6 +489,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -493,6 +510,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: null,
         vesselVisitExecutionsCodes: []
       };
@@ -516,6 +534,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -530,6 +549,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: []
       };
@@ -553,6 +573,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -567,6 +588,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: []
       };
@@ -590,6 +612,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -604,6 +627,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: []
       };
@@ -627,6 +651,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -641,6 +666,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Updated description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: []
       };
@@ -667,6 +693,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         [vve]
       );
@@ -681,6 +708,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: ["2025-PA-000001"]
       };
@@ -709,6 +737,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         [vve1]
       );
@@ -723,6 +752,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: ["2025-PA-000002"]
       };
@@ -748,6 +778,7 @@ describe("IncidentService – Aggregate Tests", () => {
         "Test description one",
         "user1",
         new Date(),
+        IncidentClassification.Critical,
         24,
         null
       );
@@ -762,6 +793,7 @@ describe("IncidentService – Aggregate Tests", () => {
         description: "Test description one",
         systemUserID: "user1",
         lastUpdated: new Date(),
+        classification: IncidentClassification.Critical,
         duration: 24,
         vesselVisitExecutionsCodes: ["2025-PA-000001"]
       };
@@ -773,5 +805,8 @@ describe("IncidentService – Aggregate Tests", () => {
     });
   });
 });
+
+
+
 
 

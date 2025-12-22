@@ -30,6 +30,7 @@ export class IncidentMap {
             raw.description,
             raw.systemUserID,
             raw.lastUpdated,
+            raw.classification,
             raw.duration ?? null,
             vesselVisitExecutions
         );
@@ -48,6 +49,7 @@ export class IncidentMap {
             description: incident.description,
             systemUserID: incident.systemUserID,
             lastUpdated: incident.lastUpdated,
+            classification: incident.classification,
             duration: incident.duration,
             vesselVisitExecutionsCodes: incident.vesselVisitExecutions ? incident.vesselVisitExecutions.map(vve => vve.code) : null,
         };
@@ -84,6 +86,7 @@ export class IncidentMap {
             description: incident.description,
             systemUserID: incident.systemUserID,
             lastUpdated: incident.lastUpdated,
+            classification: incident.classification,
             duration: incident.duration,
             vesselVisitExecutionsCodes: vveCodes,
         };
