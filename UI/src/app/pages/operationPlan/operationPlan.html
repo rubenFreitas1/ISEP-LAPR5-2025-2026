@@ -1,0 +1,144 @@
+<div class="page-container">
+  <h1 class="page-title">{{ 'OPERATION_PLANS.TITLE' | translate }}</h1>
+
+  <div class="top-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        [placeholder]="'OPERATION_PLANS.SEARCH_PLACEHOLDER' | translate"
+      />
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    {{ 'COMMON.LOADING' | translate }}
+  </div>
+
+  <div *ngIf="!isLoading && filteredPlans.length === 0" class="no-data">
+    <p>{{ 'OPERATION_PLANS.NO_PLANS' | translate }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredPlans.length > 0" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ 'OPERATION_PLANS.TABLE.VESSEL' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.TARGET_DAY' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.ARRIVAL' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.DEPARTURE' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.OPERATIONS' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.AUTHOR' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.ALGORITHM' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.CREATED' | translate }}</th>
+          <th>{{ 'OPERATION_PLANS.TABLE.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let plan of filteredPlans"
+            [class.selected]="selectedPlan?.id === plan.id"
+            (click)="selectPlan(plan)">
+          <td><span class="styled-field">{{ plan.vvn }}</span></td>
+          <td>{{ formatDateOnly(plan.targetDay) }}</td>
+          <td>{{ formatDate(plan.arrivalTime) }}</td>
+          <td>{{ formatDate(plan.departureTime) }}</td>
+          <td>{{ plan.operations.length }}</td>
+          <td>{{ plan.author }}</td>
+          <td>{{ plan.algorithm }}</td>
+          <td>{{ formatDate(plan.createdAt) }}</td>
+          <td>
+            <button
+              (click)="viewDetails(plan); $event.stopPropagation()"
+              class="btn-select"
+            >
+              {{ 'ORGANIZATION.TABLE.SELECT' | translate }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Details Modal -->
+  <div *ngIf="showDetailsModal && selectedPlan" class="modal-overlay">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>{{ 'OPERATION_PLANS.DETAILS.TITLE' | translate }}</h2>
+        <button class="close-button" (click)="closeDetailsModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="plan-info">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.VESSEL' | translate }}:</label>
+              <span>{{ selectedPlan.vvn }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.TARGET_DAY' | translate }}:</label>
+              <span>{{ formatDateOnly(selectedPlan.targetDay) }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.ARRIVAL' | translate }}:</label>
+              <span>{{ formatDate(selectedPlan.arrivalTime) }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.DEPARTURE' | translate }}:</label>
+              <span>{{ formatDate(selectedPlan.departureTime) }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.AUTHOR' | translate }}:</label>
+              <span>{{ selectedPlan.author }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.ALGORITHM' | translate }}:</label>
+              <span class="algorithm-badge">{{ selectedPlan.algorithm }}</span>
+            </div>
+            <div class="info-item">
+              <label>{{ 'OPERATION_PLANS.DETAILS.CREATED' | translate }}:</label>
+              <span>{{ formatDate(selectedPlan.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="operations-section">
+          <h3>{{ 'OPERATION_PLANS.DETAILS.OPERATIONS' | translate }} ({{ selectedPlan.operations.length }})</h3>
+          <div class="operations-table-container">
+            <table class="operations-table">
+              <thead>
+                <tr>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.OP_ID' | translate }}</th>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.OP_TYPE' | translate }}</th>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.CONTAINER' | translate }}</th>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.CRANE' | translate }}</th>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.START' | translate }}</th>
+                  <th>{{ 'OPERATION_PLANS.DETAILS.END' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let operation of selectedPlan.operations">
+                  <td>{{ operation.id }}</td>
+                  <td>
+                    <span class="operation-type-badge" [class.loading]="operation.operationType === 'LOADING'" [class.unloading]="operation.operationType === 'UNLOADING'">
+                      {{ operation.operationType }}
+                    </span>
+                  </td>
+                  <td>{{ operation.container }}</td>
+                  <td>{{ operation.craneUsed }}</td>
+                  <td>{{ formatDate(operation.operationStart) }}</td>
+                  <td>{{ formatDate(operation.operationEnd) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary" (click)="closeDetailsModal()">
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

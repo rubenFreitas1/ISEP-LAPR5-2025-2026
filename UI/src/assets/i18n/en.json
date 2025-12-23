@@ -25,6 +25,7 @@
     "REPRESENTATIVE": "Representative",
 
     "SCHEDULE": "Schedule",
+    "OPERATION_PLANS": "Operation Plans",
     "SYSTEM_USER": "System User",
     "PRIVACY_POLICY": "Privacy Policy",
     "INCIDENT_TYPE": "Incident Type",
@@ -1379,5 +1380,51 @@
       "SUCCESS_CREATE": "Decision successfully created.",
       "ERROR": "An error occurred while processing the decision."
     }
+  },
+
+  "OPERATION_PLANS": {
+    "TITLE": "Operation Plans",
+    "SUBTITLE": "View and manage all operation plans generated from vessel schedules",
+    "SEARCH_PLACEHOLDER": "Search by VVN, author, algorithm or ID...",
+    "NO_PLANS": "No operation plans found.",
+    "TABLE": {
+      "ID": "ID",
+      "VESSEL": "Vessel",
+      "VVN": "Vessel Visit Notification",
+      "TARGET_DAY": "Target Day",
+      "ARRIVAL": "Arrival Time",
+      "DEPARTURE": "Departure Time",
+      "OPERATIONS": "Operations",
+      "AUTHOR": "Author",
+      "ALGORITHM": "Algorithm",
+      "CREATED": "Created At",
+      "ACTIONS": "Actions"
+    },
+    "DETAILS": {
+      "TITLE": "Operation Plan Details",
+      "ID": "Plan ID",
+      "VESSEL": "Vessel",
+      "VVN": "Vessel Visit Notification",
+      "TARGET_DAY": "Target Day",
+      "ARRIVAL": "Arrival Time",
+      "DEPARTURE": "Departure Time",
+      "AUTHOR": "Author",
+      "ALGORITHM": "Algorithm",
+      "CREATED": "Created At",
+      "OPERATIONS": "Operations",
+      "OP_ID": "Operation ID",
+      "OP_TYPE": "Type",
+      "CONTAINER": "Container",
+      "CRANE": "Crane",
+      "START": "Start Time",
+      "END": "End Time"
+    }
+  },
+
+  "COMMON": {
+    "BACK": "Back",
+    "CLOSE": "Close",
+    "REFRESH": "Refresh",
+    "LOADING": "Loading..."
   }
 }
