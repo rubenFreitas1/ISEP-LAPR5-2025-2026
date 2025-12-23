@@ -16,6 +16,26 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
     schema: '../persistence/schemas/incidentTypeSchema',
   }
 
+  const operationPlanSchema = {
+    name: 'operationPlanSchema',
+    schema: '../persistence/schemas/operationPlanSchema',
+  }
+
+  const operationPlanController = {
+    name: config.controllers.operationPlan.name,
+    path: config.controllers.operationPlan.path
+  }
+
+  const operationPlanService = {
+    name: config.services.operationPlan.name,
+    path: config.services.operationPlan.path
+  }
+
+  const operationPlanRepo = {
+    name: config.repos.operationPlan.name,
+    path: config.repos.operationPlan.path
+  }
+
   const incidentTypeController = {
     name: config.controllers.incidentType.name,
     path: config.controllers.incidentType.path
@@ -129,25 +149,29 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
       incidentTypeSchema,
       vesselVisitExecutionSchema,
       incidentSchema,
-      complementaryTaskCategorySchema
+      complementaryTaskCategorySchema,
+      operationPlanSchema
     ],
     controllers: [
       incidentTypeController,
       vesselVisitExecutionController,
       incidentController,
-      complementaryTaskCategoryController
+      complementaryTaskCategoryController,
+      operationPlanController
     ],
     repos: [
       incidentTypeRepo,
       vesselVisitExecutionRepo,
       incidentRepo,
-      complementaryTaskCategoryRepo
+      complementaryTaskCategoryRepo,
+      operationPlanRepo
     ],
     services: [
       incidentTypeService,
       vesselVisitExecutionService,
       incidentService,
-      complementaryTaskCategoryService
+      complementaryTaskCategoryService,
+      operationPlanService
     ]
   });
   Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');

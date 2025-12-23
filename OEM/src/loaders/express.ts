@@ -42,7 +42,8 @@ export default ({ app }: { app: express.Application }) => {
   app.use(require('method-override')());
 
   // Middleware that transforms the raw string of req.body into json
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
   
 
 
