@@ -1,0 +1,28 @@
+@startuml 4.1.3
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Logistics Operator" as logisticsOperator
+participant "UI" as ui
+participant "System" as system
+
+title System Sequence Diagram - US4.1.3
+
+== Search Operation Plans ==
+activate logisticsOperator
+
+logisticsOperator -> ui: Search Operation Plans with Filters
+activate ui
+ui -> system : Request Operation Plans with Filters
+activate system
+
+system -> system : Retrieve Operation Plans\n from DB based on Filters
+system -> ui : Return Operation Plans List
+deactivate system
+ui -> logisticsOperator : Display Operation Plans List
+deactivate ui 
+
+
+
+@enduml

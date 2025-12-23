@@ -1,0 +1,37 @@
+@startuml 4.1.2
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Logistics Operator" as logisticsOperator
+participant "UI" as ui
+participant "System" as system
+
+title System Sequence Diagram - US4.1.2
+
+== Register Operation Plans ==
+activate logisticsOperator
+
+logisticsOperator -> ui: Schedule Vessel Visit Notification on Target Date
+activate ui
+ui -> system : Invoce Algorithm to\nSchedule Notification
+activate system
+
+system -> system : Generate Schedule for \nVessel Visit Notifications\non Target Date
+system -> ui : Returns Scheduled Notifications
+deactivate system
+ui -> logisticsOperator : Display Scheduled Notifications
+deactivate ui 
+logisticsOperator -> ui: Create Operation Plans based on Scheduled Notifications
+activate ui
+ui -> system : Request Creation of Operation Plans
+activate system
+system -> system : Validate and \nCreate Operation Plans 
+system -> ui : Confirm Operation Plans Registration
+deactivate system
+ui -> logisticsOperator : Display Confirmation of Operation Plans Registration
+deactivate ui
+
+
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml Vessels
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(LO, "Logistics Operator", "System user managing logistics operations")
+
+Container_Boundary(UI, "UI Module") {
+    Component(SchedulingUI, "Scheduling Component", "Angular", "UI component for scheduling vessels")
+    Component(OperationPlansUI, "Operation Plans Component", "Angular", "UI component for managing operation plans")
+    Component(RebalancingUI, "Rebalancing Component", "Angular", "UI for rebalancing operations")
+}
+
+
+Container_Boundary(API, "API Module" ) {
+    Component(SchedulingController, "Scheduling Controller", "ASP.NET Core MVC Controller", "Handles HTTP requests related to Algorithms to schedule vessels")
+    Component(SchedulingService, "Scheduling Service", ".NET 8 (ASP.NET Core)", "Business logic for Scheduling vessels")
+    Component(RebalancingDTO, "Rebalancing DTO", "DTO", "Data transfer object for rebalancing operations")
+    Component(SchedulingDTO, "Scheduling DTO", "DTO", "Data transfer object for scheduling operations")
+
+    Component(VesselRecordRepository, "Vessel Repository", ".NET 8 (ASP.NET Core)", "Data access for Vessels")
+    Component(PhysicalResourceRepository, "Physical Resource Repository", ".NET 8 (ASP.NET Core)", "Data access for Physical Resources")
+    Component(DockRepository, "Dock Repository", ".NET 8 (ASP.NET Core)", "Data access for Docks")
+    Component(StaffRepository, "Staff Repository", ".NET 8 (ASP.NET Core)", "Data access for Staff")
+    Component(StorageAreaRepository, "Storage Area Repository", ".NET 8 (ASP.NET Core)", "Data access for Storage Areas")
+
+    Component(DbContext, "DbContext", ".NET 8 (Entity Framework Core)", "EF Core DbContext for Shipping Management")
+    ComponentDb(db, "Shipping Management Database", "SQL Server", "Stores all data related to shipping management")
+}
+
+Container_Boundary(OEM, "OEM Module (Node.js + Express + MongoDB)") {
+    Component(OperationPlanRoute, "OperationPlanRoute", "Express Router", "Validates requests and forwards to controller")
+    Component(OperationPlanController, "OperationPlanController", "Express Controller", "Handles HTTP requests for operation plans")
+    Component(OperationPlanService, "OperationPlanService", "TypeScript (TypeDI)", "Business logic for operation plans")
+    Component(OperationPlanDTO, "OperationPlanDTO", "DTO", "Data transfer object for operation plans")
+    Component(OperationEntryDTO, "OperationEntryDTO", "DTO", "Data transfer object for each entry in the operation plan")
+    Component(OperationPlanDomain, "OperationPlan", "Domain Model", "Aggregate with embedded entries and validation")
+    Component(OperationEntryDomain, "OperationEntry", "Domain Model", "Value object for each entry in the plan")
+    Component(OperationPlanRepo, "OperationPlanRepo", "Mongoose Repository", "Persists operation plans")
+    Component(OperationPlanMap, "OperationPlanMap", "Mapper", "Converts between DTO, domain, and persistence")
+    Component(OperationEntryMap, "OperationEntryMap", "Mapper", "Converts between DTO and domain for entries")
+    Component(OperationPlanPersistence, "IOperationPlanPersistence", "Persistence Contract", "Mongoose document interface")
+    Component(OperationPlanSchema, "operationPlanSchema", "Mongoose Schema", "Schema describing operation plans + entries")
+    ComponentDb(MongoDB, "OEM MongoDB", "MongoDB", "Stores operation plans")
+}
+
+Container_Boundary(PROLOG, "Scheduling Module") {
+    Component(HttpHandler, "HTTP Handler", "Prolog", "Handles HTTP requests for Scheduling services")
+    Component(GeneticAlgorithm, "Genetic Algorithm", "Prolog", "Implements genetic algorithm for vessel scheduling")
+    Component(HeuristicAlgorithm, "Heuristic Algorithm", "Prolog", "Implements heuristic algorithm for vessel scheduling")
+    Component(ImprovedAlgorithm, "Improved Algorithm", "Prolog", "Implements improved algorithm for vessel scheduling")
+
+}
+
+
+
+Rel(LO, SchedulingUI, "Uses", "Mouse/Keyboard")
+Rel(LO, OperationPlansUI, "Uses", "Mouse/Keyboard")
+Rel(LO, RebalancingUI, "Uses", "Mouse/Keyboard")
+
+Rel(SchedulingUI, SchedulingController, "Sends HTTP requests", "HTTPS/JSON")
+Rel(OperationPlansUI, OperationPlanRoute, "Sends HTTP requests", "HTTPS/JSON")
+Rel(OperationPlanRoute, OperationPlanController, "Invokes controller", "Express pipeline")
+Rel(RebalancingUI, SchedulingController, "Sends HTTP requests", "HTTPS/JSON")
+Rel(SchedulingController, SchedulingService, "Calls methods in", "Method Calls")
+Rel(SchedulingService, RebalancingDTO, "Uses", "Domain Logic")
+Rel(SchedulingService, SchedulingDTO, "Uses", "Domain Logic")
+Rel(SchedulingService, VesselRecordRepository, "Uses", "Method Calls")
+Rel(SchedulingService, PhysicalResourceRepository, "Uses", "Method Calls")
+Rel(SchedulingService, DockRepository, "Uses", "Method Calls")
+Rel(SchedulingService, StaffRepository, "Uses", "Method Calls")
+Rel(SchedulingService, StorageAreaRepository, "Uses", "Method Calls")
+Rel(PhysicalResourceRepository, DbContext, "Uses", "Method Calls")
+Rel(DockRepository, DbContext, "Uses", "Method Calls")
+Rel(StaffRepository, DbContext, "Uses", "Method Calls")
+Rel(StorageAreaRepository, DbContext, "Uses", "Method Calls")
+Rel(VesselRecordRepository, DbContext, "Uses", "Method Calls")
+Rel(DbContext, db, "Reads from and writes to", "EF Core/SQL")
+
+Rel(SchedulingService, HttpHandler, "Sends scheduling requests to", "HTTP/JSON")
+Rel(HttpHandler, GeneticAlgorithm, "Invokes", "Internal Calls")
+Rel(HttpHandler, HeuristicAlgorithm, "Invokes", "Internal Calls")
+Rel(HttpHandler, ImprovedAlgorithm, "Invokes", "Internal Calls")
+
+Rel(OperationPlanController, OperationPlanService, "Calls methods in", "Method Calls")
+Rel(OperationPlanService, OperationPlanMap, "Delegates transformations", "Mapping")
+Rel(OperationPlanService, OperationPlanRepo, "Uses", "Method Calls")
+Rel(OperationPlanMap, OperationPlanDomain, "Creates/updates", "Domain Logic")
+Rel(OperationPlanMap, OperationEntryMap, "Delegates transformations", "Mapping")
+Rel(OperationEntryMap, OperationEntryDomain, "Creates", "Value Object Mapping")
+Rel(OperationEntryMap, OperationEntryDTO, "Maps to/from", "DTO Conversion")
+Rel(OperationPlanMap, OperationPlanDTO, "Maps to/from", "DTO Conversion")
+Rel(OperationPlanMap, OperationPlanPersistence, "Maps to/from", "Persistence Conversion")
+Rel(OperationPlanRepo, OperationPlanMap, "Uses", "Mapping")
+Rel(OperationPlanRepo, OperationPlanSchema, "Uses", "ODM")
+Rel(OperationPlanSchema, OperationPlanPersistence, "Implements", "Schema Contract")
+Rel(OperationPlanSchema, MongoDB, "Persists to", "Mongoose")
+
+@enduml

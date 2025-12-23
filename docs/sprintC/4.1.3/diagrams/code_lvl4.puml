@@ -1,0 +1,157 @@
+@startuml OperationPlansCode
+
+class OperationPlanRoute {
+    +postOperationPlan(req, res, next)
+    +putOperationPlan(id, req, res, next)
+    +getOperationPlanById(id, req, res, next)
+    +getOperationPlans(req, res, next)
+}
+
+class OperationPlanController {
+    +createOperationPlan(Request req, Response res, NextFunction next)
+    +updateOperationPlan(Request req, Response res, NextFunction next)
+    +getOperationPlanById(Request req, Response res, NextFunction next)
+    +getOperationPlansByFilters(Request req, Response res, NextFunction next)
+}
+
+class OperationPlanService {
+    +createOperationPlan(OperationPlanDTO dto)
+    +updateOperationPlan(string id, OperationPlanDTO dto)
+    +getOperationPlanById(string id)
+    +getOperationPlansByAuthor(string author)
+    +getOperationPlansByAlgorithm(string algorithm)
+    +getOperationPlanByTargetDay(string targetDay)
+}
+
+interface IOperationPlanRepo {
+    +findAll()
+    +findById(string id)
+    +findByAuthor(string author)
+    +findByAlgorithm(string algorithm)
+    +findByTargetDay(Date targetDay)
+    +save(OperationPlan plan)
+    +update(OperationPlan plan)
+}
+
+class OperationPlanRepo {
+    +findAll()
+    +findById(string id)
+    +findByAuthor(string author)
+    +findByAlgorithm(string algorithm)
+    +findByTargetDay(Date targetDay)
+    +save(OperationPlan plan)
+    +update(OperationPlan plan)
+}
+
+class OperationPlanDTO {
+    -id: string
+    -operationList: OperationEntryDTO[]
+    -targetDay: Date
+    -author: string
+    -algorithm: string
+    -createdAt: Date
+    -lastModifiedAt: Date
+}
+
+class OperationEntryDTO {
+    -id: string
+    -vesselName: string
+    -arrivalTime: Date
+    -departureTime: Date
+    -cranes: string[]
+    -staffMembers: string[]
+    -lastModifiedAt: Date
+}
+
+class OperationPlanMap {
+    +toDomain(IOperationPlanPersistence raw)
+    +toDTO(OperationPlan domain)
+    +toPersistence(OperationPlan domain)
+}
+
+class OperationEntryMap {
+    +toDomain(IOperationEntryPersistence raw)
+    +toDTO(OperationEntry entry)
+    +toPersistence(OperationEntry entry)
+}
+
+class OperationPlan {
+    -id: string
+    -operationList: OperationEntry[]
+    -targetDay: Date
+    -author: string
+    -algorithm: string
+    -createdAt: Date
+    -lastModifiedAt: Date
+    +updateAuthor(string author)
+    +updateAlgorithm(string algorithm)
+    +updateOperationList(OperationEntry[] entries)
+    +updateTargetDay(Date targetDay)
+}
+
+class OperationEntry {
+    -id: string
+    -vesselName: string
+    -arrivalTime: Date
+    -departureTime: Date
+    -cranes: string[]
+    -staffMembers: string[]
+    -lastModifiedAt: Date
+    +updateName(string name)
+    +updateCranes(string[] cranes)
+    +updateStaffMembers(string[] staff)
+    +updateArrivalTime(Date arrival)
+    +updateDepartureTime(Date departure)
+}
+
+interface IOperationPlanPersistence {
+    +_id: string
+    +operationList: IOperationEntryPersistence[]
+    +targetDay: Date
+    +author: string
+    +algorithm: string
+    +createdAt: Date
+    +lastModifiedAt: Date
+}
+
+interface IOperationEntryPersistence {
+    +_id: string
+    +vesselName: string
+    +arrivalTime: Date
+    +departureTime: Date
+    +cranes: string[]
+    +staffMembers: string[]
+    +lastModifiedAt: Date
+}
+
+class OperationPlanSchema {
+    +mongooseModel: Model
+    +ensureIndexes()
+}
+
+class MongoDBCluster <<database>>
+
+OperationPlanRoute --> OperationPlanController : forwards requests
+OperationPlanController --> OperationPlanService : invokes methods
+OperationPlanService --> OperationPlanDTO : consumes/produces
+OperationPlanService --> OperationEntryDTO : consumes/produces
+OperationPlanService --> OperationPlanMap : delegates mapping
+OperationPlanService --> IOperationPlanRepo : uses persistence abstraction
+
+OperationPlanRepo ..|> IOperationPlanRepo
+OperationPlanRepo --> OperationPlanMap : uses
+OperationPlanRepo --> OperationPlanSchema : uses ODM
+OperationPlanSchema --> IOperationPlanPersistence : implements structure
+OperationPlanSchema --> MongoDBCluster : stores documents
+
+OperationPlanMap --> OperationPlan : maps domain
+OperationPlanMap --> OperationEntryMap : delegates entry mapping
+OperationEntryMap --> OperationEntry : maps domain
+OperationPlanMap --> OperationPlanDTO : maps DTO
+OperationEntryMap --> OperationEntryDTO : maps DTO
+OperationPlanMap --> IOperationPlanPersistence : maps persistence
+OperationEntryMap --> IOperationEntryPersistence : maps persistence
+
+OperationPlan --> OperationEntry : aggregates
+
+@enduml
