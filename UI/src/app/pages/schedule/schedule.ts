@@ -16,6 +16,8 @@ import {
 import { ScheduleService } from '../../services/schedule.service';
 import { ScheduleModel, ScheduleEntryModel } from '../../models/schedule.model';
 import { OperationPlanService } from '../../services-oem/operationPlan.service';
+import { AuthService as Auth0Service } from '@auth0/auth0-angular';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -76,7 +78,8 @@ export class Schedule implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private scheduleService: ScheduleService,
-    private operationPlanService: OperationPlanService
+    private operationPlanService: OperationPlanService,
+    private auth0: Auth0Service
   ) {}
 
   ngOnInit() {
@@ -418,12 +421,23 @@ export class Schedule implements OnInit, OnDestroy {
     return `${minutes}m`;
   }
 
-  generateOperationPlans() {
+  async generateOperationPlans() {
     if (!this.scheduleModel || !this.scheduleModel.scheduleEntries || this.scheduleModel.scheduleEntries.length === 0) {
       return;
     }
 
     this.isGeneratingPlans = true;
+
+    // Obter email do utilizador logado
+    let userEmail = 'unknown-user@system.com';
+    try {
+      const user = await firstValueFrom(this.auth0.user$);
+      if (user && (user as any).email) {
+        userEmail = (user as any).email;
+      }
+    } catch (error) {
+      console.error('Error getting user email:', error);
+    }
 
     // Extrair dados do schedule para enviar ao backend
     const vvns: string[] = [];
@@ -478,7 +492,7 @@ export class Schedule implements OnInit, OnDestroy {
       arrivalTimes,
       departureTimes,
       targetDays,
-      author: this.scheduleModel.algorithm || 'schedule-system',
+      author: userEmail,
       algorithm: this.selectedAlgorithm
     };
 
