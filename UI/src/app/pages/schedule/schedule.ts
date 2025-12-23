@@ -15,6 +15,7 @@ import {
 } from '../../models/vesselVisitNotification.model';
 import { ScheduleService } from '../../services/schedule.service';
 import { ScheduleModel, ScheduleEntryModel } from '../../models/schedule.model';
+import { OperationPlanService } from '../../services-oem/operationPlan.service';
 
 
 @Component({
@@ -65,11 +66,17 @@ export class Schedule implements OnInit, OnDestroy {
   scheduleModel: ScheduleModel | null = null;
   showScheduleModal: boolean = false;
 
+  // UI state for operation plans generation
+  showOperationPlansModal: boolean = false;
+  generatedPlansMessage: string = '';
+  isGeneratingPlans: boolean = false;
+
   constructor(
     private vesselVisitNotificationService: VesselVisitNotificationService,
     private http: HttpClient,
     private router: Router,
-    private scheduleService: ScheduleService
+    private scheduleService: ScheduleService,
+    private operationPlanService: OperationPlanService
   ) {}
 
   ngOnInit() {
@@ -409,6 +416,119 @@ export class Schedule implements OnInit, OnDestroy {
     if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
     if (hours > 0) return `${hours}h`;
     return `${minutes}m`;
+  }
+
+  generateOperationPlans() {
+    if (!this.scheduleModel || !this.scheduleModel.scheduleEntries || this.scheduleModel.scheduleEntries.length === 0) {
+      return;
+    }
+
+    this.isGeneratingPlans = true;
+
+    // Extrair dados do schedule para enviar ao backend
+    const vvns: string[] = [];
+    const assignedCranes: string[][] = [];
+    const staffs: string[][] = [];
+    const operationTypes: string[][] = [];
+    const containers: string[][] = [];
+    const arrivalTimes: string[] = [];
+    const departureTimes: string[] = [];
+    const targetDays: string[] = [];
+
+    for (const entry of this.scheduleModel.scheduleEntries) {
+      // Usar vesselName como VVN (ajustar se necessário)
+      vvns.push(entry.vesselName || 'UNKNOWN');
+
+      // Cranes
+      const cranes = Array.isArray(entry.assignedCrane) ? entry.assignedCrane.map((c: any) => 
+        typeof c === 'string' ? c : (c.craneName || c.name || '')
+      ).filter((n: string) => !!n) : [];
+      assignedCranes.push(cranes);
+
+      // Staff
+      const staff = Array.isArray(entry.assignedStaff) ? entry.assignedStaff.map((s: any) => 
+        typeof s === 'string' ? s : (s.staffName || s.name || '')
+      ).filter((n: string) => !!n) : [];
+      staffs.push(staff);
+
+      // Operation types (default para LOADING)
+      const opTypes = cranes.map(() => 'LOADING');
+      operationTypes.push(opTypes);
+
+      // Containers (gerar IDs baseados no vessel)
+      const conts = cranes.map((_, idx) => `CONT-${entry.vesselName}-${idx + 1}`);
+      containers.push(conts);
+
+      // Times
+      arrivalTimes.push(entry.arrivalTime ? new Date(entry.arrivalTime).toISOString() : new Date().toISOString());
+      departureTimes.push(entry.departureTime ? new Date(entry.departureTime).toISOString() : new Date().toISOString());
+      
+      // Target day (usar arrival time como referência)
+      const targetDay = entry.arrivalTime ? new Date(entry.arrivalTime) : new Date();
+      targetDay.setHours(0, 0, 0, 0);
+      targetDays.push(targetDay.toISOString().split('T')[0]);
+    }
+
+    const payload = {
+      vvns,
+      assignedCranes,
+      staffs,
+      operationTypes,
+      containers,
+      arrivalTimes,
+      departureTimes,
+      targetDays,
+      author: this.scheduleModel.algorithm || 'schedule-system',
+      algorithm: this.selectedAlgorithm
+    };
+
+    console.log('Payload being sent:', payload);
+
+    // Chamar o backend para criar operation plans
+    this.operationPlanService.createBatch(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.isGeneratingPlans = false;
+          this.showScheduleModal = false;
+
+          // Extrair IMOs dos vessels
+          const vesselIMOs = vvns.join(', ');
+          const targetDay = targetDays[0] || 'Unknown';
+          
+          this.generatedPlansMessage = `Operation plans for vessels ${vesselIMOs} on ${targetDay} were generated.`;
+          this.showOperationPlansModal = true;
+        },
+        error: (err) => {
+          this.isGeneratingPlans = false;
+          console.error('Error generating operation plans:', err);
+          console.error('Error details:', err?.originalError);
+          console.error('Error response:', err?.originalError?.error);
+          
+          let msg = 'Error generating operation plans';
+          try {
+            if (err && err.error) {
+              const be = err.error;
+              if (typeof be === 'string') msg = be;
+              else if (be.error) msg = be.error;
+              else if (be.message) msg = be.message;
+            }
+          } catch (e) {
+            console.error('Error extracting error message', e);
+          }
+
+          this.statusMessageType = 'error';
+          this.statusMessage = msg;
+          this.statusHiding = false;
+          if (this.statusTimeout) { clearTimeout(this.statusTimeout); }
+          this.statusTimeout = setTimeout(() => this.clearStatusMessage(), 3000);
+        }
+      });
+  }
+
+  closeOperationPlansModal() {
+    this.showOperationPlansModal = false;
+    this.generatedPlansMessage = '';
   }
 
 

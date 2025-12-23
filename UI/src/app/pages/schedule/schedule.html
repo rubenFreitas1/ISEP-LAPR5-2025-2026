@@ -170,7 +170,26 @@
         </div>
       </div>
       <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="generateOperationPlans()" [disabled]="isGeneratingPlans">
+          {{ isGeneratingPlans ? 'Generating...' : 'Generate Plans' }}
+        </button>
         <button class="btn" (click)="closeSchedule()">{{ 'SCHEDULE.BUTTON.CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operation Plans Generation Modal -->
+  <div *ngIf="showOperationPlansModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Operation Plans Generation</h2>
+        <button class="close-button" (click)="closeOperationPlansModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="plans-message">{{ generatedPlansMessage }}</p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+        <button class="btn" (click)="closeOperationPlansModal()">Close</button>
       </div>
     </div>
   </div>

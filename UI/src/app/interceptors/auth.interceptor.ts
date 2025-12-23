@@ -10,6 +10,10 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private auth0: Auth0Service) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    console.log('AuthInterceptor - Original request body:', req.body);
+    console.log('AuthInterceptor - Request URL:', req.url);
+    console.log('AuthInterceptor - Content-Type:', req.headers.get('Content-Type'));
+    
     return from(
       this.auth0.getAccessTokenSilently({
         authorizationParams: {
@@ -24,6 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
             Authorization: `Bearer ${token}`
           }
         });
+        console.log('AuthInterceptor - Cloned request body:', authReq.body);
         return next.handle(authReq);
       })
     );
