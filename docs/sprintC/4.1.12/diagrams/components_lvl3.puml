@@ -1,0 +1,44 @@
+@startuml 4.1.12
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(PAO, "Port Authority Officer", "System user managing incident types")
+
+Container_Boundary(UI, "UI Module") {
+    Component(IncidentTypeUI, "Incident Type Component", "Angular", "UI component for managing incident types")
+}
+
+
+Container_Boundary(OEM, "OEM Module (Node.js + Express + MongoDB)") {
+    Component(IncidentTypeRoute, "IncidentTypeRoute", "Express Router", "Validates requests and forwards to controller")
+    Component(IncidentTypeController, "IncidentTypeController", "Express Controller", "Handles HTTP requests for incident types")
+    Component(IncidentTypeService, "IncidentTypeService", "TypeScript (TypeDI)", "Business logic for incident types")
+    Component(IncidentTypeDTO, "IncidentTypeDTO", "DTO", "Data transfer object for incident types")
+    Component(IncidentTypeDomain, "IncidentType", "Domain Model", "Represents incident type entity")
+    Component(IncidentTypeRepo, "IncidentTypeRepo", "Mongoose Repository", "Persists incident types")
+    Component(IncidentTypeMap, "IncidentTypeMap", "Mapper", "Converts between DTO, domain, and persistence")
+    Component(IncidentTypePersistence, "IIncidentTypePersistence", "Persistence Contract", "Mongoose document interface")
+    Component(IncidentTypeSchema, "incidentTypeSchema", "Mongoose Schema", "Schema describing incident types")
+    ComponentDb(MongoDB, "OEM MongoDB", "MongoDB", "Stores incident types")
+}
+
+
+
+
+
+Rel(PAO, IncidentTypeUI, "Uses", "Mouse/Keyboard")
+
+Rel(IncidentTypeUI, IncidentTypeRoute, "Sends HTTP requests", "HTTPS/JSON")
+Rel(IncidentTypeRoute, IncidentTypeController, "Invokes controller", "Express pipeline")
+
+Rel(IncidentTypeController, IncidentTypeService, "Calls methods in", "Method Calls")
+Rel(IncidentTypeService, IncidentTypeMap, "Delegates transformations", "Mapping")
+Rel(IncidentTypeService, IncidentTypeRepo, "Uses", "Method Calls")
+Rel(IncidentTypeMap, IncidentTypeDomain, "Creates/updates", "Domain Logic")
+Rel(IncidentTypeMap, IncidentTypeDTO, "Maps to/from", "DTO Conversion")
+Rel(IncidentTypeMap, IncidentTypePersistence, "Maps to/from", "Persistence Conversion")
+Rel(IncidentTypeRepo, IncidentTypeMap, "Uses", "Mapping")
+Rel(IncidentTypeRepo, IncidentTypeSchema, "Uses", "ODM")
+Rel(IncidentTypeSchema, IncidentTypePersistence, "Implements", "Schema Contract")
+Rel(IncidentTypeSchema, MongoDB, "Persists to", "Mongoose")
+@enduml

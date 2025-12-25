@@ -1,0 +1,160 @@
+@startuml Code level for 4.1.12
+
+class IncidentTypeRoute {
+    +postIncidentType(req, res, next)
+    +putIncidentType( req, res, next)
+    +getAllIncidentTypes(req, res, next)
+    +getIncidentTypeById( req, res, next)
+    +getIncidentTypeByCode(req, res, next)
+    +getIncidentTypeByName(req, res, next)
+    +getIncidentTypesByParent(req, res, next)
+    +getIncidentTypesByClassification(req, res, next)
+    +getIncidentTypesWithParent(req, res, next)
+}
+
+interface IIncidentTypeController{
+    +getAllIncidentTypes(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeById(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeByCode(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeByName(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesWithParent(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesByClassification(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesByParent(req: Request, res: Response, next: NextFunction)
+    +createIncidentType(req: Request, res: Response, next: NextFunction)
+    +updateIncidentType(req: Request, res: Response, next: NextFunction)
+}
+
+class IncidentTypeController {
+    +getAllIncidentTypes(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeById(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeByCode(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypeByName(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesWithParent(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesByClassification(req: Request, res: Response, next: NextFunction)
+    +getIncidentTypesByParent(req: Request, res: Response, next: NextFunction)
+    +createIncidentType(req: Request, res: Response, next: NextFunction)
+    +updateIncidentType(req: Request, res: Response, next: NextFunction)
+}
+
+class IncidentTypeService {
+    +resolveParentCodes(incidentTypes: IncidentType[])
+    +getSingleParentCode(parentId?: string)
+    +getAllIncidentTypes()
+    +getIncidentTypeById(id: string)
+    +getIncidentTypeByCode(code: string)
+    +getIncidentTypeByName(name: string)
+    +getIncidentTypesWithParent(hasParent: boolean)
+    +getIncidentTypesByClassification(classification: string)
+    +getIncidentTypesByParent(parentCode: string)
+    +create(dto: IncidentTypeDTO)
+    +update(code: string,dto: IncidentTypeDTO)
+}
+
+interface IIncidentTypeService{
+    +getAllIncidentTypes()
+    +getIncidentTypeById(id: string)
+    +getIncidentTypeByCode(code: string)
+    +getIncidentTypeByName(name: string)
+    +getIncidentTypesWithParent(hasParent: boolean)
+    +getIncidentTypesByClassification(classification: string)
+    +getIncidentTypesByParent(parentCode: string)
+    +create(dto: IncidentTypeDTO)
+    +update(code: string,dto: IncidentTypeDTO)
+}
+
+interface IIncidentTypeRepo {
+    +findAll()
+    +findById(id: string)
+    +findByCode(code: string)
+    +findByName(name: string)
+    +findWithParent(hasParent: boolean)
+    +findByClassification(classification: IncidentClassification)
+    +findByParent(parentId: string)
+    +update(incidentType: IncidentType)
+    +findByIds(ids: string[])
+}
+
+class IncidentTypeRepo {
+    +findAll()
+    +findById(id: string)
+    +findByCode(code: string)
+    +findByName(name: string)
+    +findWithParent(hasParent: boolean)
+    +findByClassification(classification: IncidentClassification)
+    +findByParent(parentId: string)
+    +update(incidentType: IncidentType)
+    +findByIds(ids: string[])
+}
+
+class IncidentTypeDTO {
+    -id: string
+    -code: string
+    -name: string
+    -description: string
+    -classification: IncidentClassification
+    -parentIncidentTypeCode?: string
+}
+
+class IncidentTypeMap {
+    +toDomain(raw: IIncidentTypePersistence | any)
+    +toPersistence(incident: IncidentType)
+    +toDTO(incident: IncidentType,parentIncidentTypeCode?: string)
+}
+
+
+
+class IncidentType {
+    -id: string
+    -code: string
+    -name: string
+    -description: string
+    -classification: IncidentClassification
+    -parentIncidentTypeId?: string
+}
+
+class IncidentClassification {
+    -Minor = "Minor"
+    -Major = "Major"
+    -Critical = "Critical"
+}
+
+
+
+interface IIncidentTypePersistence {
+    -_id: string
+    -code: string
+    -name: string
+    -description: string
+    -classification: IncidentClassification
+    -parentIncidentTypeId?: string
+}
+
+
+
+class IncidentTypeSchema {
+    +mongooseModel: Model
+}
+
+class MongoDBCluster <<database>>
+
+IncidentTypeRoute --> IncidentTypeController : forwards requests
+IncidentTypeController ..|> IIncidentTypeController
+IncidentTypeController --> IncidentTypeService : invokes methods
+IncidentTypeService --> IncidentTypeDTO : consumes/produces
+IncidentTypeService --> IncidentTypeMap : delegates mapping
+IncidentTypeService ---> IIncidentTypeRepo : uses persistence abstraction
+IncidentTypeService .up.|> IIncidentTypeService
+
+IncidentTypeRepo ..|> IIncidentTypeRepo
+IncidentTypeRepo --> IncidentTypeMap : uses
+IncidentTypeRepo --> IncidentTypeSchema : uses ODM
+IncidentTypeSchema --> IIncidentTypePersistence : implements structure
+IncidentTypeSchema --> MongoDBCluster : stores documents
+
+IncidentTypeMap --> IncidentType : maps domain
+IncidentTypeMap --> IncidentTypeDTO : maps DTO
+IncidentTypeMap --> IIncidentTypePersistence : maps persistence
+
+IncidentType --> IncidentClassification : has classification
+
+@enduml

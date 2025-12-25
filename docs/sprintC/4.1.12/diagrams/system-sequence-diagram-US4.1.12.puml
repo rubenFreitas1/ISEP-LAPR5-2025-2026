@@ -1,0 +1,34 @@
+@startuml 4.1.12
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Port Authority Officer" as portAuthority
+participant "UI" as ui
+participant "System" as system
+
+title System Sequence Diagram - US4.1.12
+
+== Manage Catalog of Incident Types ==
+activate portAuthority
+
+portAuthority -> ui: Manage Incident Types\n(Create, Read, Update)
+activate ui
+ui -> portAuthority : Request Incident Types Data
+deactivate ui
+
+portAuthority -> ui : Provide Incident Type Data
+activate ui
+ui -> system : Invoke Incident Type\nManagement System
+activate system
+
+system -> system : Process Incident Type Data
+
+system --> ui : Return Operation Result
+deactivate system
+ui -> portAuthority : Display Operation Result
+deactivate ui 
+
+
+
+@enduml
