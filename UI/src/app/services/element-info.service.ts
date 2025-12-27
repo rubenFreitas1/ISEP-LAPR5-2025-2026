@@ -71,6 +71,9 @@ export interface ElementInfo {
   // Vessel list navigation
   vesselsList?: any[];
   currentVesselIndex?: number;
+  // Warnings
+  craneWarning?: string;
+  vesselVisitWarning?: string;
   // Common
   lastModified?: string;
 }
@@ -419,6 +422,9 @@ export class ElementInfoService {
         info.vveStatus = vesselVVE.status || vesselVVE.description;
         info.arrivalDate = vesselVVE.arrivalDate ? new Date(vesselVVE.arrivalDate).toLocaleString() : undefined;
         info.departureDate = vesselVVE.departureDate ? new Date(vesselVVE.departureDate).toLocaleString() : 'In progress';
+        info.vesselVisitWarning = undefined;
+      } else {
+        info.vesselVisitWarning = 'No vessel has arrived or there is no active visit currently in port.';
       }
 
       // Add VVN information if available (approved notifications only)
@@ -486,6 +492,10 @@ export class ElementInfoService {
         cranesList: cranesToShow,
         currentCraneIndex: 0
       };
+
+      if (dockName && cranesForDock.length === 0) {
+        info.craneWarning = `No STS cranes are associated with dock ${dockName}.`;
+      }
 
       // Load first crane info
       if (canSeeRestricted && cranesToShow.length > 0) {
@@ -664,6 +674,9 @@ export class ElementInfoService {
         updated.vveStatus = vesselVVE.status || vesselVVE.description;
         updated.arrivalDate = vesselVVE.arrivalDate ? new Date(vesselVVE.arrivalDate).toLocaleString() : undefined;
         updated.departureDate = vesselVVE.departureDate ? new Date(vesselVVE.departureDate).toLocaleString() : 'In progress';
+        updated.vesselVisitWarning = undefined;
+      } else {
+        updated.vesselVisitWarning = 'No vessel has arrived or there is no active visit currently in port.';
       }
 
       // Add VVN info

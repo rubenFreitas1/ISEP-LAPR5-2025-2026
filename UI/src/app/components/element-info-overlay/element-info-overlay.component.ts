@@ -20,18 +20,21 @@ import { ElementInfoService, ElementInfo } from '../../services/element-info.ser
       <div class="info-body" (wheel)="onWheel($event)" (pointerdown)="$event.stopPropagation()" (touchmove)="$event.stopPropagation()">
         <div class="info-section">
           <h4>General Information</h4>
-          <div class="info-item">
+          <div class="info-item" *ngIf="!hasWarnings()">
             <span class="label">Name:</span>
             <span class="value">{{ elementInfo.name }}</span>
           </div>
-          <div class="info-item" *ngIf="elementInfo.description">
+          <div class="info-item" *ngIf="!hasWarnings() && elementInfo.description">
             <span class="label">Description:</span>
             <span class="value">{{ elementInfo.description }}</span>
           </div>
+
+          <div class="info-warning" *ngIf="elementInfo.craneWarning">{{ elementInfo.craneWarning }}</div>
+          <div class="info-warning" *ngIf="elementInfo.vesselVisitWarning">{{ elementInfo.vesselVisitWarning }}</div>
         </div>
 
         <!-- Vessel Section -->
-        <div class="info-section" *ngIf="hasVesselInfo()">
+        <div class="info-section" *ngIf="!hasWarnings() && hasVesselInfo()">
           <h4>Vessel Information</h4>
 
           <!-- Vessel list navigation counter -->
@@ -99,7 +102,7 @@ import { ElementInfoService, ElementInfo } from '../../services/element-info.ser
           </div>
         </div>
 
-        <div class="info-section" *ngIf="hasTechnicalInfo()">
+        <div class="info-section" *ngIf="!hasWarnings() && hasTechnicalInfo()">
           <h4>Technical Details</h4>
 
           <!-- Vessel type technical details -->
@@ -258,12 +261,12 @@ import { ElementInfoService, ElementInfo } from '../../services/element-info.ser
         </div>
 
         <!-- Vessel navigation placed after technical details, only for vessels -->
-        <div class="crane-navigation" *ngIf="hasVesselInfo() && elementInfo.vesselsList && elementInfo.vesselsList.length > 1">
+        <div class="crane-navigation" *ngIf="!hasWarnings() && hasVesselInfo() && elementInfo.vesselsList && elementInfo.vesselsList.length > 1">
           <button class="nav-button" (click)="previousVessel()" title="Previous vessel">← Previous</button>
           <button class="nav-button" (click)="nextVessel()" title="Next vessel">Next →</button>
         </div>
 
-        <div class="info-section" *ngIf="hasCapacityInfo()">
+        <div class="info-section" *ngIf="!hasWarnings() && hasCapacityInfo()">
           <h4>Capacity</h4>
 
           <div class="info-item" *ngIf="elementInfo.currentCapacity !== undefined && !hasVesselInfo()">
@@ -391,6 +394,16 @@ import { ElementInfoService, ElementInfo } from '../../services/element-info.ser
       align-items: flex-start;
       margin-bottom: 10px;
       line-height: 1.6;
+    }
+
+    .info-warning {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffc107;
+      border-radius: 6px;
+      font-size: 0.95em;
     }
 
     .info-item .label {
@@ -621,6 +634,10 @@ export class ElementInfoOverlayComponent implements OnInit, OnDestroy {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  hasWarnings(): boolean {
+    return !!(this.elementInfo?.craneWarning || this.elementInfo?.vesselVisitWarning);
   }
 
   onWheel(event: WheelEvent) {
