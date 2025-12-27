@@ -34,8 +34,8 @@ public class VesselRecordDTO
         {
             VesselRecordDTO vesselRecordDTO = new VesselRecordDTO(vesselRecord.IMONumber!, vesselRecord.VesselName!, vesselRecord.VesselType!.Name!, vesselRecord.Operator!);
             vesselRecordDTO.Id = vesselRecord.Id;
-                        vesselRecordDTO.VesselType = vesselRecord.VesselType != null ? VesselTypeDTO.ToDTO(vesselRecord.VesselType) : null;
-                        vesselRecordDTO.LastModifiedAt = vesselRecord.LastModifiedAt;
+            vesselRecordDTO.VesselType = vesselRecord.VesselType != null ? VesselTypeDTO.ToDTO(vesselRecord.VesselType) : null;
+            vesselRecordDTO.LastModifiedAt = vesselRecord.LastModifiedAt;
             return vesselRecordDTO;
         }
         catch (ArgumentOutOfRangeException ex)

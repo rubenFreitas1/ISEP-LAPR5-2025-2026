@@ -10,8 +10,8 @@ public class VesselVisitNotificationDTO
 {
     public long Id { get; set; }
     public string Code { get; set; } = string.Empty;
-        public VesselRecordDTO? Vessel { get; set; }
-        public long VesselId { get; set; }
+    public VesselRecordDTO? Vessel { get; set; }
+    public long VesselId { get; set; }
     public string VesselIMO { get; set; } = null!;
     public string RepresentativeCitizenID { get; set; } = null!;
     public DateTime Eta { get; set; }
