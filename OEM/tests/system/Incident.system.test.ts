@@ -45,17 +45,17 @@ describe("Incident – System Tests (MongoDB Atlas)", () => {
   // Setup: Criar app e conectar à BD ANTES de todos os testes
   beforeAll(async () => {
     app = await createSystemApp();
-  }, 30000); // 30s timeout para conexão à BD
+  }, 60000); // 60s timeout para conexão à BD
 
   // Limpar a BD ANTES de cada teste para garantir isolamento
   beforeEach(async () => {
     await clearDatabase();
-  }, 10000);
+  }, 30000);
 
   // Cleanup: Fechar conexões DEPOIS de todos os testes
   afterAll(async () => {
     await closeDatabase();
-  }, 10000);
+  }, 30000);
 
   // Helper function to create an incident type (prerequisite for incidents)
   const createIncidentType = async (code: string, classification: string = "Minor") => {

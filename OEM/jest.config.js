@@ -159,6 +159,9 @@ module.exports = {
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
   // timers: "real",
 
+  // Timeout global para todos os testes (especialmente importante para testes de sistema)
+  testTimeout: 60000, // 60 segundos
+
   // A map from regular expressions to paths to transformers
   transform: {
     '^.+\\.ts?$': 'ts-jest',

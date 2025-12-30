@@ -17,8 +17,11 @@ if(process.env.NODE_ENV !== 'development') {
   )
 }
 
+// Durante os testes, mostrar apenas erros
+const logLevel = process.env.NODE_ENV === 'test' ? 'error' : config.logs.level;
+
 const LoggerInstance = winston.createLogger({
-  level: config.logs.level,
+  level: logLevel,
   levels: winston.config.npm.levels,
   format: winston.format.combine(
     winston.format.timestamp({

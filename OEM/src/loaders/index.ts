@@ -9,7 +9,6 @@ import path from 'path';
 
 export default async ({ expressApp }: { expressApp: express.Application }) => {
   const mongoConnection = await mongooseLoader();
-  Logger.info('✌️ DB loaded and connected!');
 
   const incidentTypeSchema = {
     name: 'incidentTypeSchema',
@@ -174,11 +173,8 @@ export default async ({ expressApp }: { expressApp: express.Application }) => {
       operationPlanService
     ]
   });
-  Logger.info('✌️ Schemas, Controllers, Repositories, Services, etc. loaded');
 
   swaggerLoader(expressApp);
-  Logger.info('✌️ Swagger loaded');
 
   await expressLoader({ app: expressApp });
-  Logger.info('✌️ Express loaded');
 };

@@ -61,15 +61,15 @@ describe("VesselVisitExecution – System Tests (MongoDB Atlas)", () => {
 
   beforeAll(async () => {
     app = await createSystemApp();
-  }, 30000);
+  }, 60000);
 
   beforeEach(async () => {
     await clearDatabase();
-  }, 10000);
+  }, 30000);
 
   afterAll(async () => {
     await closeDatabase();
-  }, 10000);
+  }, 30000);
 
   // =========================================
   // TESTES DE CRIAÇÃO (POST)
