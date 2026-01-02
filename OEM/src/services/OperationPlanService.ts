@@ -19,9 +19,7 @@ export default class OperationPlanService implements IOperationPlanService {
         @Inject("operationPlanRepo") private operationPlanRepo: IOperationPlanRepo,
         @Inject("logger") private logger: any
     ){
-        const apiBaseUrl = config.env === 'production' 
-            ? (process.env.API_URL || '/api')
-            : (process.env.API_URL || 'http://localhost:5000/api');
+        const apiBaseUrl = process.env.API_URL || 'http://localhost:5000/api';
         this.vvnClient = new VesselVisitNotificationClient(apiBaseUrl);
     }
 
