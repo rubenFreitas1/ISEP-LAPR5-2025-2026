@@ -1,69 +1,22 @@
-% Simple rebalancing algorithm (Greedy temporal) for vessel->dock assignment.
-%
-% Facts format expected in this file (examples provided below):
-%   vessel(Name, ArrivalTime, DepartureTime, Load).
-%     - ArrivalTime and DepartureTime are integers (time units)
-%     - Load is integer processing time (unload+load)
-%   dock(Name, NumCranes).
-%     - NumCranes is the number of cranes (parallelism) at the dock
-%
-% The algorithm implemented here follows Option 2 (temporal greedy):
-% 1) Compute priority score = Arrival + Departure + Slack, where
-% Simple rebalancing algorithm (Greedy temporal) for vessel->dock assignment.
-%
-% Facts format expected in this file (examples provided below):
-%   vessels(Name, ArrivalTime, DepartureTime, Cargo).
-%     - ArrivalTime and DepartureTime are integers (time units)
-%     - Cargo is integer number of containers
-%   dock(Name, OperationalCapacity).
-%     - OperationalCapacity is number of containers per hour
-%
-% The algorithm implemented here follows Option 2 (temporal greedy):
-% 1) Compute priority score = Arrival + Departure + Slack, where
-%    Slack = max(Departure - Arrival - Duration, 0).
-%    (Duration is computed as ceil(Cargo / OperationalCapacity)).
-% 2) Sort vessels by increasing score (higher urgency first).
-% 3) For each vessel in order, try each dock and find the earliest start >= Arrival
-%    where the dock has a free slot during [start, start+duration).
-% 4) Choose dock minimizing (Delay, EndTime, -OperationalCapacity) lexicographically, where
-%    Delay = max(0, EndTime - Departure).
-%
-% The return is a list of assign(Vessel, Dock, Start, End, Delay).
-
 :- module(rebalancing_algorithm, [rebalance_assignments/1, rebalance_assignments/2, example_run/1]).
 
 :- dynamic vessels/4.
 :- dynamic vessel/4.
 :- dynamic dock/2.
 
-%% Example data (uncomment or provide your own facts)
-%% Use the following format as requested by the user:
-%%   vessels(Name, ArrivalTime, DepartureTime, Cargo).
-%%   dock(Name, OperationalCapacity).
-%% Execution time for a vessel = ceil(Cargo / OperationalCapacity)
-%% Examples:
-% Example facts removed. The controller should assert `vessels/4` and `dock/2` dynamically
-% before calling `rebalance_assignments/2` so that the algorithm works on runtime data.
-
-%% Public predicate: rebalance_assignments(-Assignments)
-%% Assignments = [assign(Vessel, Dock, Start, DeclaredDeparture, Delay, ActualDeparture, ActualArrival), ...]
 rebalance_assignments(Assignments) :-
-    % Debug: entry log
     with_output_to(user_error, format('rebalancing_algorithm: rebalance_assignments called~n', [])),
-    % Collect vessels from both `vessels/4` and `vessel/4` if present.
     findall(vessel(Name,A,D,L), vessels(Name,A,D,L), V1),
     % avoid calling an undefined predicate by using catch
     ( catch(findall(vessel(Name2,A2,D2,L2), vessel(Name2,A2,D2,L2), V2), _, V2 = []) ),
     append(V1, V2, Vessels),
     findall(dock(NameC,OpCap), dock(NameC,OpCap), Docks),
-    % Debug: report collected counts
     length(Vessels, VCount), length(Docks, DCount),
     with_output_to(user_error, format('rebalancing_algorithm: collected ~w vessels and ~w docks~n', [VCount, DCount])),
     build_dock_schedules(Docks, DockSchedules),
     % compute average operational capacity for slack estimation
     average_opcap(Docks, AvgCap),
     score_and_sort_vessels(Vessels, AvgCap, SortedVessels),
-    % Debug: list sorted vessels (print header, then each line separately)
     with_output_to(user_error, format('rebalancing_algorithm: sorted vessels:~n', [])),
     forall(member(vessel(N,A2,D2,L2), SortedVessels), with_output_to(user_error, format('  - ~w (A=~w D=~w L=~w)~n',[N,A2,D2,L2]))),
     rebalance_vessels(SortedVessels, DockSchedules, Assignments).

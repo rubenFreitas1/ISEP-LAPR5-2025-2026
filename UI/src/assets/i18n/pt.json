@@ -164,6 +164,101 @@
       }
     }
   },
+  "INCIDENT": {
+    "TITLE": "Incidentes",
+
+    "SEARCH_PLACEHOLDER": "Pesquisar por IMO da Embarcação ou Gravidade",
+    "NO_RESULTS": "Nenhum incidente disponível.",
+    "NO_RESULTS_FOR": "Nenhum resultado encontrado para",
+
+    "BUTTON": {
+      "NEW": "Novo Incidente",
+      "EDIT": "Editar",
+      "UNSELECT": "Desselecionar",
+      "SELECT": "Selecionar",
+      "CANCEL": "Cancelar",
+      "CREATE": "Criar",
+      "CREATING": "A criar...",
+      "SAVE": "Guardar",
+      "SAVING": "A guardar...",
+      "APPLY": "Aplicar",
+      "CLEAR": "Limpar",
+      "CLOSE": "Fechar",
+      "CLEAR_SEARCH": "Limpar pesquisa"
+    },
+
+    "TABLE": {
+      "DESCRIPTION": "Descrição",
+      "START_DATE": "Data de Início",
+      "END_DATE": "Data de Fim",
+      "SEVERITY": "Gravidade",
+      "STATUS": "Estado",
+      "ACTIONS": "Ações"
+    },
+
+    "DETAILS": {
+      "TITLE": "Incidente Selecionado",
+      "INCIDENT_TYPE_CODE": "Código do Tipo de Incidente",
+      "START_DATE": "Data de Início",
+      "END_DATE": "Data de Fim",
+      "DURATION": "Duração",
+      "DESCRIPTION": "Descrição",
+      "AFFECTED_VVES": "Execuções de Visita de Embarcação Afetadas",
+      "SEVERITY": "Gravidade",
+      "STATUS": "Estado",
+      "CREATED_BY": "Criado por Utilizador do Sistema ID",
+      "LAST_UPDATED": "Última Atualização",
+      "ON_GOING": "Em Curso",
+      "HOURS": "horas"
+    },
+
+    "FILTER": {
+      "ALL_STATUS": "Todos os Estados",
+      "ACTIVE": "Ativo",
+      "RESOLVED": "Resolvido",
+      "FROM_TO": "De - Até",
+      "FROM": "De",
+      "TO": "Até"
+    },
+
+    "FORM": {
+      "TITLE_CREATE": "Criar Incidente",
+      "TITLE_EDIT": "Editar Incidente",
+      "INCIDENT_TYPE": "Tipo de Incidente",
+      "START_DATE": "Data de Início",
+      "END_DATE": "Data de Fim",
+      "CLASSIFICATION": "Classificação",
+      "DESCRIPTION": "Descrição",
+      "STATUS": "Estado",
+      "AFFECTED_VVES": "Execuções de Visita de Embarcação Afetadas",
+      "NO_VVES": "Nenhuma execução de visita de embarcação no intervalo de tempo do incidente.",
+      "ARRIVAL": "Chegada",
+      "SELECT_INCIDENT_TYPE": "Selecionar Tipo de Incidente",
+      "SELECT_CLASSIFICATION": "Selecionar Classificação",
+      "PLACEHOLDER_DESCRIPTION": "Introduzir descrição do incidente",
+      "PLACEHOLDER_STATUS": "Estado"
+    },
+
+    "CLASSIFICATION": {
+      "MINOR": "Menor",
+      "MAJOR": "Maior",
+      "CRITICAL": "Crítico"
+    },
+
+    "STATUS_VALUES": {
+      "ACTIVE": "Ativo",
+      "RESOLVED": "Resolvido",
+      "CLOSED": "Fechado",
+      "ONGOING": "Em Curso",
+      "OPEN": "Aberto"
+    },
+
+    "MESSAGES": {
+      "LOADING": "A carregar...",
+      "NO_RESULTS_MESSAGE": "Nenhum incidente encontrado.",
+      "FILL_REQUIRED_FIELDS": "Por favor, preencha todos os campos obrigatórios (Descrição, Data de Início, Tipo de Incidente)."
+    }
+  },
   "COMPLEMENTARY_TASK_CATEGORY": {
     "TITLE": "Categorias de Tarefas Complementares",
     "SEARCH_PLACEHOLDER": "Pesquisar por código, nome ou descrição",

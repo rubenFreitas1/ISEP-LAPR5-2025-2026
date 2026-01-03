@@ -1,5 +1,5 @@
 <div class="page-container">
-  <h1 class="page-title">Incidents</h1>
+  <h1 class="page-title">{{ 'INCIDENT.TITLE' | translate }}</h1>
 
   <div class="top-bar">
     <div class="search-container">
@@ -7,10 +7,10 @@
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
-        placeholder="Search by Vessel IMO or Severity"
+        [placeholder]="'INCIDENT.SEARCH_PLACEHOLDER' | translate"
         class="search-input"
       >
-      <button *ngIf="searchTerm" (click)="clearSearchAndNotify()" class="clear-button" title="Clear search">✕</button>
+      <button *ngIf="searchTerm" (click)="clearSearchAndNotify()" class="clear-button" [title]="'INCIDENT.BUTTON.CLEAR_SEARCH' | translate">✕</button>
     </div>
     
     <div class="filter-container">
@@ -23,32 +23,32 @@
               <path d="M3 10h18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
             </svg>
           </span>
-          <span class="calendar-label" *ngIf="filterFrom || filterTo">{{ filterFrom ? (filterFrom | date: 'dd/MM/yyyy') : 'From' }} - {{ filterTo ? (filterTo | date: 'dd/MM/yyyy') : 'To' }}</span>
+          <span class="calendar-label" *ngIf="filterFrom || filterTo">{{ filterFrom ? (filterFrom | date: 'dd/MM/yyyy') : ('INCIDENT.FILTER.FROM' | translate) }} - {{ filterTo ? (filterTo | date: 'dd/MM/yyyy') : ('INCIDENT.FILTER.TO' | translate) }}</span>
         </button>
 
         <div *ngIf="showDatePicker" class="datepicker-popover" (click)="$event.stopPropagation()">
-          <div class="dp-header">From - To</div>
+          <div class="dp-header">{{ 'INCIDENT.FILTER.FROM_TO' | translate }}</div>
           <div class="dp-row">
-            <label>From: <input type="date" [(ngModel)]="filterFrom" /></label>
-            <label>To: <input type="date" [(ngModel)]="filterTo" /></label>
+            <label>{{ 'INCIDENT.FILTER.FROM' | translate }}: <input type="date" [(ngModel)]="filterFrom" /></label>
+            <label>{{ 'INCIDENT.FILTER.TO' | translate }}: <input type="date" [(ngModel)]="filterTo" /></label>
           </div>
           <div class="dp-actions">
-            <button class="btn btn-compact" (click)="applyDateRange()">Apply</button>
-            <button class="btn btn-compact" (click)="clearDateRange()">Clear</button>
-            <button class="btn btn-compact" (click)="closeDatePicker()">Close</button>
+            <button class="btn btn-compact" (click)="applyDateRange()">{{ 'INCIDENT.BUTTON.APPLY' | translate }}</button>
+            <button class="btn btn-compact" (click)="clearDateRange()">{{ 'INCIDENT.BUTTON.CLEAR' | translate }}</button>
+            <button class="btn btn-compact" (click)="closeDatePicker()">{{ 'INCIDENT.BUTTON.CLOSE' | translate }}</button>
           </div>
         </div>
       </div>
       <select class="status-dropdown" [(ngModel)]="filterStatus" (change)="onFilterChange()">
-        <option value="">All Status</option>
-        <option value="Active">Active</option>
-        <option value="Resolved">Resolved</option>
+        <option value="">{{ 'INCIDENT.FILTER.ALL_STATUS' | translate }}</option>
+        <option value="Active">{{ 'INCIDENT.FILTER.ACTIVE' | translate }}</option>
+        <option value="Resolved">{{ 'INCIDENT.FILTER.RESOLVED' | translate }}</option>
       </select>
     </div>
     
     <div class="action-buttons">
-      <button (click)="onCreateNew()" class="btn btn-primary" title="New Incident">New Incident</button>
-      <button (click)="onUpdate()" class="btn btn-secondary" [disabled]="!selected" title="Edit Incident">Edit</button>
+      <button (click)="onCreateNew()" class="btn btn-primary" [title]="'INCIDENT.BUTTON.NEW' | translate">{{ 'INCIDENT.BUTTON.NEW' | translate }}</button>
+      <button (click)="onUpdate()" class="btn btn-secondary" [disabled]="!selected" [title]="'INCIDENT.BUTTON.EDIT' | translate">{{ 'INCIDENT.BUTTON.EDIT' | translate }}</button>
     </div>
   </div>
 
@@ -62,30 +62,30 @@
     <button (click)="clearStatusMessage()" class="close-error">✕</button>
   </div>
 
-  <div *ngIf="isLoading" class="loading">Loading...</div>
+  <div *ngIf="isLoading" class="loading">{{ 'INCIDENT.MESSAGES.LOADING' | translate }}</div>
 
   <div *ngIf="!isLoading" class="table-container">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Severity</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>{{ 'INCIDENT.TABLE.DESCRIPTION' | translate }}</th>
+          <th>{{ 'INCIDENT.TABLE.START_DATE' | translate }}</th>
+          <th>{{ 'INCIDENT.TABLE.END_DATE' | translate }}</th>
+          <th>{{ 'INCIDENT.TABLE.SEVERITY' | translate }}</th>
+          <th>{{ 'INCIDENT.TABLE.STATUS' | translate }}</th>
+          <th>{{ 'INCIDENT.TABLE.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of filteredItems; let i = index" [class.selected]="selected?.id === item.id" (click)="select(item)">
           <td><span class="styled-field">{{ item.description }}</span></td>
           <td>{{ item.startDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</td>
-          <td>{{ item.endDate ? (item.endDate | date: 'dd/MM/yyyy, HH:mm:ss') : 'On Going' }}</td>
+          <td>{{ item.endDate ? (item.endDate | date: 'dd/MM/yyyy, HH:mm:ss') : ('INCIDENT.DETAILS.ON_GOING' | translate) }}</td>
           <td><span [ngClass]="getSeverityClass(item.classification)">{{ item.classification || '-' }}</span></td>
           <td><span [ngClass]="getStatusClass(item.status)">{{ item.status }}</span></td>
           <td>
             <button (click)="select(item); $event.stopPropagation()" class="btn-select" [class.selected]="selected?.id === item.id">
-              {{ selected?.id === item.id ? 'Unselect' : 'Select' }}
+              {{ selected?.id === item.id ? ('INCIDENT.BUTTON.UNSELECT' | translate) : ('INCIDENT.BUTTON.SELECT' | translate) }}
             </button>
           </td>
         </tr>
@@ -98,20 +98,20 @@
   </div>
 
   <div *ngIf="selected" class="selected-info">
-    <h3>Selected Incident</h3>
+    <h3>{{ 'INCIDENT.DETAILS.TITLE' | translate }}</h3>
     <div class="info-card">
-      <p *ngIf="getSelectedIncidentTypeCode()"><strong>Incident Type Code:</strong> {{ getSelectedIncidentTypeCode() }}</p>
-      <p *ngIf="selected.startDate"><strong>Start Date:</strong> {{ selected.startDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-      <p><strong>End Date:</strong> {{ selected.endDate ? (selected.endDate | date: 'dd/MM/yyyy, HH:mm:ss') : 'On Going' }}</p>
-      <p *ngIf="selected.status === 'Resolved' && selected.duration !== null"><strong>Duration:</strong> {{ selected.duration }} hours</p>
-      <p *ngIf="selected.description"><strong>Description:</strong> {{ selected.description }}</p>
+      <p *ngIf="getSelectedIncidentTypeCode()"><strong>{{ 'INCIDENT.DETAILS.INCIDENT_TYPE_CODE' | translate }}:</strong> {{ getSelectedIncidentTypeCode() }}</p>
+      <p *ngIf="selected.startDate"><strong>{{ 'INCIDENT.DETAILS.START_DATE' | translate }}:</strong> {{ selected.startDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+      <p><strong>{{ 'INCIDENT.DETAILS.END_DATE' | translate }}:</strong> {{ selected.endDate ? (selected.endDate | date: 'dd/MM/yyyy, HH:mm:ss') : ('INCIDENT.DETAILS.ON_GOING' | translate) }}</p>
+      <p *ngIf="selected.status === 'Resolved' && selected.duration !== null"><strong>{{ 'INCIDENT.DETAILS.DURATION' | translate }}:</strong> {{ selected.duration }} {{ 'INCIDENT.DETAILS.HOURS' | translate }}</p>
+      <p *ngIf="selected.description"><strong>{{ 'INCIDENT.DETAILS.DESCRIPTION' | translate }}:</strong> {{ selected.description }}</p>
       <p *ngIf="selected.vesselVisitExecutionsCodes && selected.vesselVisitExecutionsCodes.length > 0">
-        <strong>Affected Vessel Visit Executions:</strong> {{ selected.vesselVisitExecutionsCodes.join(', ') }}
+        <strong>{{ 'INCIDENT.DETAILS.AFFECTED_VVES' | translate }}:</strong> {{ selected.vesselVisitExecutionsCodes.join(', ') }}
       </p>
-      <p *ngIf="selected.classification"><strong>Severity:</strong> <span [ngClass]="getSeverityClass(selected.classification)">{{ selected.classification }}</span></p>
-      <p *ngIf="selected.status"><strong>Status:</strong> <span [ngClass]="getStatusClass(selected.status)">{{ selected.status }}</span></p>
-      <p><strong>Created By System User ID:</strong> {{ selected.systemUserID }}</p>
-      <p *ngIf="selected.lastUpdated"><strong>Last Updated:</strong> {{ selected.lastUpdated | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+      <p *ngIf="selected.classification"><strong>{{ 'INCIDENT.DETAILS.SEVERITY' | translate }}:</strong> <span [ngClass]="getSeverityClass(selected.classification)">{{ selected.classification }}</span></p>
+      <p *ngIf="selected.status"><strong>{{ 'INCIDENT.DETAILS.STATUS' | translate }}:</strong> <span [ngClass]="getStatusClass(selected.status)">{{ selected.status }}</span></p>
+      <p><strong>{{ 'INCIDENT.DETAILS.CREATED_BY' | translate }}:</strong> {{ selected.systemUserID }}</p>
+      <p *ngIf="selected.lastUpdated"><strong>{{ 'INCIDENT.DETAILS.LAST_UPDATED' | translate }}:</strong> {{ selected.lastUpdated | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
     </div>
   </div>
 </div>
@@ -120,7 +120,7 @@
 <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Edit Incident</h2>
+      <h2>{{ 'INCIDENT.FORM.TITLE_EDIT' | translate }}</h2>
       <button class="close-button" (click)="closeEditModal()">✕</button>
     </div>
 
@@ -129,22 +129,22 @@
 
       <form (ngSubmit)="onSaveEdit()" #editForm="ngForm">
         <div class="form-group">
-          <label for="edit-endDate">End Date</label>
+          <label for="edit-endDate">{{ 'INCIDENT.FORM.END_DATE' | translate }}</label>
           <input id="edit-endDate" name="endDate" type="datetime-local" [(ngModel)]="editItem.endDate" (change)="onEditEndDateChange()" class="form-input">
         </div>
 
         <div class="form-group">
-          <label for="edit-classification">Classification</label>
+          <label for="edit-classification">{{ 'INCIDENT.FORM.CLASSIFICATION' | translate }}</label>
           <select id="edit-classification" name="classification" [(ngModel)]="editItem.classification" class="form-input">
-            <option [ngValue]="''" disabled>Select Classification</option>
-            <option value="Minor">Minor</option>
-            <option value="Major">Major</option>
-            <option value="Critical">Critical</option>
+            <option [ngValue]="''" disabled>{{ 'INCIDENT.FORM.SELECT_CLASSIFICATION' | translate }}</option>
+            <option value="Minor">{{ 'INCIDENT.CLASSIFICATION.MINOR' | translate }}</option>
+            <option value="Major">{{ 'INCIDENT.CLASSIFICATION.MAJOR' | translate }}</option>
+            <option value="Critical">{{ 'INCIDENT.CLASSIFICATION.CRITICAL' | translate }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Affected Vessel Visit Executions</label>
+          <label>{{ 'INCIDENT.FORM.AFFECTED_VVES' | translate }}</label>
           <div class="vve-list" *ngIf="getFilteredEditVVEs().length > 0">
             <div *ngFor="let vve of getFilteredEditVVEs()" class="vve-item">
               <label class="vve-checkbox-label">
@@ -156,23 +156,23 @@
                 >
                 <span class="vve-info">
                   <strong>{{ vve.code || vve.name }}</strong>
-                  <span class="vve-details" *ngIf="vve.arrivalDate"> - Arrival: {{ vve.arrivalDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="vve-details" *ngIf="vve.arrivalDate"> - {{ 'INCIDENT.FORM.ARRIVAL' | translate }}: {{ vve.arrivalDate | date: 'dd/MM/yyyy HH:mm' }}</span>
                 </span>
               </label>
             </div>
           </div>
           <div *ngIf="getFilteredEditVVEs().length === 0" class="no-vves-message">
-            No vessel visit executions in the incident time range.
+            {{ 'INCIDENT.FORM.NO_VVES' | translate }}
           </div>
         </div>
 
         <div class="form-group">
-          <label for="edit-description">Description</label>
+          <label for="edit-description">{{ 'INCIDENT.FORM.DESCRIPTION' | translate }}</label>
           <textarea id="edit-description" name="description" [(ngModel)]="editItem.description" class="form-input" rows="3"></textarea>
         </div>
 
         <div class="form-group">
-          <label for="edit-status">Status</label>
+          <label for="edit-status">{{ 'INCIDENT.FORM.STATUS' | translate }}</label>
           <input
             type="text"
             id="edit-status"
@@ -180,13 +180,13 @@
             [value]="editItem.status"
             readonly
             class="form-input readonly"
-            placeholder="Status"
+            [placeholder]="'INCIDENT.FORM.PLACEHOLDER_STATUS' | translate"
           >
         </div>
 
         <div class="modal-footer">
-          <button type="button" (click)="closeEditModal()" class="btn btn-secondary" [disabled]="isEditing">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="isEditing || !hasEditChanges()">{{ isEditing ? 'Saving...' : 'Save' }}</button>
+          <button type="button" (click)="closeEditModal()" class="btn btn-secondary" [disabled]="isEditing">{{ 'INCIDENT.BUTTON.CANCEL' | translate }}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="isEditing || !hasEditChanges()">{{ isEditing ? ('INCIDENT.BUTTON.SAVING' | translate) : ('INCIDENT.BUTTON.SAVE' | translate) }}</button>
         </div>
       </form>
     </div>
@@ -197,7 +197,7 @@
 <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Create Incident</h2>
+      <h2>{{ 'INCIDENT.FORM.TITLE_CREATE' | translate }}</h2>
       <button class="close-button" (click)="closeCreateModal()">✕</button>
     </div>
 
@@ -206,38 +206,38 @@
 
       <form (ngSubmit)="onSaveNew()" #form="ngForm">
         <div class="form-group">
-          <label for="incidentTypeCode">Incident Type *</label>
+          <label for="incidentTypeCode">{{ 'INCIDENT.FORM.INCIDENT_TYPE' | translate }} *</label>
           <select id="incidentTypeCode" name="incidentTypeCode" [(ngModel)]="newItem.incidentTypeCode" required class="form-input" [class.error]="hasFieldError('incidentTypeCode')">
-            <option [ngValue]="''" disabled>Select Incident Type</option>
+            <option [ngValue]="''" disabled>{{ 'INCIDENT.FORM.SELECT_INCIDENT_TYPE' | translate }}</option>
             <option *ngFor="let type of incidentTypes" [ngValue]="type.code">{{ type.code }}</option>
           </select>
           <div *ngIf="hasFieldError('incidentTypeCode')" class="field-error">{{ getFieldError('incidentTypeCode') }}</div>
         </div>
 
         <div class="form-group">
-          <label for="startDate">Start Date *</label>
+          <label for="startDate">{{ 'INCIDENT.FORM.START_DATE' | translate }} *</label>
           <input id="startDate" name="startDate" type="datetime-local" [(ngModel)]="newItem.startDate" required class="form-input" [class.error]="hasFieldError('startDate')">
           <div *ngIf="hasFieldError('startDate')" class="field-error">{{ getFieldError('startDate') }}</div>
         </div>
 
         <div class="form-group">
-          <label for="endDate">End Date</label>
+          <label for="endDate">{{ 'INCIDENT.FORM.END_DATE' | translate }}</label>
           <input id="endDate" name="endDate" type="datetime-local" [(ngModel)]="newItem.endDate" (change)="onEndDateChanged()" class="form-input">
         </div>
 
         <div class="form-group">
-          <label for="classification">Classification *</label>
+          <label for="classification">{{ 'INCIDENT.FORM.CLASSIFICATION' | translate }} *</label>
           <select id="classification" name="classification" [(ngModel)]="newItem.classification" required class="form-input" [class.error]="hasFieldError('classification')">
-            <option [ngValue]="''" disabled>Select Classification</option>
-            <option value="Minor">Minor</option>
-            <option value="Major">Major</option>
-            <option value="Critical">Critical</option>
+            <option [ngValue]="''" disabled>{{ 'INCIDENT.FORM.SELECT_CLASSIFICATION' | translate }}</option>
+            <option value="Minor">{{ 'INCIDENT.CLASSIFICATION.MINOR' | translate }}</option>
+            <option value="Major">{{ 'INCIDENT.CLASSIFICATION.MAJOR' | translate }}</option>
+            <option value="Critical">{{ 'INCIDENT.CLASSIFICATION.CRITICAL' | translate }}</option>
           </select>
           <div *ngIf="hasFieldError('classification')" class="field-error">{{ getFieldError('classification') }}</div>
         </div>
 
         <div class="form-group">
-          <label>Affected Vessel Visit Executions</label>
+          <label>{{ 'INCIDENT.FORM.AFFECTED_VVES' | translate }}</label>
           <div class="vve-list" *ngIf="getFilteredVVEs().length > 0">
             <div *ngFor="let vve of getFilteredVVEs()" class="vve-item">
               <label class="vve-checkbox-label">
@@ -249,24 +249,24 @@
                 >
                 <span class="vve-info">
                   <strong>{{ vve.code || vve.name }}</strong>
-                  <span class="vve-details" *ngIf="vve.arrivalDate"> - Arrival: {{ vve.arrivalDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="vve-details" *ngIf="vve.arrivalDate"> - {{ 'INCIDENT.FORM.ARRIVAL' | translate }}: {{ vve.arrivalDate | date: 'dd/MM/yyyy HH:mm' }}</span>
                 </span>
               </label>
             </div>
           </div>
           <div *ngIf="getFilteredVVEs().length === 0" class="no-vves-message">
-            No vessel visit executions in the incident time range.
+            {{ 'INCIDENT.FORM.NO_VVES' | translate }}
           </div>
         </div>
 
         <div class="form-group">
-          <label for="description">Description *</label>
-          <textarea id="description" name="description" [(ngModel)]="newItem.description" required class="form-input" [class.error]="hasFieldError('description')" rows="3" placeholder="Enter incident description"></textarea>
+          <label for="description">{{ 'INCIDENT.FORM.DESCRIPTION' | translate }} *</label>
+          <textarea id="description" name="description" [(ngModel)]="newItem.description" required class="form-input" [class.error]="hasFieldError('description')" rows="3" [placeholder]="'INCIDENT.FORM.PLACEHOLDER_DESCRIPTION' | translate"></textarea>
           <div *ngIf="hasFieldError('description')" class="field-error">{{ getFieldError('description') }}</div>
         </div>
 
         <div class="form-group">
-          <label for="status">Status</label>
+          <label for="status">{{ 'INCIDENT.FORM.STATUS' | translate }}</label>
           <input
             type="text"
             id="status"
@@ -274,13 +274,13 @@
             [value]="newItem.status || 'Active'"
             readonly
             class="form-input readonly"
-            placeholder="Status"
+            [placeholder]="'INCIDENT.FORM.PLACEHOLDER_STATUS' | translate"
           >
         </div>
 
         <div class="modal-footer">
-          <button type="button" (click)="closeCreateModal()" class="btn btn-secondary" [disabled]="isCreating">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="isCreating || !form.form.valid">{{ isCreating ? 'Creating...' : 'Create' }}</button>
+          <button type="button" (click)="closeCreateModal()" class="btn btn-secondary" [disabled]="isCreating">{{ 'INCIDENT.BUTTON.CANCEL' | translate }}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="isCreating || !form.form.valid">{{ isCreating ? ('INCIDENT.BUTTON.CREATING' | translate) : ('INCIDENT.BUTTON.CREATE' | translate) }}</button>
         </div>
       </form>
     </div>

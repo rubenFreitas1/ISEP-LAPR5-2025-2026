@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { IncidentService } from '../../services-oem/incident.service';
 import { IncidentModel } from '../../models/incident.model';
@@ -71,7 +71,8 @@ export class Incident implements OnInit, OnDestroy {
   constructor(
     private incidentService: IncidentService,
     private incidentTypeService: IncidentTypeService,
-    private vesselVisitExecutionService: VesselVisitExecutionService
+    private vesselVisitExecutionService: VesselVisitExecutionService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -502,7 +503,7 @@ export class Incident implements OnInit, OnDestroy {
     this.fieldErrors = {};
 
     if (!this.isValidNew()) {
-      this.modalErrorMessage = 'Please fill in all required fields (Description, Start Date, Incident Type).';
+      this.modalErrorMessage = this.translate.instant('INCIDENT.MESSAGES.FILL_REQUIRED_FIELDS');
       return;
     }
 

@@ -165,6 +165,101 @@
       }
     }
   },
+  "INCIDENT": {
+    "TITLE": "Incidents",
+
+    "SEARCH_PLACEHOLDER": "Search by Vessel IMO or Severity",
+    "NO_RESULTS": "No incidents available.",
+    "NO_RESULTS_FOR": "No results found for",
+
+    "BUTTON": {
+      "NEW": "New Incident",
+      "EDIT": "Edit",
+      "UNSELECT": "Unselect",
+      "SELECT": "Select",
+      "CANCEL": "Cancel",
+      "CREATE": "Create",
+      "CREATING": "Creating...",
+      "SAVE": "Save",
+      "SAVING": "Saving...",
+      "APPLY": "Apply",
+      "CLEAR": "Clear",
+      "CLOSE": "Close",
+      "CLEAR_SEARCH": "Clear search"
+    },
+
+    "TABLE": {
+      "DESCRIPTION": "Description",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "SEVERITY": "Severity",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    },
+
+    "DETAILS": {
+      "TITLE": "Selected Incident",
+      "INCIDENT_TYPE_CODE": "Incident Type Code",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "DURATION": "Duration",
+      "DESCRIPTION": "Description",
+      "AFFECTED_VVES": "Affected Vessel Visit Executions",
+      "SEVERITY": "Severity",
+      "STATUS": "Status",
+      "CREATED_BY": "Created By System User ID",
+      "LAST_UPDATED": "Last Updated",
+      "ON_GOING": "On Going",
+      "HOURS": "hours"
+    },
+
+    "FILTER": {
+      "ALL_STATUS": "All Status",
+      "ACTIVE": "Active",
+      "RESOLVED": "Resolved",
+      "FROM_TO": "From - To",
+      "FROM": "From",
+      "TO": "To"
+    },
+
+    "FORM": {
+      "TITLE_CREATE": "Create Incident",
+      "TITLE_EDIT": "Edit Incident",
+      "INCIDENT_TYPE": "Incident Type",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "CLASSIFICATION": "Classification",
+      "DESCRIPTION": "Description",
+      "STATUS": "Status",
+      "AFFECTED_VVES": "Affected Vessel Visit Executions",
+      "NO_VVES": "No vessel visit executions in the incident time range.",
+      "ARRIVAL": "Arrival",
+      "SELECT_INCIDENT_TYPE": "Select Incident Type",
+      "SELECT_CLASSIFICATION": "Select Classification",
+      "PLACEHOLDER_DESCRIPTION": "Enter incident description",
+      "PLACEHOLDER_STATUS": "Status"
+    },
+
+    "CLASSIFICATION": {
+      "MINOR": "Minor",
+      "MAJOR": "Major",
+      "CRITICAL": "Critical"
+    },
+
+    "STATUS_VALUES": {
+      "ACTIVE": "Active",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed",
+      "ONGOING": "Ongoing",
+      "OPEN": "Open"
+    },
+
+    "MESSAGES": {
+      "LOADING": "Loading...",
+      "NO_RESULTS_MESSAGE": "No incidents found.",
+      "FILL_REQUIRED_FIELDS": "Please fill in all required fields (Description, Start Date, Incident Type)."
+    }
+  },
   "COMPLEMENTARY_TASK_CATEGORY": {
     "TITLE": "Complementary Task Categories",
     "SEARCH_PLACEHOLDER": "Search by code, name, or description",
