@@ -6,6 +6,13 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { OperationPlanService } from '../../services-oem/operationPlan.service';
 
+interface ChangeLogEntryModel {
+  date: Date;
+  author: string;
+  reason: string;
+  changes: string;
+}
+
 interface OperationPlanModel {
   id: string;
   vvn: string;
@@ -16,6 +23,7 @@ interface OperationPlanModel {
   author: string;
   algorithm: string;
   createdAt: Date;
+  changeLog?: ChangeLogEntryModel[];
 }
 
 interface OperationEntryModel {
@@ -37,7 +45,7 @@ export class OperationPlan implements OnInit, OnDestroy {
   isLoading: boolean = false;
   operationPlans: OperationPlanModel[] = [];
   filteredPlans: OperationPlanModel[] = [];
-  
+
   // Search
   searchTerm: string = '';
   private destroy$ = new Subject<void>();
@@ -45,6 +53,15 @@ export class OperationPlan implements OnInit, OnDestroy {
   // Selected plan for details modal
   selectedPlan: OperationPlanModel | null = null;
   showDetailsModal: boolean = false;
+
+  // Edit modal
+  showEditModal: boolean = false;
+  isEditing: boolean = false;
+  editPlan: any = null;
+  originalEditPlan: any = null;
+  editErrorMessage: string = '';
+  editSuccessMessage: string = '';
+  timeExceedsWarning: boolean = false;
 
   constructor(
     private operationPlanService: OperationPlanService,
@@ -79,7 +96,7 @@ export class OperationPlan implements OnInit, OnDestroy {
 
   onSearchChange() {
     const term = this.searchTerm.toLowerCase().trim();
-    
+
     if (!term) {
       this.filteredPlans = [...this.operationPlans];
       return;
@@ -135,5 +152,165 @@ export class OperationPlan implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(['/']);
+  }
+
+  // Edit operations
+  onUpdate() {
+    if (!this.selectedPlan) return;
+
+    // Deep clone to avoid modifying the original
+    this.editPlan = {
+      ...this.selectedPlan,
+      targetDay: this.formatDateForInput(this.selectedPlan.targetDay),
+      arrivalTime: this.formatDateTimeForInput(this.selectedPlan.arrivalTime),
+      departureTime: this.formatDateTimeForInput(this.selectedPlan.departureTime),
+      changeReason: '',  // Initialize empty change reason
+      operations: this.selectedPlan.operations.map(op => ({
+        ...op,
+        operationStart: this.formatDateTimeForInput(op.operationStart),
+        operationEnd: this.formatDateTimeForInput(op.operationEnd)
+      }))
+    };
+    this.originalEditPlan = JSON.parse(JSON.stringify(this.editPlan));
+    this.showEditModal = true;
+    this.editErrorMessage = '';
+    this.editSuccessMessage = '';
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editPlan = null;
+    this.originalEditPlan = null;
+    this.isEditing = false;
+    this.editErrorMessage = '';
+    this.editSuccessMessage = '';
+    this.timeExceedsWarning = false;
+  }
+
+
+
+  checkTimeExceedsDeparture() {
+    if (!this.editPlan || !this.editPlan.operations || this.editPlan.operations.length === 0) {
+      this.timeExceedsWarning = false;
+      return;
+    }
+
+    const lastOperation = this.editPlan.operations[this.editPlan.operations.length - 1];
+    const departureDate = new Date(this.editPlan.departureTime);
+    const operationEndDate = new Date(lastOperation.operationEnd);
+
+    // Compare if operation end is after departure time
+    this.timeExceedsWarning = operationEndDate > departureDate;
+  }
+
+  validateOperationTimes(): string | null {
+    if (!this.editPlan || !this.editPlan.operations) {
+      return null;
+    }
+
+    for (let i = 0; i < this.editPlan.operations.length; i++) {
+      const op = this.editPlan.operations[i];
+      const startTime = new Date(op.operationStart);
+      const endTime = new Date(op.operationEnd);
+
+      if (startTime >= endTime) {
+        return `Operation ${i + 1}: Start time must be before end time.`;
+      }
+    }
+
+    return null;
+  }
+
+
+
+  onSaveEdit() {
+    this.editErrorMessage = '';
+    this.editSuccessMessage = '';
+
+    if (!this.selectedPlan) {
+      this.editErrorMessage = 'No operation plan selected.';
+      return;
+    }
+
+    // Validate operation times
+    const validationError = this.validateOperationTimes();
+    if (validationError) {
+      this.editErrorMessage = validationError;
+      return;
+    }
+
+    // Prepare the payload with proper date formatting
+    const payload: any = {
+      id: this.editPlan.id,
+      vvn: this.editPlan.vvn,
+      targetDay: new Date(this.editPlan.targetDay),
+      arrivalTime: new Date(this.editPlan.arrivalTime),
+      departureTime: new Date(this.editPlan.departureTime),
+      author: this.editPlan.author,
+      algorithm: this.editPlan.algorithm,
+      createdAt: this.selectedPlan.createdAt,
+      changeReason: this.editPlan.changeReason,  // Include change reason
+      operations: this.editPlan.operations.map((op: any) => ({
+        id: op.id,
+        operationType: op.operationType,
+        container: op.container,
+        operationStart: new Date(op.operationStart),
+        operationEnd: new Date(op.operationEnd),
+        craneUsed: op.craneUsed
+      }))
+    };
+
+    this.isEditing = true;
+    this.operationPlanService.update(this.editPlan.vvn, payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updated) => {
+          this.isEditing = false;
+          this.editSuccessMessage = 'Operation plan updated successfully!';
+
+          // Update the local arrays
+          const idx = this.operationPlans.findIndex(p => p.id === this.selectedPlan!.id);
+          if (idx !== -1) {
+            this.operationPlans[idx] = updated;
+          }
+          const filteredIdx = this.filteredPlans.findIndex(p => p.id === this.selectedPlan!.id);
+          if (filteredIdx !== -1) {
+            this.filteredPlans[filteredIdx] = updated;
+          }
+          this.selectedPlan = updated;
+
+          setTimeout(() => {
+            this.closeEditModal();
+          }, 1500);
+        },
+        error: (error) => {
+          this.isEditing = false;
+          this.editErrorMessage = error?.error?.error || error?.error?.message || 'Error updating operation plan.';
+          console.error('Error updating operation plan:', error);
+        }
+      });
+  }
+
+  // Helper methods for date/time formatting
+  formatDateForInput(date: Date | string): string {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  }
+
+  formatDateTimeForInput(date: Date | string): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  formatTimeForInput(date: Date | string): string {
+    const d = new Date(date);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 }

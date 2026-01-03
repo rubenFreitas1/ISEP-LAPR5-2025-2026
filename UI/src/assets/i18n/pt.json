@@ -25,6 +25,7 @@
     "REPRESENTATIVE": "Representante",
 
     "SCHEDULE": "Agenda",
+    "OPERATION_PLANS": "Planos de Operação",
     "SYSTEM_USER": "Utilizadores do Sistema",
     "PRIVACY_POLICY": "Política de Privacidade",
     "INCIDENT_TYPE": "Tipo de Incidente",
@@ -491,7 +492,9 @@
     "BUTTON": {
       "RUN": "Executar Escalonamento",
       "CLOSE": "Fechar",
-      "CLEAN_SEARCH": "Limpar pesquisa"
+      "CLEAN_SEARCH": "Limpar pesquisa",
+      "GENERATE_PLANS": "Gerar Planos de Operação",
+      "GENERATING_PLANS": "Gerando Planos de Operação..."
     },
 
     "ALGORITHM": {
@@ -1379,7 +1382,80 @@
       "SUCCESS_CREATE": "Decisão criada com sucesso.",
       "ERROR": "Ocorreu um erro ao processar a decisão."
     }
-  }
+  },
 
+  "OPERATION_PLANS": {
+    "TITLE": "Planos de Operação",
+    "SUBTITLE": "Ver e gerir todos os planos de operação gerados a partir dos horários de embarcações",
+    "SEARCH_PLACEHOLDER": "Pesquisar por VVN, autor, algoritmo ou ID...",
+    "NO_PLANS": "Nenhum plano de operação encontrado.",
+    "TABLE": {
+      "ID": "ID",
+      "VESSEL": "Embarcação",
+      "VVN": "Notificação de Visita",
+      "TARGET_DAY": "Dia",
+      "ARRIVAL": "Hora de Chegada",
+      "DEPARTURE": "Hora de Partida",
+      "OPERATIONS": "Operações",
+      "AUTHOR": "Autor",
+      "ALGORITHM": "Algoritmo",
+      "CREATED": "Criado Em",
+      "ACTIONS": "Ações"
+    },
+    "DETAILS": {
+      "TITLE": "Detalhes do Plano de Operação",
+      "ID": "ID do Plano",
+      "VESSEL": "Embarcação",
+      "VVN": "Notificação de Visita",
+      "TARGET_DAY": "Dia",
+      "ARRIVAL": "Hora de Chegada",
+      "DEPARTURE": "Hora de Partida",
+      "AUTHOR": "Autor",
+      "ALGORITHM": "Algoritmo",
+      "CREATED": "Criado Em",
+      "OPERATIONS": "Operações",
+      "OP_ID": "ID da Operação",
+      "OP_TYPE": "Tipo",
+      "CONTAINER": "Contentor",
+      "CRANE": "Grua",
+      "START": "Hora de Início",
+      "END": "Hora de Fim",
+      "CHANGE_LOG": "Histórico de Alterações",
+      "REASON": "Motivo",
+      "CHANGES": "Alterações"
+    },
+    "EDIT": {
+      "TITLE": "Editar Plano de Operação",
+      "VVN": "Notificação de Visita",
+      "TARGET_DAY": "Dia",
+      "ARRIVAL": "Hora de Chegada",
+      "DEPARTURE": "Hora de Partida",
+      "AUTHOR": "Autor",
+      "ALGORITHM": "Algoritmo",
+      "OPERATIONS": "Operações",
+      "OPERATION": "Operação",
+      "OP_ID": "ID",
+      "OP_TYPE": "Tipo",
+      "CONTAINER": "Contentor",
+      "CRANE": "Grua",
+      "START": "Início",
+      "END": "Fim",
+      "CHANGE_REASON": "Motivo da Alteração",
+      "CHANGE_REASON_PLACEHOLDER": "Por favor descreva o motivo destas alterações...",
+      "WARNING": "Aviso",
+      "TIME_EXCEEDS_DEPARTURE": "A hora de fim da última operação excede a hora de partida da embarcação. Por favor, ajuste os tempos das operações."
+    },
+    "BUTTON": {
+      "EDIT": "Editar",
+      "CANCEL": "Cancelar",
+      "SAVE": "Guardar Alterações",
+      "SAVING": "A guardar..."
+    }
+  },
 
+  "COMMON": {
+    "BACK": "Voltar",
+    "CLOSE": "Fechar",
+    "REFRESH": "Atualizar",
+    "LOADING": "A carregar..."  }
 }

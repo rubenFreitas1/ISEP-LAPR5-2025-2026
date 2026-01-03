@@ -112,11 +112,11 @@ export class ObjectPickerService {
       return userRole !== null;
     }
 
-    // Vessels e Cranes - apenas LogisticOperator e PortAuthorityOfficer
+    // Vessels e Cranes - apenas LogisticOperator, PortAuthorityOfficer e Admin
     if (obj.type === 'vessel' || obj.type === 'crane') {
       return userRole === 'LogisticOperator' ||
-             userRole === 'PortAuthorityOfficer' //||
- //            userRole === 'Admin';
+             userRole === 'PortAuthorityOfficer' ||
+             userRole === 'Admin';
     }
 
     return false;

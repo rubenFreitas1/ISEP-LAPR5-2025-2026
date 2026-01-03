@@ -40,4 +40,16 @@ export class OperationPlanService {
       })
     );
   }
+
+  update(vvn: string, payload: any): Observable<any> {
+    return this.oemService.put<any>(`/operation-plans/update/${vvn}`, payload).pipe(
+      catchError((err) => {
+        console.error('Error updating operation plan:', err);
+        return throwError(() => ({
+          message: err?.error?.error || err?.message || 'Error updating operation plan',
+          originalError: err
+        }));
+      })
+    );
+  }
 }

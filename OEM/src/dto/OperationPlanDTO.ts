@@ -1,5 +1,12 @@
 import { OperationEntryDTO } from "./OperationEntryDTO";
 
+export interface ChangeLogEntryDTO {
+  date: Date;
+  author: string;
+  reason: string;
+  changes: string;
+}
+
 /**
  * @swagger
  * components:
@@ -56,6 +63,25 @@ import { OperationEntryDTO } from "./OperationEntryDTO";
  *           format: date-time
  *           description: Creation timestamp
  *           example: "2025-01-01T10:30:00Z"
+ *         changeLog:
+ *           type: array
+ *           description: History of changes made to this operation plan
+ *           items:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               author:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *               changes:
+ *                 type: string
+ *         changeReason:
+ *           type: string
+ *           description: Reason for the current change (used in updates)
+ *           example: "Updated operation times due to port congestion"
  */
 export interface OperationPlanDTO {
   id: string;
@@ -67,4 +93,6 @@ export interface OperationPlanDTO {
   author: string;
   algorithm: string;
   createdAt: Date;
+  changeLog?: ChangeLogEntryDTO[];
+  changeReason?: string;
 }

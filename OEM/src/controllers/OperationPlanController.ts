@@ -183,7 +183,7 @@ export default class OperationPlanController implements IOperationPlanController
         try {
             this.logger.silly('Updating operation plan');
             const dto: OperationPlanDTO = req.body;
-            const result = await this.operationPlanService.update(req.params.id, dto);
+            const result = await this.operationPlanService.update(req.params.vvn, dto);
             if (result.isSuccess) {
                 res.status(200).json(result.getValue());
             } else {

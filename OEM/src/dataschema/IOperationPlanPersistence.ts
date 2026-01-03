@@ -1,5 +1,12 @@
 import { IOperationEntryPersistence } from "./IOperationEntryPersistence";
 
+export interface IChangeLogEntryPersistence {
+  date: Date;
+  author: string;
+  reason: string;
+  changes: string;
+}
+
 export interface IOperationPlanPersistence {
   _id: string;
   vvn: string;
@@ -10,4 +17,5 @@ export interface IOperationPlanPersistence {
   author: string;
   algorithm: string;
   createdAt: Date;
+  changeLog?: IChangeLogEntryPersistence[];
 }

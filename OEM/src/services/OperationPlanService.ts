@@ -7,6 +7,7 @@ import { Result } from "../core/logic/Result";
 import { OperationPlanDTO } from "../dto/OperationPlanDTO";
 import { AuthMechanism } from "mongodb";
 import { OperationPlanMap } from "../mappers/OperationPlanMap";
+import { OperationEntryMap } from "../mappers/OperationEntryMap";
 import VesselVisitNotificationClient, { VesselVisitNotificationDTO } from "./clients/VesselVisitNotificationClient";
 import config from "../../config";
 
@@ -26,17 +27,7 @@ export default class OperationPlanService implements IOperationPlanService {
     public async getAllOperationPlans(): Promise<Result<OperationPlanDTO[]>> {
         try {
             const operationPlans = await this.operationPlanRepo.findAll();
-            const operationPlanDTOs = operationPlans.map(op => ({
-                id: op.id,
-                vvn: op.vvn,
-                targetDay: op.TargetDay,
-                arrivalTime: op.arrivalTime,
-                departureTime: op.departureTime,
-                operations: op.operations,
-                author: op.author,
-                algorithm: op.algorithm,
-                createdAt: op.createdAt
-            }));
+            const operationPlanDTOs = operationPlans.map(op => OperationPlanMap.toDTO(op));
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -51,17 +42,7 @@ export default class OperationPlanService implements IOperationPlanService {
             if (!operationPlan) {
                 return Result.fail("Operation plan not found.");
             }
-            const operationPlanDTO: OperationPlanDTO = {
-                id: operationPlan.id,
-                vvn: operationPlan.vvn,
-                targetDay: operationPlan.TargetDay,
-                arrivalTime: operationPlan.arrivalTime,
-                departureTime: operationPlan.departureTime,
-                operations: operationPlan.operations,
-                author: operationPlan.author,
-                algorithm: operationPlan.algorithm,
-                createdAt: operationPlan.createdAt
-            };
+            const operationPlanDTO = OperationPlanMap.toDTO(operationPlan);
             return Result.ok(operationPlanDTO);
         } catch (error) {
             this.logger.error(error);
@@ -77,28 +58,8 @@ export default class OperationPlanService implements IOperationPlanService {
                 return Result.ok([]);
             }
             const operationPlanDTOs = Array.isArray(operationPlan) 
-                ? operationPlan.map(op => ({
-                    id: op.id,
-                    vvn: op.vvn,
-                    targetDay: op.TargetDay,
-                    arrivalTime: op.arrivalTime,
-                    departureTime: op.departureTime,
-                    operations: op.operations,
-                    author: op.author,
-                    algorithm: op.algorithm,
-                    createdAt: op.createdAt
-                }))
-                : [{
-                    id: operationPlan.id,
-                    vvn: operationPlan.vvn,
-                    targetDay: operationPlan.TargetDay,
-                    arrivalTime: operationPlan.arrivalTime,
-                    departureTime: operationPlan.departureTime,
-                    operations: operationPlan.operations,
-                    author: operationPlan.author,
-                    algorithm: operationPlan.algorithm,
-                    createdAt: operationPlan.createdAt
-                }];
+                ? operationPlan.map(op => OperationPlanMap.toDTO(op))
+                : [OperationPlanMap.toDTO(operationPlan)];
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -114,28 +75,8 @@ export default class OperationPlanService implements IOperationPlanService {
                 return Result.ok([]);
             }
             const operationPlanDTOs = Array.isArray(operationPlans)
-                ? operationPlans.map(op => ({
-                    id: op.id,
-                    vvn: op.vvn,
-                    targetDay: op.TargetDay,
-                    arrivalTime: op.arrivalTime,
-                    departureTime: op.departureTime,
-                    operations: op.operations,
-                    author: op.author,
-                    algorithm: op.algorithm,
-                    createdAt: op.createdAt
-                }))
-                : [{
-                    id: operationPlans.id,
-                    vvn: operationPlans.vvn,
-                    targetDay: operationPlans.TargetDay,
-                    arrivalTime: operationPlans.arrivalTime,
-                    departureTime: operationPlans.departureTime,
-                    operations: operationPlans.operations,
-                    author: operationPlans.author,
-                    algorithm: operationPlans.algorithm,
-                    createdAt: operationPlans.createdAt
-                }];
+                ? operationPlans.map(op => OperationPlanMap.toDTO(op))
+                : [OperationPlanMap.toDTO(operationPlans)];
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -146,17 +87,7 @@ export default class OperationPlanService implements IOperationPlanService {
     public async getOperationPlansByArrivalTime(arrivalTime: Date): Promise<Result<OperationPlanDTO[]>> {
         try {
             const operationPlans = await this.operationPlanRepo.findByArrivalTime(arrivalTime);
-            const operationPlanDTOs = operationPlans.map(op => ({
-                id: op.id,
-                vvn: op.vvn,
-                targetDay: op.TargetDay,
-                arrivalTime: op.arrivalTime,
-                departureTime: op.departureTime,
-                operations: op.operations,
-                author: op.author,
-                algorithm: op.algorithm,
-                createdAt: op.createdAt
-            }));
+            const operationPlanDTOs = operationPlans.map(op => OperationPlanMap.toDTO(op));
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -168,17 +99,7 @@ export default class OperationPlanService implements IOperationPlanService {
     public async getOperationPlansByDepartureTime(departureTime: Date): Promise<Result<OperationPlanDTO[]>> {
         try {
             const operationPlans = await this.operationPlanRepo.findByDepartureTime(departureTime);
-            const operationPlanDTOs = operationPlans.map(op => ({
-                id: op.id,
-                vvn: op.vvn,
-                targetDay: op.TargetDay,
-                arrivalTime: op.arrivalTime,
-                departureTime: op.departureTime,
-                operations: op.operations,
-                author: op.author,
-                algorithm: op.algorithm,
-                createdAt: op.createdAt
-            }));
+            const operationPlanDTOs = operationPlans.map(op => OperationPlanMap.toDTO(op));
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -189,17 +110,7 @@ export default class OperationPlanService implements IOperationPlanService {
     public async getOperationPlansByAuthor(author: string): Promise<Result<OperationPlanDTO[]>> {
         try {
             const operationPlans = await this.operationPlanRepo.findByAuthor(author);
-            const operationPlanDTOs = operationPlans.map(op => ({
-                id: op.id,
-                vvn: op.vvn,
-                targetDay: op.TargetDay,
-                arrivalTime: op.arrivalTime,
-                departureTime: op.departureTime,
-                operations: op.operations,
-                author: op.author,
-                algorithm: op.algorithm,
-                createdAt: op.createdAt
-            }));
+            const operationPlanDTOs = operationPlans.map(op => OperationPlanMap.toDTO(op));
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -210,17 +121,7 @@ export default class OperationPlanService implements IOperationPlanService {
     public async getOperationPlansByAlgorithm(algorithm: string): Promise<Result<OperationPlanDTO[]>> {
         try {
             const operationPlans = await this.operationPlanRepo.findByAlgorithm(algorithm);
-            const operationPlanDTOs = operationPlans.map(op => ({
-                id: op.id,
-                vvn: op.vvn,
-                targetDay: op.TargetDay,
-                arrivalTime: op.arrivalTime,
-                departureTime: op.departureTime,
-                operations: op.operations,
-                author: op.author,
-                algorithm: op.algorithm,
-                createdAt: op.createdAt
-            }));
+            const operationPlanDTOs = operationPlans.map(op => OperationPlanMap.toDTO(op));
             return Result.ok(operationPlanDTOs);
         } catch (error) {
             this.logger.error(error);
@@ -273,9 +174,46 @@ export default class OperationPlanService implements IOperationPlanService {
                 return Result.fail("Vessel Visit Notification number cannot be changed.");
             }
 
-            const conflictWithTargetDay = await this.operationPlanRepo.findByTargetDay(dto.targetDay);
-            if (conflictWithTargetDay && conflictWithTargetDay.id !== operationPlan.id) {
-                return Result.fail("Another operation plan for the same target day already exists.");
+            // Validate that changeReason is provided for updates
+            if (!dto.changeReason || dto.changeReason.trim().length === 0) {
+                return Result.fail("Change reason is required for updates.");
+            }
+
+            // Validate that the last operation doesn't exceed departure time
+            if (dto.operations && dto.operations.length > 0) {
+                const lastOperation = dto.operations[dto.operations.length - 1];
+                const lastOperationEnd = new Date(lastOperation.operationEnd);
+                const departureTime = new Date(dto.departureTime);
+                
+                if (lastOperationEnd > departureTime) {
+                    return Result.fail("The last operation cannot end after the departure time.");
+                }
+            }
+
+            // Track changes made
+            const changes: string[] = [];
+            if (operationPlan.TargetDay.getTime() !== new Date(dto.targetDay).getTime()) {
+                changes.push(`Target Day: ${operationPlan.TargetDay.toISOString()} -> ${new Date(dto.targetDay).toISOString()}`);
+            }
+            if (operationPlan.operations.length !== dto.operations.length) {
+                changes.push(`Operations count: ${operationPlan.operations.length} -> ${dto.operations.length}`);
+            } else {
+                for (let i = 0; i < operationPlan.operations.length; i++) {
+                    const oldOp = operationPlan.operations[i];
+                    const newOp = dto.operations[i];
+                    if (oldOp.operationStart.getTime() !== new Date(newOp.operationStart).getTime() ||
+                        oldOp.operationEnd.getTime() !== new Date(newOp.operationEnd).getTime()) {
+                        changes.push(`Operation ${i + 1} times updated`);
+                    }
+                }
+            }
+
+            // Validate operation times
+            for (let i = 0; i < dto.operations.length; i++) {
+                const op = dto.operations[i];
+                if (new Date(op.operationStart) >= new Date(op.operationEnd)) {
+                    return Result.fail(`Operation ${i + 1}: Start time must be before end time.`);
+                }
             }
 
             try {
@@ -284,6 +222,15 @@ export default class OperationPlanService implements IOperationPlanService {
                 operationPlan.updateDepartureTime(dto.departureTime);
                 operationPlan.updateAuthor(dto.author);
                 operationPlan.updateAlgorithm(dto.algorithm);
+                const operationEntries = dto.operations.map(opDTO => OperationEntryMap.toDomain(opDTO));
+                operationPlan.updateOperations(operationEntries);
+
+                // Add change log entry
+                operationPlan.addChangeLogEntry(
+                    dto.author,
+                    dto.changeReason,
+                    changes.length > 0 ? changes.join('; ') : 'No changes detected'
+                );
             } catch (error: any) {
                 return Result.fail(`Validation error: ${error.message}`);
             }

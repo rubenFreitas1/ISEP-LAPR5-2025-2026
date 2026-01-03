@@ -1,5 +1,12 @@
 import { OperationEntry } from "./OperationEntry";
 
+export interface ChangeLogEntry {
+    date: Date;
+    author: string;
+    reason: string;
+    changes: string;
+}
+
 export class OperationPlan {
     
     constructor(
@@ -11,7 +18,8 @@ export class OperationPlan {
         public operations: OperationEntry[],
         public author: string,
         public algorithm: string,
-        public createdAt: Date
+        public createdAt: Date,
+        public changeLog: ChangeLogEntry[] = []
     ) {
         this.validateVvn(vvn);
         this.validateAuthor(author);
@@ -67,6 +75,13 @@ export class OperationPlan {
         this.operations = operations;
     }
 
-
+    addChangeLogEntry(author: string, reason: string, changes: string) {
+        this.changeLog.push({
+            date: new Date(),
+            author,
+            reason,
+            changes
+        });
+    }
 
 }

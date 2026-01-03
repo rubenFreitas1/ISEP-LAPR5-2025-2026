@@ -2,6 +2,29 @@ import mongoose from "mongoose";
 import { IOperationPlanPersistence } from "../../dataschema/IOperationPlanPersistence";
 
 
+const ChangeLogEntrySchema = new mongoose.Schema(
+  {
+    date: {
+      type: Date,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    reason: {
+      type: String,
+      required: true,
+    },
+    changes: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+
 const OperationEntrySchema = new mongoose.Schema(
   {
     id: {
@@ -74,6 +97,12 @@ const OperationPlanSchema = new mongoose.Schema(
     algorithm: {
       type: String,
       required: true,
+    },
+
+    changeLog: {
+      type: [ChangeLogEntrySchema],
+      required: false,
+      default: [],
     },
   },
   { timestamps: true }

@@ -11,6 +11,12 @@
         [placeholder]="'OPERATION_PLANS.SEARCH_PLACEHOLDER' | translate"
       />
     </div>
+
+    <div class="action-buttons">
+      <button (click)="onUpdate()" class="btn btn-secondary" [disabled]="!selectedPlan">
+        {{ 'OPERATION_PLANS.BUTTON.EDIT' | translate }}
+      </button>
+    </div>
   </div>
 
   <div *ngIf="isLoading" class="loading">
@@ -59,6 +65,115 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Edit Modal -->
+  <div *ngIf="showEditModal && editPlan" class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ 'OPERATION_PLANS.EDIT.TITLE' | translate }}</h2>
+        <button class="close-button" (click)="closeEditModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="editErrorMessage" class="alert alert-danger">{{ editErrorMessage }}</div>
+        <div *ngIf="editSuccessMessage" class="alert alert-success">{{ editSuccessMessage }}</div>
+
+        <form (ngSubmit)="onSaveEdit()" #editForm="ngForm">
+          <div class="form-group">
+            <label>{{ 'OPERATION_PLANS.EDIT.CHANGE_REASON' | translate }} *</label>
+            <textarea
+              name="changeReason"
+              [(ngModel)]="editPlan.changeReason"
+              class="form-input"
+              rows="3"
+              required
+              placeholder="{{ 'OPERATION_PLANS.EDIT.CHANGE_REASON_PLACEHOLDER' | translate }}">
+            </textarea>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'OPERATION_PLANS.EDIT.VVN' | translate }}</label>
+            <input name="vvn" [(ngModel)]="editPlan.vvn" class="form-input readonly-input" readonly />
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'OPERATION_PLANS.EDIT.TARGET_DAY' | translate }}</label>
+            <input type="date" name="targetDay" [(ngModel)]="editPlan.targetDay" class="form-input readonly-input" readonly />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'OPERATION_PLANS.EDIT.ARRIVAL' | translate }}</label>
+              <input type="datetime-local" name="arrivalTime" [(ngModel)]="editPlan.arrivalTime" class="form-input readonly-input" readonly />
+            </div>
+            <div class="form-group">
+              <label>{{ 'OPERATION_PLANS.EDIT.DEPARTURE' | translate }}</label>
+              <input type="datetime-local" name="departureTime" [(ngModel)]="editPlan.departureTime" class="form-input readonly-input" readonly />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'OPERATION_PLANS.EDIT.AUTHOR' | translate }}</label>
+            <input name="author" [(ngModel)]="editPlan.author" class="form-input readonly-input" readonly />
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'OPERATION_PLANS.EDIT.ALGORITHM' | translate }}</label>
+            <input name="algorithm" [(ngModel)]="editPlan.algorithm" class="form-input readonly-input" readonly />
+          </div>
+
+          <div class="operations-edit-section">
+            <h3>{{ 'OPERATION_PLANS.EDIT.OPERATIONS' | translate }} ({{ editPlan.operations.length }})</h3>
+            <div *ngIf="timeExceedsWarning" class="alert alert-warning">
+              <strong>⚠️ {{ 'OPERATION_PLANS.EDIT.WARNING' | translate }}:</strong>
+              {{ 'OPERATION_PLANS.EDIT.TIME_EXCEEDS_DEPARTURE' | translate }}
+            </div>
+            <div class="operations-edit-container">
+              <div *ngFor="let op of editPlan.operations; let i = index" class="operation-edit-card">
+                <div class="operation-edit-header">
+                  <h4>{{ 'OPERATION_PLANS.EDIT.OPERATION' | translate }} {{ i + 1 }}</h4>
+                </div>
+                <div class="operation-edit-grid">
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.OP_ID' | translate }}</label>
+                    <input [(ngModel)]="op.id" name="op_id_{{i}}" class="form-input-small readonly-input" readonly />
+                  </div>
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.OP_TYPE' | translate }}</label>
+                    <input [(ngModel)]="op.operationType" name="op_type_{{i}}" class="form-input-small readonly-input" readonly />
+                  </div>
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.CONTAINER' | translate }}</label>
+                    <input [(ngModel)]="op.container" name="op_container_{{i}}" class="form-input-small readonly-input" readonly />
+                  </div>
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.CRANE' | translate }}</label>
+                    <input [(ngModel)]="op.craneUsed" name="op_crane_{{i}}" class="form-input-small readonly-input" readonly />
+                  </div>
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.START' | translate }}</label>
+                    <input type="datetime-local" [(ngModel)]="op.operationStart" (ngModelChange)="checkTimeExceedsDeparture()" name="op_start_{{i}}" class="form-input-small" />
+                  </div>
+                  <div class="form-group-small">
+                    <label>{{ 'OPERATION_PLANS.EDIT.END' | translate }}</label>
+                    <input type="datetime-local" [(ngModel)]="op.operationEnd" (ngModelChange)="checkTimeExceedsDeparture()" name="op_end_{{i}}" class="form-input-small" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" (click)="closeEditModal()" class="btn btn-secondary" [disabled]="isEditing">
+              {{ 'OPERATION_PLANS.BUTTON.CANCEL' | translate }}
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isEditing || !editForm.form.valid">
+              {{ isEditing ? ('OPERATION_PLANS.BUTTON.SAVING' | translate) : ('OPERATION_PLANS.BUTTON.SAVE' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Details Modal -->
@@ -132,6 +247,33 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <!-- Change Log Section -->
+        <div class="changelog-section" *ngIf="(selectedPlan?.changeLog?.length ?? 0) > 0">
+          <h3>{{ 'OPERATION_PLANS.DETAILS.CHANGE_LOG' | translate }} ({{ selectedPlan.changeLog!.length }})</h3>
+          <div class="changelog-container">
+            <div class="changelog-entry" *ngFor="let log of selectedPlan.changeLog; let i = index">
+              <div class="changelog-header">
+                <span class="changelog-number">#{{ i + 1 }}</span>
+                <span class="changelog-date">{{ formatDate(log.date) }}</span>
+                <span class="changelog-author">{{ log.author }}</span>
+              </div>
+              <div class="changelog-body">
+                <div class="changelog-reason">
+                  <strong>{{ 'OPERATION_PLANS.DETAILS.REASON' | translate }}:</strong> {{ log.reason }}
+                </div>
+                <div class="changelog-changes">
+                  <strong>{{ 'OPERATION_PLANS.DETAILS.CHANGES' | translate }}:</strong> {{ log.changes }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug: Show if changeLog exists but is empty -->
+        <div *ngIf="(selectedPlan?.changeLog?.length ?? 0) === 0" style="padding: 16px; background: #f0f0f0; margin-top: 16px; border-radius: 8px;">
+          <p style="margin: 0; color: #666;">No change history available yet. Changes will appear here after the first update.</p>
         </div>
       </div>
       <div class="modal-footer" style="display: flex; justify-content: flex-end;">

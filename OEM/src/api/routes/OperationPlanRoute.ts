@@ -124,17 +124,17 @@ export default (app: Router) => {
 
     /**
      * @swagger
-     * /operation-plans/update/{id}:
+     * /operation-plans/update/{vvn}:
      *   put:
      *     tags: [OperationPlans]
      *     summary: Update an Operation Plan
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: vvn
      *         required: true
      *         schema:
      *           type: string
-     *         description: ID of the Operation Plan to update
+     *         description: VVN of the Operation Plan to update
      *     requestBody:
      *       required: true
      *       content:
@@ -154,23 +154,28 @@ export default (app: Router) => {
      *         description: Operation Plan not found
      */
     route.put(
-        '/update/:id',
+        '/update/:vvn',
         celebrate({
             body: Joi.object({
+                id: Joi.string().optional(),
                 vvn: Joi.string().required(),
                 targetDay: Joi.date().required(),
                 arrivalTime: Joi.date().iso().required(),
                 departureTime: Joi.date().iso().required(),
                 operations: Joi.array().items(
                     Joi.object({
-                        operationId: Joi.string().required(),
-                        description: Joi.string().required(),
-                        scheduledStart: Joi.date().iso().required(),
-                        scheduledEnd: Joi.date().iso().required()
+                        id: Joi.string().required(),
+                        operationType: Joi.string().required(),
+                        container: Joi.string().required(),
+                        operationStart: Joi.date().iso().required(),
+                        operationEnd: Joi.date().iso().required(),
+                        craneUsed: Joi.string().required()
                     })
                 ).required(),
-                author: Joi.string().email().required(),
-                algorithm: Joi.string().required()
+                author: Joi.string().required(),
+                algorithm: Joi.string().required(),
+                createdAt: Joi.date().iso().optional(),
+                changeReason: Joi.string().required()
             })
         }),
         (req, res, next) => ctrl.updateOperationPlan(req, res, next)

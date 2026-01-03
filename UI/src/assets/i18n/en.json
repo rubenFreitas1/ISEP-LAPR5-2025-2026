@@ -1420,7 +1420,37 @@
       "CONTAINER": "Container",
       "CRANE": "Crane",
       "START": "Start Time",
-      "END": "End Time"
+      "END": "End Time",
+      "CHANGE_LOG": "Change History",
+      "REASON": "Reason",
+      "CHANGES": "Changes"
+    },
+    "EDIT": {
+      "TITLE": "Edit Operation Plan",
+      "VVN": "Vessel Visit Notification",
+      "TARGET_DAY": "Target Day",
+      "ARRIVAL": "Arrival Time",
+      "DEPARTURE": "Departure Time",
+      "AUTHOR": "Author",
+      "ALGORITHM": "Algorithm",
+      "OPERATIONS": "Operations",
+      "OPERATION": "Operation",
+      "OP_ID": "ID",
+      "OP_TYPE": "Type",
+      "CONTAINER": "Container",
+      "CRANE": "Crane",
+      "START": "Start",
+      "END": "End",
+      "CHANGE_REASON": "Reason for Change",
+      "CHANGE_REASON_PLACEHOLDER": "Please describe why you are making these changes...",
+      "WARNING": "Warning",
+      "TIME_EXCEEDS_DEPARTURE": "The last operation end time exceeds the vessel departure time. Please adjust the operation times."
+    },
+    "BUTTON": {
+      "EDIT": "Edit",
+      "CANCEL": "Cancel",
+      "SAVE": "Save Changes",
+      "SAVING": "Saving..."
     }
   },
 

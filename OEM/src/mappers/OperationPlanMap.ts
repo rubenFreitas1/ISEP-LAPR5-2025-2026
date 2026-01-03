@@ -21,7 +21,8 @@ export class OperationPlanMap {
         : [],
       raw.author,
       raw.algorithm,
-      raw.createdAt
+      raw.createdAt,
+      raw.changeLog || []
     );
   }
 
@@ -39,7 +40,8 @@ export class OperationPlanMap {
       ),
       author: plan.author,
       algorithm: plan.algorithm,
-      createdAt: plan.createdAt
+      createdAt: plan.createdAt,
+      changeLog: plan.changeLog
     };
 
     if (plan.id && plan.id !== "") {
@@ -61,7 +63,8 @@ export class OperationPlanMap {
       ),
       author: plan.author,
       algorithm: plan.algorithm,
-      createdAt: plan.createdAt
+      createdAt: plan.createdAt,
+      changeLog: plan.changeLog
     };
   }
 }
