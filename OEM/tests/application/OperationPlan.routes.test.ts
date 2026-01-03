@@ -42,6 +42,9 @@ const operationPlanServiceMock = {
   getOperationPlanById: jest.fn(),
   getOperationPlansByVvn: jest.fn(),
   getOperationPlansByTargetDay: jest.fn(),
+  getOperationPlansByAuthor: jest.fn(),
+  getOperationPlansByAlgorithm: jest.fn(),
+  searchOperationPlans: jest.fn(),
   create: jest.fn(),
   createBatch: jest.fn(),
   update: jest.fn(),
@@ -193,6 +196,339 @@ describe("OperationPlan Routes - Missing Plans Tests (Application Tests)", () =>
 
       // Assert
       expect(operationPlanServiceMock.getVvnsWithoutOperationPlan).toHaveBeenCalledWith(authToken);
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans
+  // =========================================
+  describe("GET /operation-plans", () => {
+    it("should return 200 with list of plans", async () => {
+      operationPlanServiceMock.getAllOperationPlans.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ id: "1", vvn: "VVN-1" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans")
+        .expect(200);
+
+      expect(res.body).toEqual([{ id: "1", vvn: "VVN-1" }]);
+      expect(operationPlanServiceMock.getAllOperationPlans).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return 500 when service fails", async () => {
+      operationPlanServiceMock.getAllOperationPlans.mockResolvedValue({
+        isSuccess: false,
+        error: "Service error"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans")
+        .expect(500);
+
+      expect(res.body).toHaveProperty("error", "Service error");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/id/:id
+  // =========================================
+  describe("GET /operation-plans/id/:id", () => {
+    it("should return 200 when found", async () => {
+      operationPlanServiceMock.getOperationPlanById.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => ({ id: "123", vvn: "VVN-1" })
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/id/123")
+        .expect(200);
+
+      expect(res.body.id).toBe("123");
+    });
+
+    it("should return 404 when not found", async () => {
+      operationPlanServiceMock.getOperationPlanById.mockResolvedValue({
+        isSuccess: false,
+        error: "not found"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/id/NOPE")
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error", "not found");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/vvn/:vvn
+  // =========================================
+  describe("GET /operation-plans/vvn/:vvn", () => {
+    it("should return 200 when found", async () => {
+      operationPlanServiceMock.getOperationPlansByVvn.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ vvn: "VVN-1" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/vvn/VVN-1")
+        .expect(200);
+
+      expect(res.body[0].vvn).toBe("VVN-1");
+    });
+
+    it("should return 404 when not found", async () => {
+      operationPlanServiceMock.getOperationPlansByVvn.mockResolvedValue({
+        isSuccess: false,
+        error: "not found"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/vvn/NOPE")
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error", "not found");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/target-day/:targetDay
+  // =========================================
+  describe("GET /operation-plans/target-day/:targetDay", () => {
+    it("should return 200 when found", async () => {
+      operationPlanServiceMock.getOperationPlansByTargetDay.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ vvn: "VVN-1" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/target-day/2026-01-01")
+        .expect(200);
+
+      expect(res.body).toHaveLength(1);
+    });
+
+    it("should return 404 when not found", async () => {
+      operationPlanServiceMock.getOperationPlansByTargetDay.mockResolvedValue({
+        isSuccess: false,
+        error: "not found"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/target-day/2026-01-01")
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error", "not found");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/author/:author
+  // =========================================
+  describe("GET /operation-plans/author/:author", () => {
+    it("should return 200 when found", async () => {
+      operationPlanServiceMock.getOperationPlansByAuthor.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ author: "alice" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/author/alice")
+        .expect(200);
+
+      expect(res.body[0].author).toBe("alice");
+    });
+
+    it("should return 404 when not found", async () => {
+      operationPlanServiceMock.getOperationPlansByAuthor.mockResolvedValue({
+        isSuccess: false,
+        error: "not found"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/author/missing")
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error", "not found");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/algorithm/:algorithm
+  // =========================================
+  describe("GET /operation-plans/algorithm/:algorithm", () => {
+    it("should return 200 when found", async () => {
+      operationPlanServiceMock.getOperationPlansByAlgorithm.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ algorithm: "genetic" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/algorithm/genetic")
+        .expect(200);
+
+      expect(res.body[0].algorithm).toBe("genetic");
+    });
+
+    it("should return 404 when not found", async () => {
+      operationPlanServiceMock.getOperationPlansByAlgorithm.mockResolvedValue({
+        isSuccess: false,
+        error: "not found"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/algorithm/missing")
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error", "not found");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans/search
+  // =========================================
+  describe("GET /operation-plans/search", () => {
+    it("should return 200 with filtered plans", async () => {
+      operationPlanServiceMock.searchOperationPlans.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => [{ vvn: "VVN-SEARCH" }]
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/search?startDate=2026-01-01&endDate=2026-01-02&vvn=VVN-SEARCH")
+        .expect(200);
+
+      expect(operationPlanServiceMock.searchOperationPlans).toHaveBeenCalledWith(
+        expect.any(Date),
+        expect.any(Date),
+        "VVN-SEARCH"
+      );
+      expect(res.body[0].vvn).toBe("VVN-SEARCH");
+    });
+
+    it("should return 500 when service fails", async () => {
+      operationPlanServiceMock.searchOperationPlans.mockResolvedValue({
+        isSuccess: false,
+        error: "search error"
+      });
+
+      const res = await request(app)
+        .get("/operation-plans/search")
+        .expect(500);
+
+      expect(res.body).toHaveProperty("error", "search error");
+    });
+  });
+
+  // =========================================
+  // POST /operation-plans (create batch)
+  // =========================================
+  describe("POST /operation-plans", () => {
+    it("should create batch and return 201", async () => {
+      const payload = {
+        vvns: ["VVN-1"],
+        assignedCranes: [["CR1"]],
+        arrivalTimes: ["2026-01-01T08:00:00Z"],
+        departureTimes: ["2026-01-01T10:00:00Z"],
+        targetDays: ["2026-01-01"],
+        author: "alice",
+        algorithm: "genetic"
+      };
+
+      operationPlanServiceMock.createBatch.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => ([{ vvn: "VVN-1" }])
+      });
+
+      const res = await request(app)
+        .post("/operation-plans")
+        .set("Authorization", "Bearer token")
+        .send(payload)
+        .expect(201);
+
+      expect(res.body[0].vvn).toBe("VVN-1");
+      expect(operationPlanServiceMock.createBatch).toHaveBeenCalledWith(
+        payload.vvns,
+        payload.assignedCranes,
+        payload.arrivalTimes,
+        payload.departureTimes,
+        payload.targetDays,
+        payload.author,
+        payload.algorithm,
+        "Bearer token"
+      );
+    });
+
+    it("should return 400 when service fails", async () => {
+      operationPlanServiceMock.createBatch.mockResolvedValue({
+        isSuccess: false,
+        error: "fail"
+      });
+
+      const res = await request(app)
+        .post("/operation-plans")
+        .send({})
+        .expect(400);
+
+      expect(res.body).toHaveProperty("error", "fail");
+    });
+  });
+
+  // =========================================
+  // PUT /operation-plans/update/:vvn
+  // =========================================
+  describe("PUT /operation-plans/update/:vvn", () => {
+    const payload = {
+      id: "1",
+      vvn: "VVN-1",
+      targetDay: "2026-01-01",
+      arrivalTime: "2026-01-01T08:00:00Z",
+      departureTime: "2026-01-01T10:00:00Z",
+      operations: [
+        {
+          id: "OP1",
+          operationType: "LOAD",
+          container: "C1",
+          operationStart: "2026-01-01T08:00:00Z",
+          operationEnd: "2026-01-01T09:00:00Z",
+          craneUsed: "CR1"
+        }
+      ],
+      author: "alice",
+      algorithm: "genetic",
+      createdAt: "2026-01-01T07:00:00Z",
+      changeReason: "Adjust"
+    };
+
+    it("should update and return 200", async () => {
+      operationPlanServiceMock.update.mockResolvedValue({
+        isSuccess: true,
+        getValue: () => ({ vvn: "VVN-1" })
+      });
+
+      const res = await request(app)
+        .put("/operation-plans/update/VVN-1")
+        .send(payload)
+        .expect(200);
+
+      expect(res.body.vvn).toBe("VVN-1");
+      expect(operationPlanServiceMock.update).toHaveBeenCalledWith("VVN-1", expect.objectContaining({ changeReason: "Adjust" }));
+    });
+
+    it("should return 400 when service fails", async () => {
+      operationPlanServiceMock.update.mockResolvedValue({
+        isSuccess: false,
+        error: "update error"
+      });
+
+      const res = await request(app)
+        .put("/operation-plans/update/VVN-1")
+        .send(payload)
+        .expect(400);
+
+      expect(res.body).toHaveProperty("error", "update error");
     });
   });
 

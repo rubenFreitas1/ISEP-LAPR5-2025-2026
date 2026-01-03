@@ -1,4 +1,6 @@
 import { Result } from "../../../src/core/logic/Result";
+import { OperationPlan } from "../../../src/domain/OperationPlan";
+import { OperationEntry } from "../../../src/domain/OperationEntry";
 
 // --- MOCKS ---
 jest.mock("../../../src/mappers/OperationPlanMap", () => ({
@@ -9,10 +11,17 @@ jest.mock("../../../src/mappers/OperationPlanMap", () => ({
     }
 }));
 
+jest.mock("../../../src/mappers/OperationEntryMap", () => ({
+    OperationEntryMap: {
+        toDomain: jest.fn()
+    }
+}));
+
 jest.mock("../../../src/services/clients/VesselVisitNotificationClient");
 
 import OperationPlanService from "../../../src/services/OperationPlanService";
 import { OperationPlanMap } from "../../../src/mappers/OperationPlanMap";
+import { OperationEntryMap } from "../../../src/mappers/OperationEntryMap";
 import VesselVisitNotificationClient from "../../../src/services/clients/VesselVisitNotificationClient";
 
 describe("OperationPlanService - Missing Plans Tests (unit tests)", () => {
@@ -28,6 +37,11 @@ describe("OperationPlanService - Missing Plans Tests (unit tests)", () => {
             findById: jest.fn(),
             findByVvn: jest.fn(),
             findByTargetDay: jest.fn(),
+            findByArrivalTime: jest.fn(),
+            findByDepartureTime: jest.fn(),
+            findByAuthor: jest.fn(),
+            findByAlgorithm: jest.fn(),
+            findByDateRange: jest.fn(),
             save: jest.fn(),
             update: jest.fn(),
             delete: jest.fn()
@@ -40,6 +54,12 @@ describe("OperationPlanService - Missing Plans Tests (unit tests)", () => {
         // Mock VesselVisitNotificationClient instance
         vvnClientMock = service['vvnClient'] as jest.Mocked<VesselVisitNotificationClient>;
         vvnClientMock.getAll = jest.fn();
+
+        (OperationEntryMap.toDomain as jest.Mock).mockImplementation((dto) => ({
+            ...dto,
+            operationStart: new Date(dto.operationStart),
+            operationEnd: new Date(dto.operationEnd)
+        }));
 
         // Reset mocks
         jest.clearAllMocks();
@@ -150,6 +170,465 @@ describe("OperationPlanService - Missing Plans Tests (unit tests)", () => {
 
             // Assert
             expect(result.isFailure).toBe(true);
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    // ---------------------------------------------------
+    // getAllOperationPlans
+    // ---------------------------------------------------
+
+    describe("getAllOperationPlans", () => {
+        it("should return mapped list on success", async () => {
+            const domainPlan = { id: "1" } as any;
+            operationPlanRepo.findAll.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "1" });
+
+            const result = await service.getAllOperationPlans();
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "1" }]);
+            expect(operationPlanRepo.findAll).toHaveBeenCalled();
+        });
+
+        it("should fail when repo throws", async () => {
+            operationPlanRepo.findAll.mockRejectedValue(new Error("DB"));
+
+            const result = await service.getAllOperationPlans();
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plans.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    // ---------------------------------------------------
+    // getOperationPlanById
+    // ---------------------------------------------------
+
+    describe("getOperationPlanById", () => {
+        it("should return DTO when found", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findById.mockResolvedValue(domainPlan);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.getOperationPlanById("p1");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual({ id: "p1" });
+        });
+
+        it("should fail when not found", async () => {
+            operationPlanRepo.findById.mockResolvedValue(null);
+
+            const result = await service.getOperationPlanById("missing");
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Operation plan not found.");
+        });
+
+        it("should fail when repo throws", async () => {
+            operationPlanRepo.findById.mockRejectedValue(new Error("boom"));
+
+            const result = await service.getOperationPlanById("p1");
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plan.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    // ---------------------------------------------------
+    // getOperationPlansByVvn / TargetDay / Author / Algorithm
+    // ---------------------------------------------------
+
+    describe("getOperationPlansByVvn", () => {
+        it("should return mapped array when found", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByVvn.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.getOperationPlansByVvn("VVN");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should return empty array when none", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue(null);
+
+            const result = await service.getOperationPlansByVvn("NONE");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([]);
+        });
+
+        it("should fail on repo error", async () => {
+            operationPlanRepo.findByVvn.mockRejectedValue(new Error("err"));
+
+            const result = await service.getOperationPlansByVvn("X");
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plans by VVN.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    describe("getOperationPlansByTargetDay", () => {
+        it("should return mapped array", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByTargetDay.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.getOperationPlansByTargetDay(new Date());
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should return empty array when repo returns null", async () => {
+            operationPlanRepo.findByTargetDay.mockResolvedValue(null);
+
+            const result = await service.getOperationPlansByTargetDay(new Date());
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([]);
+        });
+
+        it("should fail on repo error", async () => {
+            operationPlanRepo.findByTargetDay.mockRejectedValue(new Error("err"));
+
+            const result = await service.getOperationPlansByTargetDay(new Date());
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plans by target day.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    describe("getOperationPlansByAuthor", () => {
+        it("should map results", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByAuthor.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.getOperationPlansByAuthor("me");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should fail on error", async () => {
+            operationPlanRepo.findByAuthor.mockRejectedValue(new Error("err"));
+
+            const result = await service.getOperationPlansByAuthor("me");
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plans by author.");
+        });
+    });
+
+    describe("getOperationPlansByAlgorithm", () => {
+        it("should map results", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByAlgorithm.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.getOperationPlansByAlgorithm("alg");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should fail on error", async () => {
+            operationPlanRepo.findByAlgorithm.mockRejectedValue(new Error("err"));
+
+            const result = await service.getOperationPlansByAlgorithm("alg");
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error retrieving operation plans by algorithm.");
+        });
+    });
+
+    // ---------------------------------------------------
+    // searchOperationPlans
+    // ---------------------------------------------------
+
+    describe("searchOperationPlans", () => {
+        it("should search by date range", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByDateRange.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.searchOperationPlans(new Date(), new Date(), "VVN");
+
+            expect(result.isSuccess).toBe(true);
+            expect(operationPlanRepo.findByDateRange).toHaveBeenCalled();
+        });
+
+        it("should search by VVN when only vvn provided", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findByVvn.mockResolvedValue(domainPlan);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.searchOperationPlans(undefined, undefined, "VVN");
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should return all when no filters", async () => {
+            const domainPlan = { id: "p1" } as any;
+            operationPlanRepo.findAll.mockResolvedValue([domainPlan]);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.searchOperationPlans();
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual([{ id: "p1" }]);
+        });
+
+        it("should fail on error", async () => {
+            operationPlanRepo.findAll.mockRejectedValue(new Error("err"));
+
+            const result = await service.searchOperationPlans();
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error searching operation plans.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    // ---------------------------------------------------
+    // create
+    // ---------------------------------------------------
+
+    describe("create", () => {
+        const baseDto: any = {
+            vvn: "VVN-1",
+            targetDay: new Date("2026-01-01"),
+            arrivalTime: new Date("2026-01-01T07:00:00Z"),
+            departureTime: new Date("2026-01-01T19:00:00Z"),
+            operations: [],
+            author: "user",
+            algorithm: "genetic"
+        };
+
+        it("should create when no conflicts", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue(null);
+            operationPlanRepo.findByTargetDay.mockResolvedValue(null);
+
+            const domainPlan = { id: "p1" } as any;
+            (OperationPlanMap.toDomain as jest.Mock).mockReturnValue(domainPlan);
+            operationPlanRepo.save.mockResolvedValue(domainPlan);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "p1" });
+
+            const result = await service.create(baseDto);
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.getValue()).toEqual({ id: "p1" });
+        });
+
+        it("should fail when VVN already exists", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue({ id: "exists" });
+
+            const result = await service.create(baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toContain("already exists");
+        });
+
+        it("should fail when target day conflicts", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue(null);
+            operationPlanRepo.findByTargetDay.mockResolvedValue({ id: "p" });
+
+            const result = await service.create(baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toContain("same target day");
+        });
+
+        it("should fail when save returns null", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue(null);
+            operationPlanRepo.findByTargetDay.mockResolvedValue(null);
+            (OperationPlanMap.toDomain as jest.Mock).mockReturnValue({});
+            operationPlanRepo.save.mockResolvedValue(null);
+
+            const result = await service.create(baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Failed to create operation plan.");
+        });
+
+        it("should fail when repo throws", async () => {
+            operationPlanRepo.findByVvn.mockRejectedValue(new Error("err"));
+
+            const result = await service.create(baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error creating operation plan.");
+            expect(logger.error).toHaveBeenCalled();
+        });
+    });
+
+    // ---------------------------------------------------
+    // update
+    // ---------------------------------------------------
+
+    describe("update", () => {
+        const createExistingPlan = () => {
+            return new OperationPlan(
+                "plan-1",
+                "VVN-1",
+                new Date("2026-01-01"),
+                new Date("2026-01-01T07:00:00Z"),
+                new Date("2026-01-01T18:00:00Z"),
+                [
+                    new OperationEntry(
+                        "op-1",
+                        "LOAD",
+                        "CONT-1",
+                        new Date("2026-01-01T08:00:00Z"),
+                        new Date("2026-01-01T09:00:00Z"),
+                        "CR-1"
+                    )
+                ],
+                "author-1",
+                "algo-1",
+                new Date("2025-12-31T23:00:00Z")
+            );
+        };
+
+        const baseDto: any = {
+            id: "plan-1",
+            vvn: "VVN-1",
+            targetDay: new Date("2026-01-02"),
+            arrivalTime: new Date("2026-01-02T07:00:00Z"),
+            departureTime: new Date("2026-01-02T18:00:00Z"),
+            operations: [
+                {
+                    id: "op-1",
+                    operationType: "LOAD",
+                    container: "C1",
+                    operationStart: new Date("2026-01-02T08:00:00Z"),
+                    operationEnd: new Date("2026-01-02T10:00:00Z"),
+                    craneUsed: "CR-1"
+                }
+            ],
+            author: "author-2",
+            algorithm: "algo-2",
+            createdAt: new Date("2025-12-31T23:00:00Z"),
+            changeReason: "Adjust"
+        };
+
+        it("should update successfully and append change log", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+            operationPlanRepo.update.mockResolvedValue(existing);
+            (OperationPlanMap.toDTO as jest.Mock).mockReturnValue({ id: "plan-1" });
+
+            const result = await service.update("VVN-1", baseDto);
+
+            expect(result.isSuccess).toBe(true);
+            expect(operationPlanRepo.update).toHaveBeenCalled();
+            expect(existing.changeLog.length).toBeGreaterThan(0);
+        });
+
+        it("should fail when plan not found", async () => {
+            operationPlanRepo.findByVvn.mockResolvedValue(null);
+
+            const result = await service.update("VVN-1", baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Operation plan not found.");
+        });
+
+        it("should fail when VVN changes", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+
+            const result = await service.update("VVN-1", { ...baseDto, vvn: "OTHER" });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Vessel Visit Notification number cannot be changed.");
+        });
+
+        it("should fail when changeReason missing", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+
+            const result = await service.update("VVN-1", { ...baseDto, changeReason: "" });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Change reason is required for updates.");
+        });
+
+        it("should fail when last operation ends after departure", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+
+            const badDto = { ...baseDto, departureTime: new Date("2026-01-02T08:30:00Z") };
+
+            const result = await service.update("VVN-1", badDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("The last operation cannot end after the departure time.");
+        });
+
+        it("should fail when any operation has invalid times", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+
+            const badDto = {
+                ...baseDto,
+                operations: [
+                    {
+                        id: "op-1",
+                        operationType: "LOAD",
+                        container: "C1",
+                        operationStart: new Date("2026-01-02T10:00:00Z"),
+                        operationEnd: new Date("2026-01-02T09:00:00Z"),
+                        craneUsed: "CR-1"
+                    }
+                ]
+            };
+
+            const result = await service.update("VVN-1", badDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toContain("Start time must be before end time.");
+        });
+
+        it("should wrap validation errors from domain", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+
+            const result = await service.update("VVN-1", { ...baseDto, author: "" });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toContain("Validation error");
+        });
+
+        it("should fail when repo update returns null", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+            operationPlanRepo.update.mockResolvedValue(null);
+
+            const result = await service.update("VVN-1", baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Failed to update operation plan.");
+        });
+
+        it("should fail when repo throws", async () => {
+            const existing = createExistingPlan();
+            operationPlanRepo.findByVvn.mockResolvedValue(existing);
+            operationPlanRepo.update.mockRejectedValue(new Error("err"));
+
+            const result = await service.update("VVN-1", baseDto);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.errorValue()).toBe("Error updating operation plan.");
             expect(logger.error).toHaveBeenCalled();
         });
     });

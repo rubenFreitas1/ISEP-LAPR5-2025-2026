@@ -93,6 +93,126 @@ describe("OperationPlan – System Tests (MongoDB Atlas)", () => {
   }, 30000);
 
   // =========================================
+  // POST /operation-plans + GET /operation-plans/vvn/:vvn
+  // =========================================
+  describe("POST /operation-plans and fetch by VVN", () => {
+    it("should create plans and fetch them by VVN", async () => {
+      const payload = {
+        vvns: ["2026-PA-000001"],
+        assignedCranes: [["CRANE-1"]],
+        arrivalTimes: ["2026-01-15T10:00:00Z"],
+        departureTimes: ["2026-01-15T18:00:00Z"],
+        targetDays: ["2026-01-15"],
+        author: "system-user",
+        algorithm: "default"
+      };
+
+      const createRes = await request(app)
+        .post("/api/operation-plans")
+        .send(payload)
+        .expect(201);
+
+      expect(createRes.body).toHaveLength(1);
+      expect(createRes.body[0]).toHaveProperty("vvn", "2026-PA-000001");
+
+      const getRes = await request(app)
+        .get("/api/operation-plans/vvn/2026-PA-000001")
+        .expect(200);
+
+      expect(Array.isArray(getRes.body)).toBe(true);
+      expect(getRes.body[0]).toHaveProperty("vvn", "2026-PA-000001");
+      expect(getRes.body[0]).toHaveProperty("operations");
+    });
+  });
+
+  // =========================================
+  // GET /operation-plans e /operation-plans/id/:id
+  // =========================================
+  describe("GET /operation-plans and /operation-plans/id/:id", () => {
+    it("should list all plans and fetch by id", async () => {
+      const payload = {
+        vvns: ["2026-PA-000001", "2026-PA-000002"],
+        assignedCranes: [["CR1"], ["CR2"]],
+        arrivalTimes: ["2026-01-15T10:00:00Z", "2026-01-15T14:00:00Z"],
+        departureTimes: ["2026-01-15T18:00:00Z", "2026-01-15T22:00:00Z"],
+        targetDays: ["2026-01-15", "2026-01-15"],
+        author: "system-user",
+        algorithm: "default"
+      };
+
+      const createRes = await request(app)
+        .post("/api/operation-plans")
+        .send(payload)
+        .expect(201);
+
+      expect(createRes.body).toHaveLength(2);
+
+      const listRes = await request(app)
+        .get("/api/operation-plans")
+        .expect(200);
+
+      expect(listRes.body.length).toBeGreaterThanOrEqual(2);
+
+      const firstId = listRes.body[0].id;
+      const byIdRes = await request(app)
+        .get(`/api/operation-plans/id/${firstId}`)
+        .expect(200);
+
+      expect(byIdRes.body).toHaveProperty("id", firstId);
+
+      await request(app)
+        .get("/api/operation-plans/id/non-existent")
+        .expect(404);
+    });
+  });
+
+  // =========================================
+  // PUT /operation-plans/update/:vvn
+  // =========================================
+  describe("PUT /operation-plans/update/:vvn", () => {
+    it("should update an existing plan with change reason", async () => {
+      const createPayload = {
+        vvns: ["2026-PA-000001"],
+        assignedCranes: [["CRANE-1"]],
+        arrivalTimes: ["2026-01-15T10:00:00Z"],
+        departureTimes: ["2026-01-15T18:00:00Z"],
+        targetDays: ["2026-01-15"],
+        author: "initial",
+        algorithm: "default"
+      };
+
+      await request(app).post("/api/operation-plans").send(createPayload).expect(201);
+
+      const existingPlanRes = await request(app)
+        .get("/api/operation-plans/vvn/2026-PA-000001")
+        .expect(200);
+
+      const existingPlan = existingPlanRes.body[0];
+
+      const updatePayload = {
+        id: existingPlan.id,
+        vvn: existingPlan.vvn,
+        targetDay: existingPlan.targetDay,
+        arrivalTime: existingPlan.arrivalTime,
+        departureTime: existingPlan.departureTime,
+        operations: existingPlan.operations,
+        author: "updated-user",
+        algorithm: "genetic",
+        createdAt: existingPlan.createdAt,
+        changeReason: "Adjust schedule"
+      };
+
+      const updateRes = await request(app)
+        .put("/api/operation-plans/update/2026-PA-000001")
+        .send(updatePayload)
+        .expect(200);
+
+      expect(updateRes.body).toHaveProperty("author", "updated-user");
+      expect(updateRes.body).toHaveProperty("algorithm", "genetic");
+    });
+  });
+
+  // =========================================
   // GET /operation-plans/missing
   // =========================================
   describe("GET /operation-plans/missing", () => {

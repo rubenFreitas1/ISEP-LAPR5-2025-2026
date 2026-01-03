@@ -169,22 +169,9 @@ export default class OperationPlanController implements IOperationPlanController
 
     public async createOperationPlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            console.log('=== CONTROLLER - createOperationPlan START ===');
-            console.log('req.body in controller:', req.body);
-            console.log('Type of req.body:', typeof req.body);
-            console.log('Keys:', req.body ? Object.keys(req.body) : 'none');
-            console.log('==============================================');
             
             const { vvns, assignedCranes, arrivalTimes, departureTimes, targetDays, author, algorithm } = req.body;
             
-            console.log('=== EXTRACTED FIELDS ===');
-            console.log('vvns:', vvns);
-            console.log('assignedCranes:', assignedCranes);
-            console.log('arrivalTimes:', arrivalTimes);
-            console.log('departureTimes:', departureTimes);
-            console.log('targetDays:', targetDays);
-            console.log('author:', author);
-            console.log('algorithm:', algorithm);
             
             // Extract Auth header from request
             const authHeader = req.headers.authorization;

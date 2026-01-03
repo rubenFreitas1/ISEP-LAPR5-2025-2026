@@ -389,16 +389,6 @@ export default class OperationPlanService implements IOperationPlanService {
         authHeader?: string
     ): Promise<Result<OperationPlanDTO[]>> {
         try {
-            console.log('=== SERVICE - CREATE BATCH DEBUG ===');
-            console.log('vvns:', vvns);
-            console.log('vvns.length:', vvns?.length);
-            console.log('assignedCranes:', assignedCranes);
-            console.log('assignedCranes.length:', assignedCranes?.length);
-            console.log('arrivalTimes.length:', arrivalTimes?.length);
-            console.log('departureTimes.length:', departureTimes?.length);
-            console.log('targetDays.length:', targetDays?.length);
-            console.log('author:', author);
-            console.log('algorithm:', algorithm);
             
             const createdPlans: OperationPlanDTO[] = [];
             const skippedVvns: string[] = [];
