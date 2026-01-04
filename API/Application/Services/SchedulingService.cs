@@ -450,7 +450,7 @@ public class SchedulingService
             .OrderByDescending(c => c.PhysicalResourceOperationalCapacity)
             .FirstOrDefault();
         int fastestCapacity = fastestCrane != null ? fastestCrane.PhysicalResourceOperationalCapacity : 0;
-        int med = GetMedianOperationalCapacity(physicalResources!);
+        int med = SumOperationalCapacity(physicalResources!);
         Console.WriteLine($"Median operational capacity of available cranes: {med}");
         int availableCranes = (physicalResources ?? Enumerable.Empty<PhysicalResource>()).Count();
         DataGeneticScheduleDTO dataGeneticScheduleDTO = new DataGeneticScheduleDTO(
@@ -589,6 +589,16 @@ public class SchedulingService
             errorMessages.Add($"Genetic algorithm error: {ex.Message}");
             return null;
         }
+    }
+
+    private int SumOperationalCapacity(IEnumerable<PhysicalResource> resources)
+    {
+        int count = 0;
+        foreach (var r in resources)
+        {
+            count += r.PhysicalResourceOperationalCapacity;
+        }
+        return count;
     }
 
     private int GetMedianOperationalCapacity(IEnumerable<PhysicalResource> resources)
