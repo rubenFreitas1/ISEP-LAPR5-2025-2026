@@ -290,6 +290,8 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
   select(item: VesselVisitExecutionModel) {
     this.selected = this.selected?.id === item.id ? null : item;
     if (this.selected) {
+      console.log('📍 Selected item:', this.selected);
+      console.log('⚠️ Warning field:', this.selected.warning);
       this.loadPlannedDock();
     } else {
       this.plannedDock = null;

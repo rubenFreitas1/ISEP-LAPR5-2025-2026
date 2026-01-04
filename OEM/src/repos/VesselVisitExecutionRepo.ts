@@ -42,6 +42,13 @@ export default class VesselVisitExecutionRepo implements IVesselVisitExecutionRe
 
     async findByCode(code: string): Promise<VesselVisitExecution | null> {
         const record = await this.vesselVisitExecutionSchema.findOne({ code });
+        if (record) {
+            console.log(`🗄️ Raw record from DB for ${code}:`, JSON.stringify({
+                plannedDock: (record as any).plannedDock,
+                plannedDockChanged: (record as any).plannedDockChanged,
+                DockAssigned: (record as any).DockAssigned
+            }));
+        }
         return record ? VesselVisitExecutionMap.toDomain(record) : null;
     }
 

@@ -98,15 +98,22 @@
 
   <div *ngIf="selected" class="selected-info">
     <h3>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.TITLE' | translate }}</h3>
+    <div *ngIf="selected.warning" class="dock-change-warning">
+      <svg class="warning-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>{{ selected.warning }}</span>
+    </div>
     <div class="info-card">
       <p *ngIf="selected.code"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.CODE' | translate }}:</strong> {{ selected.code }}</p>
       <p *ngIf="selected.name"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.VESSEL_IMO' | translate }}:</strong> {{ selected.name }}</p>
       <p *ngIf="selected.vesselVisitNotificationCode"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.VVN_CODE' | translate }}:</strong> {{ selected.vesselVisitNotificationCode }}</p>
       <p *ngIf="plannedDock" class="planned-dock-info"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.PLANNED_DOCK' | translate }}:</strong> {{ plannedDock }}</p>
+      <p *ngIf="selected.DockAssigned"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.DOCK_ASSIGNED' | translate }}:</strong> {{ selected.DockAssigned }}</p>
       <p *ngIf="selected.status || selected.description"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.STATUS' | translate }}:</strong> <span [ngClass]="getStatusClass(selected.status || selected.description)">{{ selected.status || selected.description }}</span></p>
+      <p *ngIf="selected.originalArrivalDate"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.ORIGINAL_ARRIVAL_DATE' | translate }}:</strong> {{ selected.originalArrivalDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <p *ngIf="selected.arrivalDate"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.ARRIVAL_DATE' | translate }}:</strong> {{ selected.arrivalDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <p *ngIf="selected.departureDate"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.DEPARTURE_DATE' | translate }}:</strong> {{ selected.departureDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-      <p *ngIf="selected.DockAssigned"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.DOCK_ASSIGNED' | translate }}:</strong> {{ selected.DockAssigned }}</p>
       <p *ngIf="selected.lastUpdated"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.LAST_UPDATED' | translate }}:</strong> {{ selected.lastUpdated | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <p *ngIf="selected.systemUserID"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.CREATED_BY' | translate }}:</strong> {{ selected.systemUserID }}</p>
       <div *ngIf="selected.operations && selected.operations.length > 0" class="operations-section">

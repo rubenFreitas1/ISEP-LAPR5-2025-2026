@@ -1644,6 +1644,7 @@
       "VVN_CODE": "Código de Notificação de Visita de Embarcação",
       "PLANNED_DOCK": "A doca planeada para esta execução é",
       "STATUS": "Estado",
+      "ORIGINAL_ARRIVAL_DATE": "Data de Chegada Planeada",
       "ARRIVAL_DATE": "Data de Chegada",
       "DEPARTURE_DATE": "Data de Partida",
       "DOCK_ASSIGNED": "Doca Atribuída",

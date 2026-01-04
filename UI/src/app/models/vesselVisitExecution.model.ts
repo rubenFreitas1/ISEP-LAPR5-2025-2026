@@ -7,11 +7,13 @@ export interface VesselVisitExecutionModel {
   vesselVisitNotificationCode?: string;
   departureDate?: string | Date;
   arrivalDate?: string;
+  originalArrivalDate?: string;
   status?: string;
   lastUpdated?: string | Date;
   systemUserID?: string;
   DockAssigned?: string;
   operations?: OperationExecutionEntry[];
+  warning?: string;
 }
 
 export interface OperationExecutionEntry {

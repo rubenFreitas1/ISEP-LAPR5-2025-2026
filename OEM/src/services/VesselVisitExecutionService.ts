@@ -34,6 +34,15 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
     public async getAllVesselVisitExecutions(): Promise<Result<VesselVisitExecutionDTO[]>> {
         try {
             const vesselVisitExecutions = await this.vesselVisitExecutionRepo.findAll();
+            
+            // Initialize originalArrivalDate for old VVEs that don't have it
+            for (const vve of vesselVisitExecutions) {
+                if (!vve.originalArrivalDate) {
+                    (vve as any).originalArrivalDate = new Date(vve.arrivalDate.getTime());
+                    await this.vesselVisitExecutionRepo.update(vve);
+                }
+            }
+            
             const dtoList = vesselVisitExecutions.map(vve => VesselVisitExecutionMap.toDTO(vve));
             return Result.ok(dtoList);
         } catch (error) {
@@ -48,6 +57,10 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
             if (!vesselVisitExecution) {
                 return Result.fail("Vessel Visit Execution not found.");
             }
+            if (!vesselVisitExecution.originalArrivalDate) {
+                (vesselVisitExecution as any).originalArrivalDate = new Date(vesselVisitExecution.arrivalDate.getTime());
+                await this.vesselVisitExecutionRepo.update(vesselVisitExecution);
+            }
             const dto = VesselVisitExecutionMap.toDTO(vesselVisitExecution);
             return Result.ok(dto);
         } catch (error) {
@@ -61,6 +74,10 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
             const vesselVisitExecution = await this.vesselVisitExecutionRepo.findByCode(code);
             if (!vesselVisitExecution) {
                 return Result.fail("Vessel Visit Execution not found.");
+            }
+            if (!vesselVisitExecution.originalArrivalDate) {
+                (vesselVisitExecution as any).originalArrivalDate = new Date(vesselVisitExecution.arrivalDate.getTime());
+                await this.vesselVisitExecutionRepo.update(vesselVisitExecution);
             }
             const dto = VesselVisitExecutionMap.toDTO(vesselVisitExecution);
             return Result.ok(dto);
@@ -237,15 +254,39 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
             }
 
             const vesselVisitExecutionCode = await this.generateVesselVisitExecutionCode();
+            
+            // Extract planned dock from VVN or from first operation's crane
+            let plannedDock = vvn.plannedDock || vvn.dock || "";
+            
+            // If no plannedDock in VVN, try to extract from first operation
+            if (!plannedDock && operationExecutions.length > 0) {
+                const firstOp = operationExecutions[0];
+                if (firstOp.craneUsed) {
+                    // Map crane to dock based on known crane assignments
+                    const craneToDockMap: { [key: string]: string } = {
+                        'STS Crane 1': 'Dock A', 'STS Crane 2': 'Dock A', 'STS Crane 3': 'Dock A',
+                        'STS Crane 4': 'Dock B', 'STS Crane 5': 'Dock B', 'STS Crane 6': 'Dock B',
+                        'STS Crane 7': 'Dock C', 'STS Crane 8': 'Dock C',
+                        'STS Crane 9': 'Dock D', 'STS Crane 10': 'Dock D'
+                    };
+                    plannedDock = craneToDockMap[firstOp.craneUsed] || "";
+                }
+            }
+            
+            this.logger.info(`Creating VVE with plannedDock: ${plannedDock}`);
+            
             const domain = VesselVisitExecutionMap.toDomain({
                 code: vesselVisitExecutionCode,
                 vesselIMO: vesselIMO,
                 status: VesselVisitExecutionStatus.InProgress,
                 arrivalDate: dto.arrivalDate,
+                originalArrivalDate: dto.arrivalDate, // Store original arrival date for validation
                 lastUpdated: new Date(),
                 systemUserID: dto.systemUserID,
                 operations: operationExecutions,
                 vvnCode: dto.vesselVisitNotificationCode,
+                plannedDock: plannedDock,
+                plannedDockChanged: false
             } as any);
             const saved = await this.vesselVisitExecutionRepo.save(domain);
             if (!saved) {
@@ -288,6 +329,11 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 return Result.fail('Vessel Visit Execution not found.');
             }
 
+            // Initialize originalArrivalDate if not set (for old VVEs)
+            if (!vesselVisitExecution.originalArrivalDate) {
+                (vesselVisitExecution as any).originalArrivalDate = new Date(vesselVisitExecution.arrivalDate.getTime());
+            }
+
             if (payload.status) {
                 const enumValue = VesselVisitExecutionStatus[payload.status as keyof typeof VesselVisitExecutionStatus];
                 if (enumValue === undefined) {
@@ -318,16 +364,66 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
 
             // Update DockAssigned if provided
             if (payload.DockAssigned !== undefined) {
+                this.logger.info(`Updating DockAssigned from "${vesselVisitExecution.DockAssigned}" to "${payload.DockAssigned}"`);
+                this.logger.info(`Planned dock is: "${vesselVisitExecution.plannedDock}"`);
+                
+                // If plannedDock is not set (for old VVEs), initialize it with current DockAssigned or extract from operations
+                if (!vesselVisitExecution.plannedDock) {
+                    let initialPlannedDock = vesselVisitExecution.DockAssigned || "";
+                    
+                    // If no DockAssigned, try to extract from first operation
+                    if (!initialPlannedDock && vesselVisitExecution.operations.length > 0) {
+                        const firstOp = vesselVisitExecution.operations[0];
+                        if (firstOp.craneUsed) {
+                            const craneToDockMap: { [key: string]: string } = {
+                                'STS Crane 1': 'Dock A', 'STS Crane 2': 'Dock A', 'STS Crane 3': 'Dock A',
+                                'STS Crane 4': 'Dock B', 'STS Crane 5': 'Dock B', 'STS Crane 6': 'Dock B',
+                                'STS Crane 7': 'Dock C', 'STS Crane 8': 'Dock C',
+                                'STS Crane 9': 'Dock D', 'STS Crane 10': 'Dock D'
+                            };
+                            initialPlannedDock = craneToDockMap[firstOp.craneUsed] || "";
+                        }
+                    }
+                    
+                    this.logger.info(`Initializing plannedDock to: "${initialPlannedDock}"`);
+                    (vesselVisitExecution as any).plannedDock = initialPlannedDock;
+                }
+                
+                // Check if this is a change from the planned dock
+                if (vesselVisitExecution.plannedDock && 
+                    payload.DockAssigned !== vesselVisitExecution.plannedDock &&
+                    payload.DockAssigned !== "") {
+                    this.logger.warn(`Dock changed from planned dock "${vesselVisitExecution.plannedDock}" to "${payload.DockAssigned}"! Setting plannedDockChanged to true`);
+                    (vesselVisitExecution as any).plannedDockChanged = true;
+                }
                 (vesselVisitExecution as any).DockAssigned = payload.DockAssigned;
             }
 
             // Update arrivalDate if provided
             if (payload.arrivalDate) {
-                const a = new Date(payload.arrivalDate);
-                if (isNaN(a.getTime())) {
+                const newArrivalDate = new Date(payload.arrivalDate);
+                if (isNaN(newArrivalDate.getTime())) {
                     return Result.fail('Invalid arrivalDate format.');
                 }
-                (vesselVisitExecution as any).arrivalDate = a;
+                
+                // Check if all operations are Pending
+                if (vesselVisitExecution.operations && vesselVisitExecution.operations.length > 0) {
+                    const nonPendingOps = vesselVisitExecution.operations.filter(op => op.status !== 'Pending');
+                    if (nonPendingOps.length > 0) {
+                        return Result.fail('Cannot update arrival date: one or more operations have already started or been completed.');
+                    }
+                }
+                
+                // Validate 24-hour change limit against ORIGINAL date (never changes)
+                const timeDifferenceMs = Math.abs(newArrivalDate.getTime() - vesselVisitExecution.originalArrivalDate!.getTime());
+                const hoursDifference = timeDifferenceMs / (1000 * 60 * 60);
+                
+                if (hoursDifference > 24) {
+                    return Result.fail('Cannot update arrival date: changes are limited to a maximum of 24 hours from the original arrival date.');
+                }
+                
+                (vesselVisitExecution as any).arrivalDate = newArrivalDate;
+                // DO NOT update originalArrivalDate - it stays constant!
             }
 
             // Update operations if provided

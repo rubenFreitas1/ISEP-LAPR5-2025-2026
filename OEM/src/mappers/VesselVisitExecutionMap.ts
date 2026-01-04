@@ -21,7 +21,10 @@ export class VesselVisitExecutionMap {
             operations,
             raw.DockAssigned || "",
             raw.departureDate,
-            raw.vvnCode
+            raw.vvnCode,
+            raw.plannedDock,
+            raw.plannedDockChanged,
+            raw.originalArrivalDate
         );
     }
 
@@ -31,12 +34,15 @@ export class VesselVisitExecutionMap {
             vesselIMO: vve.vesselIMO,
             status: vve.status,
             arrivalDate: vve.arrivalDate,
+            originalArrivalDate: vve.originalArrivalDate,
             departureDate: vve.departureDate,
             lastUpdated: vve.lastUpdated,
             systemUserID: vve.systemUserID,
             DockAssigned: vve.DockAssigned,
             operations: vve.operations.map(op => OperationExecutionEntryMap.toPersistence(op)),
-            vvnCode: vve.vvnCode
+            vvnCode: vve.vvnCode,
+            plannedDock: vve.plannedDock,
+            plannedDockChanged: vve.plannedDockChanged
         };
 
         if (vve.id && vve.id !== "") {
@@ -98,6 +104,10 @@ export class VesselVisitExecutionMap {
             }
         }
 
+        console.log(`🔔 VVE ${vve.code} - plannedDockChanged: ${vve.plannedDockChanged}, plannedDock: ${vve.plannedDock}`);
+        const warning = vve.plannedDockChanged ? "Planned dock has been changed" : undefined;
+        console.log(`🔔 Warning to return: ${warning}`);
+
         return {
             id: vve.id,
             code: vve.code,
@@ -105,11 +115,13 @@ export class VesselVisitExecutionMap {
             vesselVisitNotificationCode: vve.vvnCode,
             status: status,
             arrivalDate: vve.arrivalDate,
+            originalArrivalDate: vve.originalArrivalDate,
             departureDate: vve.departureDate,
             lastUpdated: vve.lastUpdated,
             systemUserID: vve.systemUserID,
             DockAssigned: dockAssigned,
-            operations: vve.operations.map(op => OperationExecutionEntryMap.toDTO(op))
+            operations: vve.operations.map(op => OperationExecutionEntryMap.toDTO(op)),
+            warning: warning
         };
     }
 }

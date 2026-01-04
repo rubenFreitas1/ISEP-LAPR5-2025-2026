@@ -81,10 +81,12 @@ export interface VesselVisitExecutionDTO {
     vesselVisitNotificationCode?: string;
     status: VesselVisitExecutionStatus;
     arrivalDate: Date; 
+    originalArrivalDate?: Date;
     lastUpdated: Date; 
     departureDate?: Date;
     systemUserID: string;
     incidentIDs?: string[] | null;
     operations?: OperationExecutionEntryDTO[];
     DockAssigned?: string;
+    warning?: string;
 }

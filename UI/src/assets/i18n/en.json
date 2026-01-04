@@ -1645,6 +1645,7 @@
       "VVN_CODE": "Vessel Visit Notification Code",
       "PLANNED_DOCK": "The planned dock for this execution is",
       "STATUS": "Status",
+      "ORIGINAL_ARRIVAL_DATE": "Planned Arrival Date",
       "ARRIVAL_DATE": "Arrival Date",
       "DEPARTURE_DATE": "Departure Date",
       "DOCK_ASSIGNED": "Dock Assigned",

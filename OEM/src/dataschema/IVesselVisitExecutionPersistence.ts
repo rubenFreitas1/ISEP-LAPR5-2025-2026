@@ -12,4 +12,6 @@ export interface IVesselVisitExecutionPersistence {
     DockAssigned?: string;
     operations: any[];
     vvnCode?: string;
+    plannedDock?: string;
+    plannedDockChanged?: boolean;
 }

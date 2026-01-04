@@ -36,6 +36,12 @@ const VesselVisitExecutionSchema = new mongoose.Schema(
         unique: false
     },
 
+    originalArrivalDate: {
+        type: Date,
+        required: false,
+        unique: false
+    },
+
     departureDate: {
       type: Date,
       required: false,
@@ -57,6 +63,18 @@ const VesselVisitExecutionSchema = new mongoose.Schema(
         type: String,
         required: false,
         default: ""
+    },
+
+    plannedDock: {
+        type: String,
+        required: false,
+        default: ""
+    },
+
+    plannedDockChanged: {
+        type: Boolean,
+        required: false,
+        default: false
     },
 
     operations: {

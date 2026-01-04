@@ -82,6 +82,10 @@ export class VesselVisitExecutionService {
       Dock: dto?.Dock
     });
 
+    if (dto?.warning) {
+      console.log('⚠️ WARNING DETECTED:', dto.warning);
+    }
+
     return {
       id: dto?.id ?? dto?._id ?? undefined,
       code: dto?.code ?? '',
@@ -91,11 +95,13 @@ export class VesselVisitExecutionService {
       status: dto?.status ?? dto?.visitStatus,
       departureDate: dto?.departureDate,
       arrivalDate: dto?.arrivalDate,
+      originalArrivalDate: dto?.originalArrivalDate,
       lastUpdated: dto?.lastUpdated,
       systemUserID: dto?.systemUserID,
       vesselVisitNotificationCode: dto?.vesselVisitNotificationCode ?? '',
       DockAssigned: dockAssigned,
-      operations: dto?.operations ?? []
+      operations: dto?.operations ?? [],
+      warning: dto?.warning
     };
   };
 

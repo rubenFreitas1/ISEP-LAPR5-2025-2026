@@ -14,7 +14,10 @@ export class VesselVisitExecution {
         public operations: OperationExecutionEntry[] = [],
         public DockAssigned: string = "",
         public departureDate?: Date,
-        public vvnCode?: string
+        public vvnCode?: string,
+        public plannedDock?: string,
+        public plannedDockChanged?: boolean,
+        public originalArrivalDate?: Date
     ) {
         this.validateCode(code);
         this.validateVesselIMO(vesselIMO);
@@ -48,10 +51,6 @@ export class VesselVisitExecution {
     private validateArrivalDate(arrivalDate: Date) {
         if (!(arrivalDate instanceof Date) || isNaN(arrivalDate.getTime())) {
             throw new Error("Arrival date must be a valid date.");
-        }
-        const now = new Date();
-        if (arrivalDate.getTime() > now.getTime()) {
-            throw new Error("Arrival date cannot be in the future.");
         }
     }
 
