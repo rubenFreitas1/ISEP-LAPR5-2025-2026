@@ -19,6 +19,7 @@ public class DockController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<DockDTO>>> GetAllDocks()
     {
         IEnumerable<DockDTO> docks = await _dockService.GetAllDocks();

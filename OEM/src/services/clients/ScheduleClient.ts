@@ -72,6 +72,22 @@ export default class ScheduleClient {
     }
 
     /**
+     * Get all docks from the API
+     */
+    private async getDocks(authHeader?: string): Promise<any[]> {
+        try {
+            const url = `${this.apiBaseUrl}/Dock`;
+            console.log(`Fetching docks from: ${url}`);
+            const json = await this.getJson(url, authHeader);
+            console.log(`Received docks:`, json);
+            return Array.isArray(json) ? json : [];
+        } catch (error) {
+            console.error('Error fetching docks:', error);
+            return [];
+        }
+    }
+
+    /**
      * Get schedule by target day and algorithm
      */
     public async getScheduleByTargetDay(
@@ -95,6 +111,19 @@ export default class ScheduleClient {
         if (stsCranes.length === 0) {
             console.warn('No STS Cranes found, using default configuration');
         }
+
+        // Get all docks from the API
+        const allDocks = await this.getDocks(authHeader);
+        console.log(`Found ${allDocks.length} docks:`, allDocks);
+        
+        // Format docks for Prolog (include median operational capacity if available)
+        const docksForProlog = allDocks.map(dock => ({
+            name: dock.name,
+            location: dock.location || dock.name,
+            medianOperationalCapacity: dock.medianOperationalCapacity || 1
+        }));
+        
+        console.log(`Formatted docks for Prolog:`, docksForProlog);
         
         // Normalize target day to start of day
         const targetDayStart = new Date(targetDay);
@@ -125,11 +154,12 @@ export default class ScheduleClient {
             },
             maxCranes: maxCranes,
             cranes: cranes,
+            docks: docksForProlog,
             algorithm: algorithm,
             timeLimit: timeLimit || 0
         };
 
-        console.log(`Payload for Prolog:`, JSON.stringify(payload, null, 2));
+        console.log(`Payload for Prolog (with ${docksForProlog.length} docks):`, JSON.stringify(payload, null, 2));
 
         const url = `${this.baseUrl}/api/scheduling/compute?algorithm=${encodeURIComponent(algorithm)}${timeLimit ? `&timeLimit=${timeLimit}` : ''}`;
         const json = await this.postJson(url, payload, authHeader);

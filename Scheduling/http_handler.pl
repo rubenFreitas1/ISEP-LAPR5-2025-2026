@@ -11,6 +11,7 @@
 :- dynamic vessel/6.
 :- dynamic obtain_seq_shortest_delay_improved_multi/4.
 :- dynamic available_cranes/1.
+:- dynamic dock_cranes/2.
 
 
 :- http_handler(root(api/scheduling/compute), handle_scheduling_request, []).
@@ -70,55 +71,63 @@ process_data_with_algorithm(Algorithm, Dict, Result, MaxCranes, TimeLimit) :-
     Crane = Dict.assignedCrane,
     CraneCapacity = Crane.operationalCapacity,
     
-    % Check if rebalancing mode is requested
+    % Check algorithm mode
     downcase_atom(Algorithm, AlgorithmAtom),
-    (   (AlgorithmAtom = 'rebalancing' ; AlgorithmAtom = 'rebalance')
-    ->  % Use rebalancing-based approach: distribute vessels across docks, then apply auto selection per dock
-        with_output_to(user_error, format('Using REBALANCING-BASED algorithm selection...~n', [])),
+    
+    % AUTOMATIC mode: rebalancing + automatic algorithm selection per dock
+    (   (AlgorithmAtom = 'automatic' ; AlgorithmAtom = 'auto')
+    ->  % AUTOMATIC MODE: First rebalance, then apply automatic selection per dock
+        with_output_to(user_error, format('Using AUTOMATIC mode: Rebalancing + per-dock algorithm selection...~n', [])),
         
-        % Get docks information from request
-        Docks = Dict.get(docks, []),
+        % Debug: Print entire Dict keys
+        dict_keys(Dict, Keys),
+        with_output_to(user_error, format('Dict keys: ~w~n', [Keys])),
+        
+        % Get docks information from request - try both 'docks' and 'Docks'
+        ( get_dict(docks, Dict, DocksVal) -> Docks = DocksVal
+        ; get_dict('Docks', Dict, DocksVal2) -> Docks = DocksVal2  
+        ; Docks = []
+        ),
+        length(Docks, NumDocksReceived),
+        with_output_to(user_error, format('Received ~w docks from request~n', [NumDocksReceived])),
         
         % Setup rebalancing facts
         retractall(rebalancing_algorithm:vessels(_,_,_,_)),
         retractall(rebalancing_algorithm:vessel(_,_,_,_)),
         retractall(rebalancing_algorithm:dock(_,_)),
+        retractall(dock_cranes(_,_)),
         
         % Process docks and vessels for rebalancing
+        with_output_to(user_error, format('Setting up dock facts...~n', [])),
         maplist(setup_dock_fact, Docks),
+        findall(D, rebalancing_algorithm:dock(D,_), SetupDocks),
+        length(SetupDocks, NumSetupDocks),
+        with_output_to(user_error, format('Successfully setup ~w dock facts~n', [NumSetupDocks])),
+        
         process_vessels_for_rebalancing(Notifications, CraneCapacity),
         
         % Run rebalancing-based scheduling with automatic algorithm selection per dock
         select_and_run_with_rebalancing(Docks, MaxCranes, TimeLimit, SeqTriplets, ShortestDelay, AlgoInfo),
         ExecutionTime = AlgoInfo.get(rebalancingTime, 0),
-        SelectedAlgo = 'rebalancing_based',
-        format(atom(SelectionReason), 'Rebalancing-based scheduling with per-dock algorithm selection (~w docks)', [AlgoInfo.numberOfDocks])
-    ;
-        % Standard vessel processing (non-rebalancing mode)
+        SelectedAlgo = 'automatic_with_rebalancing',
+        format(atom(SelectionReason), 'Automatic mode: Rebalancing across ~w docks with per-dock algorithm selection', [AlgoInfo.numberOfDocks])
+    
+    % MANUAL algorithm selection (legacy mode)
+    ;   % Standard vessel processing (no rebalancing)
         process_vessels(Notifications, CraneCapacity, MaxCranes, _),
         
-        % Check if automatic algorithm selection is requested
-        (   (AlgorithmAtom = 'automatic' ; AlgorithmAtom = 'auto')
-        ->  % Use automatic controller to select and run the best algorithm
-            with_output_to(user_error, format('Using AUTOMATIC algorithm selection...~n', [])),
-            select_and_run_algorithm(MaxCranes, TimeLimit, SeqTriplets, ShortestDelay, AlgoInfo),
-            ExecutionTime = AlgoInfo.executionTime,
-            SelectedAlgo = AlgoInfo.selectedAlgorithm,
-            SelectionReason = AlgoInfo.selectionReason
-        ;   % Manual algorithm selection (legacy mode)
-            with_output_to(user_error, format('Using MANUAL algorithm selection: ~w~n', [AlgorithmAtom])),
-            % First run a single-crane measurement to collect baseline stats for the popup
-            automatic_controller:obtain_seq_shortest_delay(_SeqSingle, DelaySingle, ExecTimeSingle),
-            % Now run the requested algorithm to obtain the final sequence (may be multi-crane)
-            (   AlgorithmAtom = 'improved'
-            ->  automatic_controller:obtain_seq_shortest_delay_improved_multi(SeqTriplets, ShortestDelay, ExecutionTime, MaxCranes),
-                SelectedAlgo = heuristic,
-                SelectionReason = 'Manually selected improved/heuristic algorithm'
-            ;   % default or any other value: use optimal algorithm
-                automatic_controller:obtain_seq_shortest_delay_multi(SeqTriplets, ShortestDelay, ExecutionTime, MaxCranes),
-                SelectedAlgo = optimal,
-                SelectionReason = 'Manually selected default/optimal algorithm'
-            )
+        with_output_to(user_error, format('Using MANUAL algorithm selection: ~w~n', [AlgorithmAtom])),
+        % First run a single-crane measurement to collect baseline stats for the popup
+        automatic_controller:obtain_seq_shortest_delay(_SeqSingle, DelaySingle, ExecTimeSingle),
+        % Now run the requested algorithm to obtain the final sequence (may be multi-crane)
+        (   AlgorithmAtom = 'improved'
+        ->  automatic_controller:obtain_seq_shortest_delay_improved_multi(SeqTriplets, ShortestDelay, ExecutionTime, MaxCranes),
+            SelectedAlgo = heuristic,
+            SelectionReason = 'Manually selected improved/heuristic algorithm'
+        ;   % default or any other value: use optimal algorithm
+            automatic_controller:obtain_seq_shortest_delay_multi(SeqTriplets, ShortestDelay, ExecutionTime, MaxCranes),
+            SelectedAlgo = optimal,
+            SelectionReason = 'Manually selected default/optimal algorithm'
         )
     ),
     
@@ -285,6 +294,40 @@ generate_crane_names_helper(Current, Max, [Name|Rest]) :-
 
 triplets_to_dicts([], []).
 
+% If already a dict, preserve it but ensure craneNames are added
+triplets_to_dicts([Dict|Rest], [EnrichedDict|DictsRest]) :-
+    is_dict(Dict), !,
+    % Check if craneNames already exists
+    ( get_dict(craneNames, Dict, _) ->
+        % Already has craneNames, keep as-is
+        EnrichedDict = Dict
+    ; get_dict(numCranes, Dict, NumCranes) ->
+        % Has numCranes but no craneNames, generate them based on dock
+        ( get_dict(dock, Dict, DockName), dock_cranes(DockName, DockCraneNames), DockCraneNames \= [] ->
+            % Use dock-specific crane names
+            length(DockCraneNames, NumAvailableCranes),
+            ( NumCranes =< NumAvailableCranes ->
+                % Take only the number of cranes needed
+                length(CraneNames, NumCranes),
+                append(CraneNames, _, DockCraneNames)
+            ;
+                % Need more cranes than available, use all available
+                CraneNames = DockCraneNames
+            )
+        ; available_cranes(CranesList), CranesList \= [] ->
+            % Fallback to global cranes list
+            generate_crane_names(CranesList, CraneNames)
+        ;
+            % Generate generic names
+            generate_crane_names(NumCranes, CraneNames)
+        ),
+        put_dict(craneNames, Dict, CraneNames, EnrichedDict)
+    ;
+        % No numCranes either, keep as-is
+        EnrichedDict = Dict
+    ),
+    triplets_to_dicts(Rest, DictsRest).
+
 % handle 3-field tuples
 triplets_to_dicts([(V, TIn, TEnd)|Rest], [Dict|DictsRest]) :-
     \+ (V, TIn, TEnd) = (_, _, _, _),
@@ -348,8 +391,22 @@ string_to_number_or_string(Str, Num) :-
 setup_dock_fact(DockDict) :-
     NameRaw = DockDict.get(name, ""),
     ( string(NameRaw) -> atom_string(Name, NameRaw) ; Name = NameRaw ),
-    OpRaw = DockDict.get(medianOperationalCapacity, 0),
-    ( number(OpRaw) -> OpCap = OpRaw ; ( catch(number_string(OpCap, OpRaw), _, OpCap = 0) ) ),
+    % Try both field names (operationalCapacity from .NET, medianOperationalCapacity from Node)
+    ( get_dict(operationalCapacity, DockDict, OpCapRaw) -> OpCap is OpCapRaw
+    ; get_dict(medianOperationalCapacity, DockDict, OpCapRaw2) -> OpCap is OpCapRaw2
+    ; OpCap = 1
+    ),
+    % Extract crane names from this dock
+    ( get_dict(cranes, DockDict, CranesList) ->
+        findall(CraneName,
+                (member(CraneDict, CranesList),
+                 get_dict(name, CraneDict, CraneName)),
+                CraneNames),
+        assertz(dock_cranes(Name, CraneNames))
+    ;
+        assertz(dock_cranes(Name, []))
+    ),
+    with_output_to(user_error, format('  Setting up dock: ~w with capacity ~w~n', [Name, OpCap])),
     assertz(rebalancing_algorithm:dock(Name, OpCap)).
 
 process_vessels_for_rebalancing([], _).

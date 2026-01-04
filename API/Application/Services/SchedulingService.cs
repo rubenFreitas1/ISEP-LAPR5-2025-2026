@@ -642,7 +642,42 @@ public class SchedulingService
             return null;
         }
         int availableCranes = (physicalResources ?? Enumerable.Empty<PhysicalResource>()).Count();
-        DataScheduleDTO dataScheduleDTO = new DataScheduleDTO(notificationDTOs.ToList(), fastestCraneDTO, availableCranes);
+        
+        // Fetch all docks for rebalancing/automatic mode
+        var docksFromDb = await _dockRepository.GetDocksAsync();
+        var allCranesByKind = await _physicalResourceRepository.GetPhysicalResourceByKindAsync(PhysicalResourceKind.STSCrane) ?? Enumerable.Empty<PhysicalResource>();
+        var docksDto = new List<DockRebalancingDTO>();
+        foreach (var dock in docksFromDb)
+        {
+            var dockName = dock.Name ?? string.Empty;
+            var resourcesForDock = allCranesByKind
+                .Where(p => string.Equals((p.PhysicalResourceAssignedDockName ?? string.Empty).Trim(), dockName.Trim(), System.StringComparison.OrdinalIgnoreCase)
+                            && p.Status == ResourceStatus.Available)
+                .ToList();
+            if (resourcesForDock.Count == 0) continue;
+            
+            int sumCap = resourcesForDock.Sum(r => r.PhysicalResourceOperationalCapacity);
+            
+            // Create crane DTOs for this dock
+            var craneDtos = resourcesForDock.Select(r => new CraneDTO 
+            { 
+                Name = r.Name ?? string.Empty, 
+                Capacity = r.PhysicalResourceOperationalCapacity 
+            }).ToList();
+            
+            docksDto.Add(new DockRebalancingDTO(dockName, sumCap, craneDtos));
+        }
+        Console.WriteLine($"SchedulingService: Fetched {docksDto.Count} docks with available cranes");
+        foreach (var d in docksDto)
+        {
+            Console.WriteLine($"  - Dock: {d.Name}, Capacity: {d.OperationalCapacity}, Cranes: {d.Cranes?.Count ?? 0}");
+        }
+        
+        DataScheduleDTO dataScheduleDTO = new DataScheduleDTO(notificationDTOs.ToList(), fastestCraneDTO, availableCranes, docksDto);
+        
+        // Log the DTO to verify docks are included
+        Console.WriteLine($"DataScheduleDTO created with {dataScheduleDTO.Docks?.Count ?? 0} docks");
+        
         string configured = _configuration["Scheduling:Endpoint"] ?? "http://localhost:6000/";
         string baseEndpoint = configured;
         if (!baseEndpoint.EndsWith("/")) baseEndpoint += "/";
@@ -670,6 +705,7 @@ public class SchedulingService
                 dataScheduleDTO,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
             );
+            Console.WriteLine($"JSON payload being sent to Prolog (first 500 chars): {(json.Length > 500 ? json.Substring(0, 500) + "..." : json)}");
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(endpoint, content);
             if (!response.IsSuccessStatusCode)

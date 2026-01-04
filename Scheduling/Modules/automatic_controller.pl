@@ -345,10 +345,27 @@ group_vessels_by_dock(Assignments, DockGroups) :-
     maplist(group_for_dock(Assignments), UniqueDocks, DockGroups).
 
 group_for_dock(Assignments, Dock, dock_group(Dock, VesselAssignments)) :-
-    findall(VesselAssignment, 
+    findall(assign(V,Dock,Start,DeclDep,Delay,ActualDep,ActualArr), 
             member(assign(V,Dock,Start,DeclDep,Delay,ActualDep,ActualArr), Assignments),
-            VesselAssignments),
-    VesselAssignment = assign(V,Dock,Start,DeclDep,Delay,ActualDep,ActualArr).
+            VesselAssignments).
+
+%% find_dock_capacity(+Docks, +DockName, -Capacity)
+% Helper to find dock capacity from list of dock dicts
+% DockName is an atom like 'Dock A', need to match against dict name field
+find_dock_capacity([], _, _) :- fail.
+find_dock_capacity([DockDict|_], DockName, Capacity) :-
+    get_dict(name, DockDict, DictName),
+    % Convert both to atoms for comparison
+    ( atom(DictName) -> Name1 = DictName ; atom_string(Name1, DictName) ),
+    ( atom(DockName) -> Name2 = DockName ; atom_string(Name2, DockName) ),
+    Name1 = Name2,
+    !,
+    % Try both field names
+    ( get_dict(operationalCapacity, DockDict, Capacity)
+    ; get_dict(medianOperationalCapacity, DockDict, Capacity)
+    ).
+find_dock_capacity([_|Rest], DockName, Capacity) :-
+    find_dock_capacity(Rest, DockName, Capacity).
 
 %% process_docks_with_auto_selection(+DockGroups, +Docks, +MaxCranes, +TimeLimit, -DockResults)
 % For each dock, analyze vessel assignments and select appropriate algorithm
@@ -357,26 +374,38 @@ process_docks_with_auto_selection([dock_group(DockName, VesselAssignments)|RestD
     length(VesselAssignments, NumVessels),
     
     % Find dock operational capacity
-    ( member(_{name: DockName, medianOperationalCapacity: DockCap}, Docks) 
-    -> true 
-    ; DockCap = 1 % default if not found
+    % DockName is an atom, need to match with dock dict name
+    ( find_dock_capacity(Docks, DockName, FoundCap)
+    -> DockCap = FoundCap
+    ; ( safe_log('WARNING: Could not find capacity for dock ~w, using default 1~n', [DockName]),
+        DockCap = 1 )
     ),
     
     safe_log('~n--- Dock: ~w (~w vessels, capacity: ~w) ---~n', [DockName, NumVessels, DockCap]),
     
-    % Calculate time horizon for this dock
-    findall(Start, member(assign(_,_,Start,_,_,_,_), VesselAssignments), Starts),
-    findall(ActualDep, member(assign(_,_,_,_,_,ActualDep,_), VesselAssignments), Deps),
-    (Starts \= [], Deps \= [] ->
-        min_list(Starts, MinStart),
+    % Calculate time horizon for this dock using actual instantiated values from assignments
+    % Extract start times and declared departure times from assignments
+    findall([V,Start,DeclDep], member(assign(V,_,Start,DeclDep,_,_,_), VesselAssignments), AssignData),
+    safe_log('Assignment data: ~w~n', [AssignData]),
+    
+    % Extract starts and deps from the structured data
+    findall(S, member([_,S,_], AssignData), Starts),
+    findall(D, member([_,_,D], AssignData), Deps),
+    
+    safe_log('Calculating time horizon: Starts=~w, Deps=~w~n', [Starts, Deps]),
+    ( Starts \= [], Deps \= [],
+      ground(Starts), ground(Deps) % ensure all values are instantiated
+    ->  min_list(Starts, MinStart),
         max_list(Deps, MaxDep),
-        DockTimeHorizon is MaxDep - MinStart
-    ;
+        DockTimeHorizon is MaxDep - MinStart,
+        safe_log('Time horizon calculated: ~w (from ~w to ~w)~n', [DockTimeHorizon, MinStart, MaxDep])
+    ;   safe_log('WARNING: Could not calculate time horizon, using 0~n', []),
         DockTimeHorizon = 0
     ),
     
     % Create temporary vessel facts for this dock only
     retractall(vessel(_,_,_,_,_,_)),
+    safe_log('Creating vessel facts with DockCap=~w~n', [DockCap]),
     create_vessel_facts_from_assignments(VesselAssignments, DockCap),
     
     % Select algorithm for this dock
@@ -386,11 +415,12 @@ process_docks_with_auto_selection([dock_group(DockName, VesselAssignments)|RestD
     
     % Run the selected algorithm for this dock
     get_time(DockStart),
-    run_algorithm(SelectedAlgo, MaxCranes, DockSchedule, DockDelay, _DockExecTime),
+    run_algorithm(SelectedAlgo, MaxCranes, DockSchedule, DockDelay, _DockExecTime, _CraneMode),
     get_time(DockEnd),
     DockActualTime is DockEnd - DockStart,
     
     safe_log('Dock ~w completed: delay=~w, time=~w sec~n', [DockName, DockDelay, DockActualTime]),
+    safe_log('Dock ~w schedule length: ~w~n', [DockName, length(DockSchedule)]),
     
     % Store result for this dock
     DockResult = _{
@@ -416,12 +446,20 @@ create_vessel_facts_from_assignments([assign(VesselName,_Dock,ArrivalTime,Declar
     ; Cargo = 0
     ),
     
+    % Ensure DockCap is a valid number
+    ( number(DockCap), DockCap > 0 
+    -> EffCap = DockCap
+    ; ( safe_log('WARNING: Invalid DockCap ~w, using default 1~n', [DockCap]),
+        EffCap = 1 )
+    ),
+    
     % Estimate loading and unloading time based on cargo and capacity
     % Assume 50/50 split between loading and unloading for simplicity
-    (DockCap =:= 0 -> EffCap = 1 ; EffCap = DockCap),
-    TotalTime is Cargo / EffCap,
-    UnloadTime is TotalTime / 2,
-    LoadTime is TotalTime / 2,
+    % Use ceiling to ensure integer values for vessel facts
+    TotalTimeFloat is Cargo / EffCap,
+    TotalTime is ceiling(TotalTimeFloat),
+    UnloadTime is ceiling(TotalTime / 2),
+    LoadTime is ceiling(TotalTime / 2),
     
     % Create vessel/6 fact: vessel(Name, TIn, TDep, TUnload, TLoad, MaxCranes)
     assertz(vessel(VesselName, ArrivalTime, DeclaredDep, UnloadTime, LoadTime, 3)),
@@ -431,12 +469,24 @@ create_vessel_facts_from_assignments([assign(VesselName,_Dock,ArrivalTime,Declar
 %% aggregate_dock_results(+DockResults, -AggregatedSchedule, -TotalDelay, -AlgorithmSummary)
 % Combines results from all docks
 aggregate_dock_results(DockResults, AggregatedSchedule, TotalDelay, AlgorithmSummary) :-
-    % Collect all schedules
-    findall(Schedule, member(_{schedule: Schedule}, DockResults), AllSchedules),
-    append(AllSchedules, AggregatedSchedule),
+    length(DockResults, NumDocks),
+    safe_log('Aggregating results from ~w docks...~n', [NumDocks]),
+    
+    % Collect all schedules with dock information
+    % For each dock, get its name and schedule, then add dock name to each schedule entry
+    findall(ScheduleWithDock, 
+            (member(DockResult, DockResults), 
+             get_dict(dock, DockResult, DockName),
+             get_dict(schedule, DockResult, DockSchedule),
+             member(ScheduleEntry, DockSchedule),
+             add_dock_to_schedule(ScheduleEntry, DockName, ScheduleWithDock)),
+            AggregatedSchedule),
+    
+    length(AggregatedSchedule, NumEntries),
+    safe_log('Collected ~w schedule entries with dock information~n', [NumEntries]),
     
     % Sum all delays
-    findall(Delay, member(_{delay: Delay}, DockResults), Delays),
+    findall(Delay, (member(DockResult, DockResults), get_dict(delay, DockResult, Delay)), Delays),
     sum_list(Delays, TotalDelay),
     
     % Create algorithm summary
@@ -445,5 +495,67 @@ aggregate_dock_results(DockResults, AggregatedSchedule, TotalDelay, AlgorithmSum
         algorithm: Algo,
         vessels: NumV,
         delay: D
-    }, member(_{dock: Dock, algorithm: Algo, numVessels: NumV, delay: D}, DockResults), AlgorithmSummary).
+    }, (member(DockResult, DockResults),
+        get_dict(dock, DockResult, Dock),
+        get_dict(algorithm, DockResult, Algo),
+        get_dict(numVessels, DockResult, NumV),
+        get_dict(delay, DockResult, D)
+       ), AlgorithmSummary).
+
+%% add_dock_to_schedule(+ScheduleEntry, +DockName, -ScheduleWithDock)
+% Adds dock name to a schedule entry, converting triplets to dicts if needed
+add_dock_to_schedule(Dict, DockName, DictWithDock) :-
+    is_dict(Dict), !,
+    % Already a dict, just add dock field
+    put_dict(dock, Dict, DockName, DictWithDock).
+
+% Convert 5-tuple (V, TIn, TEnd, _Exec, N) to dict with dock
+add_dock_to_schedule((V, TIn, TEnd, _Exec, N), DockName, Dict) :-
+    !,
+    sanitize_vessel_schedule_value(TIn, SIn),
+    sanitize_vessel_schedule_value(TEnd, SEnd),
+    sanitize_vessel_schedule_value(N, NumCranes),
+    Dict = _{
+        vessel: V,
+        start: SIn,
+        end: SEnd,
+        numCranes: NumCranes,
+        dock: DockName
+    }.
+
+% Convert 4-tuple (V, TIn, TEnd, _Exec) to dict with dock
+add_dock_to_schedule((V, TIn, TEnd, _Exec), DockName, Dict) :-
+    !,
+    sanitize_vessel_schedule_value(TIn, SIn),
+    sanitize_vessel_schedule_value(TEnd, SEnd),
+    Dict = _{
+        vessel: V,
+        start: SIn,
+        end: SEnd,
+        dock: DockName
+    }.
+
+% Convert 3-tuple (V, TIn, TEnd) to dict with dock
+add_dock_to_schedule((V, TIn, TEnd), DockName, Dict) :-
+    !,
+    sanitize_vessel_schedule_value(TIn, SIn),
+    sanitize_vessel_schedule_value(TEnd, SEnd),
+    Dict = _{
+        vessel: V,
+        start: SIn,
+        end: SEnd,
+        dock: DockName
+    }.
+
+% Fallback for any other format
+add_dock_to_schedule(Other, DockName, Dict) :-
+    catch(term_to_atom(Other, A), _, A = 'unknown'),
+    Dict = _{ vessel: A, dock: DockName }.
+
+%% sanitize_vessel_schedule_value(+Value, -Sanitized)
+% Sanitizes values for vessel schedule entries
+sanitize_vessel_schedule_value(V, S) :- var(V), !, S = 0.
+sanitize_vessel_schedule_value(V, S) :- number(V), !, S = V.
+sanitize_vessel_schedule_value(V, S) :- atom(V), !, atom_number(V, S).
+sanitize_vessel_schedule_value(_, 0).
 
