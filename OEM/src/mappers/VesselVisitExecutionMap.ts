@@ -23,8 +23,8 @@ export class VesselVisitExecutionMap {
             raw.departureDate,
             raw.vvnCode,
             raw.plannedDock,
-            raw.plannedDockChanged,
-            raw.originalArrivalDate
+            raw.originalArrivalDate,
+            raw.warning
         );
     }
 
@@ -42,7 +42,7 @@ export class VesselVisitExecutionMap {
             operations: vve.operations.map(op => OperationExecutionEntryMap.toPersistence(op)),
             vvnCode: vve.vvnCode,
             plannedDock: vve.plannedDock,
-            plannedDockChanged: vve.plannedDockChanged
+            warning: vve.warning
         };
 
         if (vve.id && vve.id !== "") {
@@ -52,40 +52,10 @@ export class VesselVisitExecutionMap {
     }
 
     public static toDTO(vve: VesselVisitExecution): VesselVisitExecutionDTO {
-        // Extract dock from first operation if DockAssigned is not set
-        let dockAssigned = vve.DockAssigned || "";
-
-        console.log(`🔍 VVE ${vve.code} - DockAssigned field: "${dockAssigned}", operations count: ${vve.operations?.length || 0}`);
-
-        if (!dockAssigned && vve.operations && vve.operations.length > 0) {
-            // Map cranes to docks based on known crane assignments
-            // STS Cranes 1-3 are on Dock A, 4-6 on Dock B, etc.
-            const craneToDockMap: { [key: string]: string } = {
-                'STS Crane 1': 'Dock A',
-                'STS Crane 2': 'Dock A',
-                'STS Crane 3': 'Dock A',
-                'STS Crane 4': 'Dock B',
-                'STS Crane 5': 'Dock B',
-                'STS Crane 6': 'Dock B',
-                'STS Crane 7': 'Dock C',
-                'STS Crane 8': 'Dock C',
-                'STS Crane 9': 'Dock D',
-                'STS Crane 10': 'Dock D'
-            };
-
-            // Try to get dock from first operation's crane
-            const firstOp = vve.operations[0];
-            console.log(`🔧 First operation crane: "${firstOp?.craneUsed}", type: "${firstOp?.operationType}"`);
-
-            if (firstOp && firstOp.craneUsed) {
-                dockAssigned = craneToDockMap[firstOp.craneUsed] || "";
-                if (dockAssigned) {
-                    console.log(`✅ Extracted dock "${dockAssigned}" from crane "${firstOp.craneUsed}"`);
-                } else {
-                    console.log(`⚠️ Crane "${firstOp.craneUsed}" not found in mapping. Available cranes:`, Object.keys(craneToDockMap));
-                }
-            }
-        }
+        // DockAssigned comes directly from the database - no inference
+        const dockAssigned = vve.DockAssigned || "";
+        
+        console.log(`🔍 VVE ${vve.code} - DockAssigned: "${dockAssigned}", plannedDock: "${vve.plannedDock}"`);
 
         // Infer status from operations if status is InProgress
         let status = vve.status;
@@ -104,9 +74,11 @@ export class VesselVisitExecutionMap {
             }
         }
 
-        console.log(`🔔 VVE ${vve.code} - plannedDockChanged: ${vve.plannedDockChanged}, plannedDock: ${vve.plannedDock}`);
-        const warning = vve.plannedDockChanged ? "Planned dock has been changed" : undefined;
-        console.log(`🔔 Warning to return: ${warning}`);
+        // Get warning from domain model if present
+        const warning = vve.warning || undefined;
+        if (warning) {
+            console.log(`⚠️ Warning to return: ${warning}`);
+        }
 
         return {
             id: vve.id,
@@ -119,6 +91,7 @@ export class VesselVisitExecutionMap {
             departureDate: vve.departureDate,
             lastUpdated: vve.lastUpdated,
             systemUserID: vve.systemUserID,
+            plannedDock: vve.plannedDock,
             DockAssigned: dockAssigned,
             operations: vve.operations.map(op => OperationExecutionEntryMap.toDTO(op)),
             warning: warning

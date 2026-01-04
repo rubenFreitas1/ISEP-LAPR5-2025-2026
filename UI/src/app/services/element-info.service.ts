@@ -372,7 +372,25 @@ export class ElementInfoService {
         };
       }
 
-      const currentVessel = vesselsToShow[0];
+      // Try to find the clicked vessel by IMO from userData
+      const clickedIMO = (element as any).userData?.imo || (element as any).mesh?.userData?.imo;
+      console.log('[loadVesselInfo] Clicked vessel IMO:', clickedIMO);
+
+      let currentVesselIndex = 0;
+      let currentVessel = vesselsToShow[0];
+
+      // If we have a clicked IMO, try to find that specific vessel
+      if (clickedIMO) {
+        const foundIndex = vesselsToShow.findIndex((v: any) => v.imoNumber === clickedIMO);
+        if (foundIndex !== -1) {
+          currentVesselIndex = foundIndex;
+          currentVessel = vesselsToShow[foundIndex];
+          console.log('[loadVesselInfo] Found clicked vessel at index:', foundIndex);
+        } else {
+          console.warn('[loadVesselInfo] Could not find vessel with IMO:', clickedIMO);
+        }
+      }
+
       console.log('[loadVesselInfo] Current vessel:', currentVessel);
 
       // Find active VVE for this vessel (check both name and vesselIMO fields)
@@ -397,7 +415,7 @@ export class ElementInfoService {
         type: 'Vessel',
         description: `Vessel ${currentVessel.vesselName || 'Unknown'}`,
         vesselsList: vesselsToShow,
-        currentVesselIndex: 0,
+        currentVesselIndex: currentVesselIndex,
         vesselRecordId: currentVessel.id,
         imoNumber: currentVessel.imoNumber,
         vesselType: currentVessel.vesselType?.name || currentVessel.vesselTypeName || 'N/A',

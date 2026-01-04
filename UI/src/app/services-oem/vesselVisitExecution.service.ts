@@ -62,25 +62,12 @@ export class VesselVisitExecutionService {
   private mapDtoToVVE = (dto: any): VesselVisitExecutionModel => {
     console.log('🔧 Mapping DTO to VVE:', dto);
 
-    // Try multiple field name variations for dock assignment
-    const dockAssigned = dto?.DockAssigned
-      || dto?.dockAssigned
-      || dto?.dock
-      || dto?.assignedDock
-      || dto?.plannedDock
-      || dto?.dockName
-      || dto?.Dock
-      || '';
+    // Map DockAssigned separately - no fallback to plannedDock
+    const dockAssigned = dto?.DockAssigned || dto?.dockAssigned || '';
+    const plannedDock = dto?.plannedDock || '';
 
-    console.log('🏗️ Dock assignment found:', dockAssigned, 'from:', {
-      DockAssigned: dto?.DockAssigned,
-      dockAssigned: dto?.dockAssigned,
-      dock: dto?.dock,
-      assignedDock: dto?.assignedDock,
-      plannedDock: dto?.plannedDock,
-      dockName: dto?.dockName,
-      Dock: dto?.Dock
-    });
+    console.log('🏗️ Planned dock:', plannedDock);
+    console.log('🏗️ Dock assigned:', dockAssigned);
 
     if (dto?.warning) {
       console.log('⚠️ WARNING DETECTED:', dto.warning);
@@ -99,9 +86,10 @@ export class VesselVisitExecutionService {
       lastUpdated: dto?.lastUpdated,
       systemUserID: dto?.systemUserID,
       vesselVisitNotificationCode: dto?.vesselVisitNotificationCode ?? '',
+      plannedDock: plannedDock,
       DockAssigned: dockAssigned,
-      operations: dto?.operations ?? [],
-      warning: dto?.warning
+      warning: dto?.warning,
+      operations: dto?.operations ?? []
     };
   };
 

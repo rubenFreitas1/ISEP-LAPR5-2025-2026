@@ -136,15 +136,9 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
       console.log('📋 All vessel status info received:', vesselStatusInfo);
 
       if (!vesselStatusInfo || vesselStatusInfo.length === 0) {
-        console.warn('No active vessels found, using default vessel');
-        // Create a default vessel if no status info
-        const defaultVessel = await createVessel({
-          imo: '9999999',
-          name: 'Default Vessel',
-          status: 'InProgress',
-          position: { x: 11, y: 15, z: 110 }
-        });
-        this.vessels = [defaultVessel];
+        console.warn('No active vessels found');
+        // No vessels to display
+        this.vessels = [];
         return;
       }
 
@@ -161,11 +155,11 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
 
       dockPositions.forEach((dock: any) => {
         dockPositionMap[dock.name] = {
-          docked: { 
+          docked: {
             ...dock.vesselDocked || { x: dock.x + 60, y: 15, z: dock.z },
             rotation: dock.vesselDockedRotation || 0
           },
-          waiting: { 
+          waiting: {
             ...dock.vesselWaiting || { x: dock.x + 40, y: 15, z: dock.z },
             rotation: dock.vesselWaitingRotation || 0
           }
@@ -192,16 +186,16 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
         let position = { x: 11, y: 15, z: 110 }; // Default position
         let rotation = 0; // Default rotation
         let finalStatus = info.status; // Will be overridden if vessel is waiting
-        
+
         if (info.dockAssigned && dockPositionMap[info.dockAssigned]) {
           const dockPositions = dockPositionMap[info.dockAssigned];
-          
+
           // Check if dock is already occupied or vessel is waiting
           const isWaiting = info.status === 'Waiting';
           const dockOccupiedCount = occupiedDocks[info.dockAssigned] || 0;
-          
+
           console.log(`   Dock ${info.dockAssigned} - Occupied count: ${dockOccupiedCount}, Is Waiting: ${isWaiting}, Status: ${info.status}`);
-          
+
           // First vessel at dock gets docked position, subsequent vessels wait
           if (dockOccupiedCount === 0 && !isWaiting) {
             // Place at docked position (first vessel) - keep original status
@@ -229,7 +223,7 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
               isWaiting
             });
           }
-          
+
           // Increment dock occupation count
           occupiedDocks[info.dockAssigned] = dockOccupiedCount + 1;
         } else {
@@ -242,7 +236,7 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
           status: finalStatus,  // Use finalStatus instead of info.status
           position
         });
-        
+
         // Apply rotation
         vessel.rotation.y = rotation;
         console.log(`   🔄 Applied rotation ${rotation} radians to vessel ${info.imo}`);
@@ -262,14 +256,8 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
       })));
     } catch (error) {
       console.error('❌ Error loading vessels with status:', error);
-      // Fallback to default vessel
-      const defaultVessel = await createVessel({
-        imo: '9999999',
-        name: 'Default Vessel',
-        status: 'InProgress',
-        position: { x: 11, y: 15, z: 110 }
-      });
-      this.vessels = [defaultVessel];
+      // No fallback vessel - just empty array
+      this.vessels = [];
     }
   }
 
@@ -290,11 +278,11 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
 
         dockPositions.forEach((dock: any) => {
           dockPositionMap[dock.name] = {
-            docked: { 
+            docked: {
               ...dock.vesselDocked || { x: dock.x + 60, y: 15, z: dock.z },
               rotation: dock.vesselDockedRotation || 0
             },
-            waiting: { 
+            waiting: {
               ...dock.vesselWaiting || { x: dock.x + 40, y: 15, z: dock.z },
               rotation: dock.vesselWaitingRotation || 0
             }
@@ -322,7 +310,7 @@ export class PortVisualizationComponent implements AfterViewInit, OnDestroy {
 
               let newPosition;
               let newRotation;
-              
+
               // First vessel at dock gets docked position, subsequent vessels wait
               if (dockOccupiedCount === 0 && !isWaiting) {
                 // Docked position - keep original status (Loading/Unloading)

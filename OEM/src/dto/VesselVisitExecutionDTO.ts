@@ -68,9 +68,13 @@ import { OperationExecutionEntryDTO } from "./OperationExecutionEntryDTO";
  *          format: date-time
  *         description: Actual date and time when the vessel was berthed at the dock
  *        example: "2025-12-17T09:15:00Z"
+ *        plannedDock:
+ *          type: string
+ *         description: Planned dock extracted from the first operation's crane assignment
+ *        example: "Dock B"
  *        DockAssigned:
  *          type: string
- *         description: Name of the dock assigned to the vessel
+ *         description: Name of the dock assigned to the vessel (empty until manually assigned)
  *        example: "Dock A"
  */
 
@@ -87,6 +91,7 @@ export interface VesselVisitExecutionDTO {
     systemUserID: string;
     incidentIDs?: string[] | null;
     operations?: OperationExecutionEntryDTO[];
+    plannedDock?: string;
     DockAssigned?: string;
     warning?: string;
 }

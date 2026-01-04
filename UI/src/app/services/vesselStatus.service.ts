@@ -37,6 +37,7 @@ export class VesselStatusService {
               name: exec.name,
               status: exec.status,
               DockAssigned: exec.DockAssigned,
+              plannedDock: exec.plannedDock,
               allFields: exec
             });
 
@@ -44,24 +45,19 @@ export class VesselStatusService {
               imo: exec.vesselIMO || '',
               name: exec.name || exec.vesselIMO || 'Unknown',
               status: this.mapStatus(exec.status || 'InProgress'),
-              dockAssigned: exec.DockAssigned
+              dockAssigned: exec.DockAssigned || exec.plannedDock
             };
           });
 
         console.log('✅ Mapped active vessels:', activeVessels);
 
-        // If no vessels from API, return demo vessels for development
-        if (activeVessels.length === 0) {
-          console.log('⚠️ No active vessels, using demo data');
-          return this.getDemoVessels();
-        }
-
+        // Return only real active vessels (no demo data)
         return activeVessels;
       }),
       catchError(error => {
         console.error('❌ Error fetching vessel status:', error);
-        // Return demo vessels as fallback
-        return of(this.getDemoVessels());
+        // Return empty array instead of demo vessels
+        return of([]);
       })
     );
   }
@@ -83,30 +79,5 @@ export class VesselStatusService {
       default:
         return 'InProgress';
     }
-  }
-
-  /**
-   * Demo vessels for development/fallback
-   */
-  private getDemoVessels(): VesselStatusInfo[] {
-    return [
-      {
-        imo: '9876543',
-        name: 'MV Demo Cargo',
-        status: 'Loading',
-        dockAssigned: 'Dock A'
-      },
-      {
-        imo: '9876544',
-        name: 'MV Test Freighter',
-        status: 'Unloading',
-        dockAssigned: 'Dock B'
-      },
-      {
-        imo: '9876545',
-        name: 'MV Sample Vessel',
-        status: 'Waiting'
-      }
-    ];
   }
 }

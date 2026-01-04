@@ -134,11 +134,6 @@ export class VesselStatusLegendComponent {
       name: 'In Progress',
       color: '#0099FF',
       description: 'Operations in progress'
-    },
-    {
-      name: 'Completed',
-      color: '#808080',
-      description: 'Operations completed'
     }
   ];
 

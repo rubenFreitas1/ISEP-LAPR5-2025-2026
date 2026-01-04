@@ -11,9 +11,10 @@ export interface VesselVisitExecutionModel {
   status?: string;
   lastUpdated?: string | Date;
   systemUserID?: string;
+  plannedDock?: string;
   DockAssigned?: string;
-  operations?: OperationExecutionEntry[];
   warning?: string;
+  operations?: OperationExecutionEntry[];
 }
 
 export interface OperationExecutionEntry {

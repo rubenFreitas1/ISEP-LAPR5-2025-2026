@@ -71,10 +71,9 @@ const VesselVisitExecutionSchema = new mongoose.Schema(
         default: ""
     },
 
-    plannedDockChanged: {
-        type: Boolean,
-        required: false,
-        default: false
+    warning: {
+        type: String,
+        required: false
     },
 
     operations: {

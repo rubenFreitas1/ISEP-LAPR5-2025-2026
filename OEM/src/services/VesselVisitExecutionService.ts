@@ -12,6 +12,7 @@ import { stat } from "fs";
 import { generateKey } from "crypto";
 import SystemUserClient from "./clients/SystemUserClient";
 import VesselVisitNotificationClient from "./clients/VesselVisitNotificationClient";
+import PhysicalResourceClient from "./clients/PhysicalResourceClient";
 import { OperationExecutionEntryMap } from "../mappers/OperationExecutionEntryMap";
 import { OperationPlanMap } from "../mappers/OperationPlanMap";
 
@@ -19,6 +20,7 @@ import { OperationPlanMap } from "../mappers/OperationPlanMap";
 export default class VesselVisitExecutionService implements IVesselVisitExecutionService {
     private sysClient: SystemUserClient;
     private vvnClient: VesselVisitNotificationClient;
+    private physicalResourceClient: PhysicalResourceClient;
 
     constructor(
         @Inject("vesselVisitExecutionRepo") private vesselVisitExecutionRepo: IVesselVisitExecutionRepo,
@@ -29,6 +31,7 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
         const apiBaseUrl = process.env.API_URL || 'http://localhost:5000/api';
         this.sysClient = new SystemUserClient(apiBaseUrl);
         this.vvnClient = new VesselVisitNotificationClient(apiBaseUrl);
+        this.physicalResourceClient = new PhysicalResourceClient(apiBaseUrl);
     }
 
     public async getAllVesselVisitExecutions(): Promise<Result<VesselVisitExecutionDTO[]>> {
@@ -208,9 +211,9 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
             if (!vesselIMO) {
                 return Result.fail("Vessel IMO is missing in the Vessel Visit Notification.");
             }
-            const vveByVvnCode = await this.vesselVisitExecutionRepo.findByVvnCode(dto.vesselVisitNotificationCode);
-            if (vveByVvnCode) {
-                return Result.fail(`A Vessel Visit Execution already exists for VVN code ${dto.vesselVisitNotificationCode}.`);
+            const vveByVesselIMO = await this.vesselVisitExecutionRepo.findByVesselIMO(vesselIMO);
+            if (vveByVesselIMO) {
+                return Result.fail(`A Vessel Visit Execution already exists for vessel IMO ${vesselIMO}.`);
             }
 
             // Validate that an OperationPlan exists for this VVN
@@ -255,22 +258,31 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
 
             const vesselVisitExecutionCode = await this.generateVesselVisitExecutionCode();
             
-            // Extract planned dock from VVN or from first operation's crane
-            let plannedDock = vvn.plannedDock || vvn.dock || "";
+            // Extract planned dock from first operation's crane by querying Physical Resources API
+            let plannedDock = "";
             
-            // If no plannedDock in VVN, try to extract from first operation
-            if (!plannedDock && operationExecutions.length > 0) {
+            if (operationExecutions.length > 0) {
                 const firstOp = operationExecutions[0];
                 if (firstOp.craneUsed) {
-                    // Map crane to dock based on known crane assignments
-                    const craneToDockMap: { [key: string]: string } = {
-                        'STS Crane 1': 'Dock A', 'STS Crane 2': 'Dock A', 'STS Crane 3': 'Dock A',
-                        'STS Crane 4': 'Dock B', 'STS Crane 5': 'Dock B', 'STS Crane 6': 'Dock B',
-                        'STS Crane 7': 'Dock C', 'STS Crane 8': 'Dock C',
-                        'STS Crane 9': 'Dock D', 'STS Crane 10': 'Dock D'
-                    };
-                    plannedDock = craneToDockMap[firstOp.craneUsed] || "";
+                    try {
+                        // Query Physical Resources API to get crane's assigned area
+                        const crane = await this.physicalResourceClient.getByName(firstOp.craneUsed, authHeader);
+                        if (crane && crane.assignedArea) {
+                            plannedDock = crane.assignedArea;
+                            this.logger.info(`✅ Extracted plannedDock "${plannedDock}" from crane "${firstOp.craneUsed}" via API`);
+                        } else {
+                            this.logger.warn(`⚠️ Crane "${firstOp.craneUsed}" found but has no assignedArea`);
+                        }
+                    } catch (error) {
+                        this.logger.error(`❌ Error fetching crane "${firstOp.craneUsed}" from API:`, error);
+                    }
                 }
+            }
+            
+            // Fallback to VVN dock if no crane or API call failed
+            if (!plannedDock) {
+                plannedDock = vvn.plannedDock || vvn.dock || "";
+                this.logger.info(`No crane assignedArea found, using VVN plannedDock: ${plannedDock}`);
             }
             
             this.logger.info(`Creating VVE with plannedDock: ${plannedDock}`);
@@ -285,8 +297,7 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 systemUserID: dto.systemUserID,
                 operations: operationExecutions,
                 vvnCode: dto.vesselVisitNotificationCode,
-                plannedDock: plannedDock,
-                plannedDockChanged: false
+                plannedDock: plannedDock
             } as any);
             const saved = await this.vesselVisitExecutionRepo.save(domain);
             if (!saved) {
@@ -367,21 +378,23 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 this.logger.info(`Updating DockAssigned from "${vesselVisitExecution.DockAssigned}" to "${payload.DockAssigned}"`);
                 this.logger.info(`Planned dock is: "${vesselVisitExecution.plannedDock}"`);
                 
-                // If plannedDock is not set (for old VVEs), initialize it with current DockAssigned or extract from operations
+                // If plannedDock is not set (for old VVEs), initialize it from Physical Resources API
                 if (!vesselVisitExecution.plannedDock) {
                     let initialPlannedDock = vesselVisitExecution.DockAssigned || "";
                     
-                    // If no DockAssigned, try to extract from first operation
+                    // If no DockAssigned, try to extract from first operation's crane via API
                     if (!initialPlannedDock && vesselVisitExecution.operations.length > 0) {
                         const firstOp = vesselVisitExecution.operations[0];
                         if (firstOp.craneUsed) {
-                            const craneToDockMap: { [key: string]: string } = {
-                                'STS Crane 1': 'Dock A', 'STS Crane 2': 'Dock A', 'STS Crane 3': 'Dock A',
-                                'STS Crane 4': 'Dock B', 'STS Crane 5': 'Dock B', 'STS Crane 6': 'Dock B',
-                                'STS Crane 7': 'Dock C', 'STS Crane 8': 'Dock C',
-                                'STS Crane 9': 'Dock D', 'STS Crane 10': 'Dock D'
-                            };
-                            initialPlannedDock = craneToDockMap[firstOp.craneUsed] || "";
+                            try {
+                                const crane = await this.physicalResourceClient.getByName(firstOp.craneUsed);
+                                if (crane && crane.assignedArea) {
+                                    initialPlannedDock = crane.assignedArea;
+                                    this.logger.info(`✅ Extracted plannedDock "${initialPlannedDock}" from crane "${firstOp.craneUsed}" via API`);
+                                }
+                            } catch (error) {
+                                this.logger.error(`❌ Error fetching crane "${firstOp.craneUsed}":`, error);
+                            }
                         }
                     }
                     
@@ -389,14 +402,24 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                     (vesselVisitExecution as any).plannedDock = initialPlannedDock;
                 }
                 
-                // Check if this is a change from the planned dock
-                if (vesselVisitExecution.plannedDock && 
-                    payload.DockAssigned !== vesselVisitExecution.plannedDock &&
-                    payload.DockAssigned !== "") {
-                    this.logger.warn(`Dock changed from planned dock "${vesselVisitExecution.plannedDock}" to "${payload.DockAssigned}"! Setting plannedDockChanged to true`);
-                    (vesselVisitExecution as any).plannedDockChanged = true;
-                }
                 (vesselVisitExecution as any).DockAssigned = payload.DockAssigned;
+            }
+
+            // Update plannedDock if manually changed and set warning
+            if (payload.plannedDock !== undefined) {
+                const originalPlannedDock = vesselVisitExecution.plannedDock;
+                
+                // Update plannedDock
+                (vesselVisitExecution as any).plannedDock = payload.plannedDock;
+                
+                // Set warning if the plannedDock was changed
+                if (originalPlannedDock && originalPlannedDock !== payload.plannedDock) {
+                    (vesselVisitExecution as any).warning = "Planned dock has been changed";
+                    this.logger.info(`⚠️ Warning set: Planned dock changed from "${originalPlannedDock}" to "${payload.plannedDock}"`);
+                } else {
+                    // Clear warning if it matches the original
+                    (vesselVisitExecution as any).warning = "";
+                }
             }
 
             // Update arrivalDate if provided
