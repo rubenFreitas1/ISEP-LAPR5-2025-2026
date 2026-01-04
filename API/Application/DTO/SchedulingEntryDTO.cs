@@ -4,7 +4,7 @@ namespace Application.DTO;
 public class SchedulingEntryDTO
 {
     public String VesselName { get; set; }
-    
+
     public String? VVNCode { get; set; }
 
     public DateTime StartTime { get; set; }
