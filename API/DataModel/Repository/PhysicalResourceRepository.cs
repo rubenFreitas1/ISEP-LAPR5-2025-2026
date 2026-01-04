@@ -40,6 +40,13 @@ namespace DataModel.Repository
             return _mapper.ToDomain(dm);
         }
 
+        public async Task<PhysicalResource?> GetPhysicalResourceByNameAsync(string name)
+        {
+            var dm = await _context.Set<PhysicalResourceDataModel>().Include(p => p.QualificationRequirements).SingleOrDefaultAsync(p => p.Name == name);
+            if (dm == null) return null;
+            return _mapper.ToDomain(dm);
+        }
+
         public async Task<IEnumerable<PhysicalResource>> GetPhysicalResourceByDescriptionAsync(string description)
         {
             if (string.IsNullOrWhiteSpace(description)) return Enumerable.Empty<PhysicalResource>();

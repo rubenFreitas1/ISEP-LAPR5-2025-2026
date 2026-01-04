@@ -101,6 +101,8 @@
     <div class="info-card">
       <p *ngIf="selected.code"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.CODE' | translate }}:</strong> {{ selected.code }}</p>
       <p *ngIf="selected.name"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.VESSEL_IMO' | translate }}:</strong> {{ selected.name }}</p>
+      <p *ngIf="selected.vesselVisitNotificationCode"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.VVN_CODE' | translate }}:</strong> {{ selected.vesselVisitNotificationCode }}</p>
+      <p *ngIf="plannedDock" class="planned-dock-info"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.PLANNED_DOCK' | translate }}:</strong> {{ plannedDock }}</p>
       <p *ngIf="selected.status || selected.description"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.STATUS' | translate }}:</strong> <span [ngClass]="getStatusClass(selected.status || selected.description)">{{ selected.status || selected.description }}</span></p>
       <p *ngIf="selected.arrivalDate"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.ARRIVAL_DATE' | translate }}:</strong> {{ selected.arrivalDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <p *ngIf="selected.departureDate"><strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.DEPARTURE_DATE' | translate }}:</strong> {{ selected.departureDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
@@ -172,7 +174,13 @@
 
         <div class="form-group">
           <label for="DockAssigned">{{ 'VESSEL_VISIT_EXECUTION.EDIT_MODAL.DOCK_ASSIGNED' | translate }}</label>
-          <input type="text" id="DockAssigned" name="DockAssigned" [(ngModel)]="editItem.DockAssigned" class="form-input" [placeholder]="'VESSEL_VISIT_EXECUTION.EDIT_MODAL.DOCK_ASSIGNED_PLACEHOLDER' | translate">
+          <p *ngIf="plannedDock" class="planned-dock-info">
+            <strong>{{ 'VESSEL_VISIT_EXECUTION.DETAILS.PLANNED_DOCK' | translate }}:</strong> {{ plannedDock }}
+          </p>
+          <select id="DockAssigned" name="DockAssigned" [(ngModel)]="editItem.DockAssigned" class="form-input">
+            <option value="">{{ 'VESSEL_VISIT_EXECUTION.EDIT_MODAL.SELECT_DOCK' | translate }}</option>
+            <option *ngFor="let dock of availableDocks" [value]="dock.name">{{ dock.name }} - {{ dock.location }}</option>
+          </select>
           <small class="form-help">{{ 'VESSEL_VISIT_EXECUTION.EDIT_MODAL.DOCK_ASSIGNED_HELP' | translate }}</small>
         </div>
 

@@ -245,6 +245,7 @@ export default class VesselVisitExecutionService implements IVesselVisitExecutio
                 lastUpdated: new Date(),
                 systemUserID: dto.systemUserID,
                 operations: operationExecutions,
+                vvnCode: dto.vesselVisitNotificationCode,
             } as any);
             const saved = await this.vesselVisitExecutionRepo.save(domain);
             if (!saved) {

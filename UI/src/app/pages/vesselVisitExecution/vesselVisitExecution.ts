@@ -9,6 +9,9 @@ import { VesselVisitNotificationService } from '../../services/vesselVisitNotifi
 import { VesselVisitNotificationModel, VisitStatus } from '../../models/vesselVisitNotification.model';
 import { IncidentService } from '../../services-oem/incident.service';
 import { IncidentModel } from '../../models/incident.model';
+import { DocksService } from '../../services/docks.service';
+import { DocksModel } from '../../models/docks.model';
+import { PhysicalResourcesService } from '../../services/physicalResources.service';
 
 @Component({
   selector: 'app-vessel-visit-execution',
@@ -54,6 +57,10 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
   ongoingIncidents: IncidentModel[] = [];
   selectedIncidentIds: string[] = [];
 
+  // Docks for edit modal
+  availableDocks: DocksModel[] = [];
+  plannedDock: string | null = null;
+
   // Date picker popover
   showDatePicker = false;
 
@@ -63,7 +70,9 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
   constructor(
     private vveService: VesselVisitExecutionService,
     private vvnService: VesselVisitNotificationService,
-    private incidentService: IncidentService
+    private incidentService: IncidentService,
+    private docksService: DocksService,
+    private physicalResourcesService: PhysicalResourcesService
   ) {}
 
   ngOnInit(): void {
@@ -280,6 +289,11 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
 
   select(item: VesselVisitExecutionModel) {
     this.selected = this.selected?.id === item.id ? null : item;
+    if (this.selected) {
+      this.loadPlannedDock();
+    } else {
+      this.plannedDock = null;
+    }
   }
 
   // Create modal handling (no edit per requirements)
@@ -308,6 +322,7 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
         DockAssigned: this.selected.DockAssigned || '',
         operations: operationsCopy
       };
+      this.loadDocks();
       this.showEditModal = true;
     } else {
       alert('Please select a vessel visit execution to update.');
@@ -318,6 +333,52 @@ export class VesselVisitExecution implements OnInit, OnDestroy {
     this.editItem = { status: '', arrivalDate: '', DockAssigned: '', operations: [] };
     this.editModalErrorMessage = '';
     this.editFieldErrors = {};
+  }
+
+  loadDocks() {
+    this.docksService.getAllDocks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (docks) => {
+          this.availableDocks = docks || [];
+        },
+        error: (error) => {
+          console.error('Error loading docks:', error);
+          this.availableDocks = [];
+        }
+      });
+  }
+
+  loadPlannedDock() {
+    this.plannedDock = null;
+    if (!this.selected?.operations || this.selected.operations.length === 0) {
+      return;
+    }
+
+    // Get the crane name from the first operation
+    const craneName = this.selected.operations[0]?.craneUsed;
+    if (!craneName) {
+      return;
+    }
+
+    console.log('Attempting to load crane with name/description:', craneName);
+
+    // Use ByName endpoint to get the exact crane by name
+    this.physicalResourcesService.getPhysicalResourceByName(craneName)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (crane) => {
+          if (crane?.assignedArea) {
+            this.plannedDock = crane.assignedArea;
+            console.log('Planned dock found:', this.plannedDock, 'from crane:', crane.name);
+          }
+        },
+        error: (error) => {
+          // Silently handle error - crane might not exist or might not have an assigned dock
+          console.log(`Crane '${craneName}' not found or has no assigned dock. Please verify the crane name in the database.`);
+          this.plannedDock = null;
+        }
+      });
   }
 
   formatDateForInput(date: any): string {

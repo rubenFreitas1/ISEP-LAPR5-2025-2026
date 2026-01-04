@@ -15,7 +15,13 @@ export class PhysicalResourcesService {
   }
 
   getPhysicalResourceByCode(code: string): Observable<PhysicalResourceModel> {
-    return this.apiService.get<PhysicalResourceModel>(`/PhysicalResources/ByCode/${code}`);
+    const encodedCode = encodeURIComponent(code);
+    return this.apiService.get<PhysicalResourceModel>(`/PhysicalResources/ByCode/${encodedCode}`);
+  }
+
+  getPhysicalResourceByName(name: string): Observable<PhysicalResourceModel> {
+    const encodedName = encodeURIComponent(name);
+    return this.apiService.get<PhysicalResourceModel>(`/PhysicalResources/ByName/${encodedName}`);
   }
 
   getPhysicalResourcesByDescription(description: string): Observable<PhysicalResourceModel[]> {

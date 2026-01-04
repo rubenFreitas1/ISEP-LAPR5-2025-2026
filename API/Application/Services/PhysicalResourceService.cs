@@ -44,6 +44,12 @@ namespace Application.Services
             return r == null ? null : PhysicalResourceDTO.ToDTO(r);
         }
 
+        public async Task<PhysicalResourceDTO?> GetByName(string name)
+        {
+            var r = await _repo.GetPhysicalResourceByNameAsync(name);
+            return r == null ? null : PhysicalResourceDTO.ToDTO(r);
+        }
+
         public async Task<IEnumerable<PhysicalResourceDTO>> GetByDescription(string description)
         {
             var r = (await _repo.GetPhysicalResourceByDescriptionAsync(description)) ?? Enumerable.Empty<PhysicalResource>();

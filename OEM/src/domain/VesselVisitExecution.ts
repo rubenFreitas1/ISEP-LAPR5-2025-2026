@@ -13,7 +13,8 @@ export class VesselVisitExecution {
         public systemUserID: string,
         public operations: OperationExecutionEntry[] = [],
         public DockAssigned: string = "",
-        public departureDate?: Date
+        public departureDate?: Date,
+        public vvnCode?: string
     ) {
         this.validateCode(code);
         this.validateVesselIMO(vesselIMO);

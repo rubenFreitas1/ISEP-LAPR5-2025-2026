@@ -17,6 +17,12 @@ const VesselVisitExecutionSchema = new mongoose.Schema(
         unique: true
     },
 
+    vvnCode: {
+        type: String,
+        required: false,
+        unique: false
+    },
+
     status: {
       type: String,
       enum: Object.values(VesselVisitExecutionStatus),

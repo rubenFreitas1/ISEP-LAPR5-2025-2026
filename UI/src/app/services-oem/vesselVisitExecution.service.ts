@@ -61,8 +61,8 @@ export class VesselVisitExecutionService {
 
   private mapDtoToVVE = (dto: any): VesselVisitExecutionModel => ({
     id: dto?.id ?? dto?._id ?? undefined,
-    code: dto?.code ?? dto?.vesselVisitNotificationCode ?? '',
-    name: dto?.vesselIMO ?? dto?.vessel?.imo ?? dto?.vesselVisitNotificationCode ?? '',
+    code: dto?.code ?? '',
+    name: dto?.vesselIMO ?? dto?.vessel?.imo ?? '',
     vesselIMO: dto?.vesselIMO ?? dto?.vessel?.imo ?? '',
     description: dto?.status ?? dto?.visitStatus ?? '',
     status: dto?.status ?? dto?.visitStatus,
@@ -70,7 +70,7 @@ export class VesselVisitExecutionService {
     arrivalDate: dto?.arrivalDate,
     lastUpdated: dto?.lastUpdated,
     systemUserID: dto?.systemUserID,
-    vesselVisitNotificationCode: dto?.code ?? dto?.vesselVisitNotificationCode,
+    vesselVisitNotificationCode: dto?.vesselVisitNotificationCode ?? '',
     DockAssigned: dto?.DockAssigned ?? dto?.dockAssigned,
     operations: dto?.operations ?? []
   });

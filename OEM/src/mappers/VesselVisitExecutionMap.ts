@@ -20,7 +20,8 @@ export class VesselVisitExecutionMap {
             raw.systemUserID,
             operations,
             raw.DockAssigned || "",
-            raw.departureDate
+            raw.departureDate,
+            raw.vvnCode
         );
     }
 
@@ -34,7 +35,8 @@ export class VesselVisitExecutionMap {
             lastUpdated: vve.lastUpdated,
             systemUserID: vve.systemUserID,
             DockAssigned: vve.DockAssigned,
-            operations: vve.operations.map(op => OperationExecutionEntryMap.toPersistence(op))
+            operations: vve.operations.map(op => OperationExecutionEntryMap.toPersistence(op)),
+            vvnCode: vve.vvnCode
         };
 
         if (vve.id && vve.id !== "") {
@@ -48,6 +50,7 @@ export class VesselVisitExecutionMap {
             id: vve.id,
             code: vve.code,
             vesselIMO: vve.vesselIMO,
+            vesselVisitNotificationCode: vve.vvnCode,
             status: vve.status,
             arrivalDate: vve.arrivalDate,
             departureDate: vve.departureDate,

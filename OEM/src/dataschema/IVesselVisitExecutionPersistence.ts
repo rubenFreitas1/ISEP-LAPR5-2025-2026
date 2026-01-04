@@ -11,4 +11,5 @@ export interface IVesselVisitExecutionPersistence {
     systemUserID: string;
     DockAssigned?: string;
     operations: any[];
+    vvnCode?: string;
 }

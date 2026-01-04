@@ -40,6 +40,14 @@ namespace WebApi.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("ByName/{name}")]
+        public async Task<ActionResult<PhysicalResourceDTO>> GetByName(string name)
+        {
+            var dto = await _service.GetByName(name);
+            if (dto == null) return NotFound($"Physical resource with name '{name}' not found.");
+            return Ok(dto);
+        }
+
         [HttpGet("ByDescription/{description}")]
         public async Task<ActionResult<IEnumerable<PhysicalResourceDTO>>> GetByDescription(string description)
         {

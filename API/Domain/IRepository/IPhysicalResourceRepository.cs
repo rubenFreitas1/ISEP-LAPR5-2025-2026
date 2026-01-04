@@ -9,6 +9,7 @@ namespace Domain.IRepository
         Task<IEnumerable<PhysicalResource>> GetAllPhysicalResourcesAsync();
         Task<PhysicalResource?> GetPhysicalResourceByIdAsync(long id);
         Task<PhysicalResource?> GetPhysicalResourceByCodeAsync(string code);
+        Task<PhysicalResource?> GetPhysicalResourceByNameAsync(string name);
         Task<IEnumerable<PhysicalResource>> GetPhysicalResourceByDescriptionAsync(string description);
         Task<IEnumerable<PhysicalResource>> GetPhysicalResourceByKindAsync(PhysicalResourceKind kind);
         Task<IEnumerable<PhysicalResource>> GetPhysicalResourceByStatusAsync(ResourceStatus status);
