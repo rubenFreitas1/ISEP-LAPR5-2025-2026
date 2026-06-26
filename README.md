@@ -1,5 +1,23 @@
 <div align="center">
 
+# 🚢 SmartPort
+
+### An intelligent digital twin for modern container ports
+
+Manage vessel visits, optimize cargo operations with AI, and explore the entire port in interactive 3D.
+
+<br/>
+
+![Angular](https://img.shields.io/badge/Angular-20-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-3D-000000?style=for-the-badge&logo=three.js&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-DDD-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Prolog](https://img.shields.io/badge/Prolog-AI-EF3B3A?style=for-the-badge)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Keycloak](https://img.shields.io/badge/OAuth2-4D4D4D?style=for-the-badge&logo=keycloak&logoColor=white)
+
+</div>
+
 ---
 
 A full-stack, **polyglot microservices** platform that models the full lifecycle of a vessel visit — from booking and dock assignment to AI-scheduled cargo operations and real-time execution tracking. Built as the capstone project for the 5th semester of Informatics Engineering at **ISEP**.
